@@ -69,6 +69,11 @@ import static org.apache.zeppelin.cluster.meta.ClusterMetaOperation.*;
 import static org.apache.zeppelin.cluster.meta.ClusterMetaType.INTP_PROCESS_META;
 
 /**
+ * 集群管理的基类，包括以下实现
+ * 1.作为RaftClient的Raft Client
+ * 2.在集群元数据提交失败后提供重试的线程
+ * 3.集群监视
+ * <p>
  * The base class for cluster management, including the following implementations
  * 1. RaftClient as the raft client
  * 2. Threading to provide retry after cluster metadata submission failure

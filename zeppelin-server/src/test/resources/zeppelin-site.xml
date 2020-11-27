@@ -33,7 +33,8 @@
 
     <property>
         <name>zeppelin.notebook.dir</name>
-        <value>notebook</value>
+        <value>D:\notebook</value>
+        <!--<value>notebook</value>-->
         <description>path or URI for notebook persist</description>
     </property>
 

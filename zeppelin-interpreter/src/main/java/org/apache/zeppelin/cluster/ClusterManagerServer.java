@@ -55,6 +55,10 @@ import java.util.function.BiFunction;
 import static org.apache.zeppelin.cluster.meta.ClusterMetaType.SERVER_META;
 
 /**
+ * 在Zeppelin-server中实例化的集群管理服务器类
+ * 1.创建一个筏式服务器
+ * 2.远程创建解释器的thrift服务
+ * <p>
  * Cluster management server class instantiated in zeppelin-server
  * 1. Create a raft server
  * 2. Remotely create interpreter's thrift service

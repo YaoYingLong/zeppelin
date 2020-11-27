@@ -140,7 +140,9 @@ if [[ -n "$ZEPPELIN_IMPERSONATE_USER" ]]; then
     ZEPPELIN_LOGFILE+="${ZEPPELIN_IMPERSONATE_USER}-"
 fi
 ZEPPELIN_LOGFILE+="${ZEPPELIN_IDENT_STRING}-${HOSTNAME}.log"
-JAVA_INTP_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
+# JAVA_INTP_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
+# 为了remote debug故修改参数
+JAVA_INTP_OPTS+=" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=`expr ${PORT} + 1` -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
 
 if [[ ! -d "${ZEPPELIN_LOG_DIR}" ]]; then
   echo "Log dir doesn't exist, create ${ZEPPELIN_LOG_DIR}"
