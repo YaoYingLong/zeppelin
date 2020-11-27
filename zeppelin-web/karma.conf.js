@@ -22,7 +22,7 @@
 
 var webpackConfig = require('./webpack.config');
 
-module.exports = function(config) {
+module.exports = function (config) {
   'use strict';
 
   config.set({
@@ -96,7 +96,7 @@ module.exports = function(config) {
       // endbower
 
       'src/index.js',
-      { pattern: 'src/**/*.test.js', watched: false },
+      {pattern: 'src/**/*.test.js', watched: false},
     ],
 
     // list of files / patterns to exclude
@@ -115,7 +115,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: [ 'PhantomJS' ],
+    browsers: ['PhantomJS'],
 
     reporters: ['spec', 'coverage'],
 
@@ -131,8 +131,8 @@ module.exports = function(config) {
     coverageReporter: {
       dir: 'reports/coverage',
       reporters: [
-        { type: 'html' },
-        { type: 'text-summary' },
+        {type: 'html'},
+        {type: 'text-summary'},
       ]
     },
 

@@ -18,13 +18,13 @@
     [visualization]="visualization"
     mode="multiBarChart">
   </zeppelin-visualization-x-axis-setting>
-  <div nz-form nzLayout="inline" class="bar-chart-setting">
+  <div class="bar-chart-setting" nz-form nzLayout="inline">
     <nz-form-item>
       <nz-form-label>View</nz-form-label>
       <nz-form-control>
-        <nz-radio-group [(ngModel)]="stacked" (ngModelChange)="viewChange()" [nzButtonStyle]="'solid'">
-          <label nz-radio-button [nzValue]="false">Grouped</label>
-          <label nz-radio-button [nzValue]="true">Stacked</label>
+        <nz-radio-group (ngModelChange)="viewChange()" [(ngModel)]="stacked" [nzButtonStyle]="'solid'">
+          <label [nzValue]="false" nz-radio-button>Grouped</label>
+          <label [nzValue]="true" nz-radio-button>Stacked</label>
         </nz-radio-group>
       </nz-form-control>
     </nz-form-item>

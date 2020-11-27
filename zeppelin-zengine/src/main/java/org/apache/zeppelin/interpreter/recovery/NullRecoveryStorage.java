@@ -28,28 +28,27 @@ import java.util.Map;
 
 /**
  * RecoveryStorage that do nothing, used when recovery is not enabled.
- *
  */
 public class NullRecoveryStorage extends RecoveryStorage {
 
-  public NullRecoveryStorage(ZeppelinConfiguration zConf,
-                             InterpreterSettingManager interpreterSettingManager)
-      throws IOException {
-    super(zConf);
-  }
+    public NullRecoveryStorage(ZeppelinConfiguration zConf,
+                               InterpreterSettingManager interpreterSettingManager)
+            throws IOException {
+        super(zConf);
+    }
 
-  @Override
-  public void onInterpreterClientStart(InterpreterClient client) throws IOException {
+    @Override
+    public void onInterpreterClientStart(InterpreterClient client) throws IOException {
 
-  }
+    }
 
-  @Override
-  public void onInterpreterClientStop(InterpreterClient client) throws IOException {
+    @Override
+    public void onInterpreterClientStop(InterpreterClient client) throws IOException {
 
-  }
+    }
 
-  @Override
-  public Map<String, InterpreterClient> restore() throws IOException {
-    return new HashMap<>();
-  }
+    @Override
+    public Map<String, InterpreterClient> restore() throws IOException {
+        return new HashMap<>();
+    }
 }

@@ -30,10 +30,21 @@ import { AboutZeppelinComponent } from '@zeppelin/share/about-zeppelin/about-zep
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent extends MessageListenersManager implements OnInit, OnDestroy {
-  private destroy$ = new Subject();
   connectStatus = 'error';
   noteListVisible = false;
   queryStr: string | null = null;
+  private destroy$ = new Subject();
+
+  constructor(
+    public ticketService: TicketService,
+    private nzModalService: NzModalService,
+    public messageService: MessageService,
+    private router: Router,
+    private notebookSearchService: NotebookSearchService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super(messageService);
+  }
 
   about() {
     this.nzModalService.create({
@@ -58,17 +69,6 @@ export class HeaderComponent extends MessageListenersManager implements OnInit, 
   @MessageListener(OP.CONFIGURATIONS_INFO)
   getConfiguration(data: MessageReceiveDataTypeMap[OP.CONFIGURATIONS_INFO]) {
     this.ticketService.setConfiguration(data);
-  }
-
-  constructor(
-    public ticketService: TicketService,
-    private nzModalService: NzModalService,
-    public messageService: MessageService,
-    private router: Router,
-    private notebookSearchService: NotebookSearchService,
-    private cdr: ChangeDetectorRef
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {

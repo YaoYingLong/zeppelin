@@ -22,13 +22,13 @@ export class NotebookAddParagraphComponent implements OnInit {
   @Output() readonly addParagraph = new EventEmitter();
   @Input() disabled = false;
 
+  constructor() {}
+
   clickAdd() {
     if (!this.disabled) {
       this.addParagraph.emit();
     }
   }
-
-  constructor() {}
 
   ngOnInit() {}
 }

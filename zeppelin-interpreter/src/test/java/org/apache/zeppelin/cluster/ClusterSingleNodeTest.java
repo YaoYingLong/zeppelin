@@ -34,117 +34,115 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ClusterSingleNodeTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterSingleNodeTest.class);
-  private static ZeppelinConfiguration zconf;
+    static final String metaKey = "ClusterSingleNodeTestKey";
+    static String zServerHost;
+    static int zServerPort;
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterSingleNodeTest.class);
+    private static ZeppelinConfiguration zconf;
+    private static ClusterManagerServer clusterServer = null;
+    private static ClusterManagerClient clusterClient = null;
 
-  private static ClusterManagerServer clusterServer = null;
-  private static ClusterManagerClient clusterClient = null;
+    @BeforeClass
+    public static void startCluster() throws IOException, InterruptedException, ConfigurationException {
+        LOGGER.info("startCluster >>>");
 
-  static String zServerHost;
-  static int zServerPort;
-  static final String metaKey = "ClusterSingleNodeTestKey";
+        zconf = ZeppelinConfiguration.create();
 
-  @BeforeClass
-  public static void startCluster() throws IOException, InterruptedException, ConfigurationException {
-    LOGGER.info("startCluster >>>");
+        // Set the cluster IP and port
+        zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
+        zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
+        zconf.setClusterAddress(zServerHost + ":" + zServerPort);
 
-    zconf = ZeppelinConfiguration.create();
+        // mock cluster manager server
+        zconf.load(ClusterSingleNodeTest.class.getResource("/zeppelin-site-test.xml"));
+        clusterServer = ClusterManagerServer.getInstance(zconf);
+        clusterServer.start();
 
-    // Set the cluster IP and port
-    zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
-    zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
-    zconf.setClusterAddress(zServerHost + ":" + zServerPort);
+        // mock cluster manager client
+        clusterClient = ClusterManagerClient.getInstance(zconf);
+        clusterClient.start(metaKey);
 
-    // mock cluster manager server
-    zconf.load(ClusterSingleNodeTest.class.getResource("/zeppelin-site-test.xml"));
-    clusterServer = ClusterManagerServer.getInstance(zconf);
-    clusterServer.start();
-
-    // mock cluster manager client
-    clusterClient = ClusterManagerClient.getInstance(zconf);
-    clusterClient.start(metaKey);
-
-    // Waiting for cluster startup
-    int wait = 0;
-    while(wait++ < 100) {
-      if (clusterServer.isClusterLeader()
-          && clusterServer.raftInitialized()
-          && clusterClient.raftInitialized()) {
-        LOGGER.info("wait {}(ms) found cluster leader", wait*3000);
-        break;
-      }
-      try {
+        // Waiting for cluster startup
+        int wait = 0;
+        while (wait++ < 100) {
+            if (clusterServer.isClusterLeader()
+                    && clusterServer.raftInitialized()
+                    && clusterClient.raftInitialized()) {
+                LOGGER.info("wait {}(ms) found cluster leader", wait * 3000);
+                break;
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+        assertEquals(true, clusterServer.isClusterLeader());
+        LOGGER.info("startCluster <<<");
     }
-    Thread.sleep(3000);
-    assertEquals(true, clusterServer.isClusterLeader());
-    LOGGER.info("startCluster <<<");
-  }
 
-  @AfterClass
-  public static void stopCluster() {
-    if (null != clusterClient) {
-      clusterClient.shutdown();
+    @AfterClass
+    public static void stopCluster() {
+        if (null != clusterClient) {
+            clusterClient.shutdown();
+        }
+        if (null != clusterClient) {
+            clusterServer.shutdown();
+        }
+        ZeppelinConfiguration.reset();
+        LOGGER.info("stopCluster");
     }
-    if (null != clusterClient) {
-      clusterServer.shutdown();
+
+    @Test
+    public void getServerMeta() {
+        LOGGER.info("getServerMeta >>>");
+
+        // Get metadata for all services
+        Object meta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
+        LOGGER.info(meta.toString());
+
+        Object intpMeta = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, "");
+        LOGGER.info(intpMeta.toString());
+
+        assertNotNull(meta);
+        assertEquals(true, (meta instanceof HashMap));
+        HashMap hashMap = (HashMap) meta;
+
+        // Get metadata for the current service
+        Object values = hashMap.get(clusterClient.getClusterNodeName());
+        assertEquals(true, (values instanceof HashMap));
+        HashMap mapMetaValues = (HashMap) values;
+
+        assertEquals(true, mapMetaValues.size() > 0);
+
+        LOGGER.info("getServerMeta <<<");
     }
-    ZeppelinConfiguration.reset();
-    LOGGER.info("stopCluster");
-  }
 
-  @Test
-  public void getServerMeta() {
-    LOGGER.info("getServerMeta >>>");
+    @Test
+    public void putIntpProcessMeta() {
+        // mock IntpProcess Meta
+        HashMap<String, Object> meta = new HashMap<>();
+        meta.put(ClusterMeta.SERVER_HOST, zServerHost);
+        meta.put(ClusterMeta.SERVER_PORT, zServerPort);
+        meta.put(ClusterMeta.INTP_TSERVER_HOST, "INTP_TSERVER_HOST");
+        meta.put(ClusterMeta.INTP_TSERVER_PORT, "INTP_TSERVER_PORT");
+        meta.put(ClusterMeta.CPU_CAPACITY, "CPU_CAPACITY");
+        meta.put(ClusterMeta.CPU_USED, "CPU_USED");
+        meta.put(ClusterMeta.MEMORY_CAPACITY, "MEMORY_CAPACITY");
+        meta.put(ClusterMeta.MEMORY_USED, "MEMORY_USED");
 
-    // Get metadata for all services
-    Object meta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
-    LOGGER.info(meta.toString());
+        // put IntpProcess Meta
+        clusterClient.putClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey, meta);
 
-    Object intpMeta = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, "");
-    LOGGER.info(intpMeta.toString());
+        // get IntpProcess Meta
+        HashMap<String, HashMap<String, Object>> check
+                = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey);
 
-    assertNotNull(meta);
-    assertEquals(true, (meta instanceof HashMap));
-    HashMap hashMap = (HashMap) meta;
+        LOGGER.info(check.toString());
 
-    // Get metadata for the current service
-    Object values = hashMap.get(clusterClient.getClusterNodeName());
-    assertEquals(true, (values instanceof HashMap));
-    HashMap mapMetaValues = (HashMap) values;
-
-    assertEquals(true, mapMetaValues.size()>0);
-
-    LOGGER.info("getServerMeta <<<");
-  }
-
-  @Test
-  public void putIntpProcessMeta() {
-    // mock IntpProcess Meta
-    HashMap<String, Object> meta = new HashMap<>();
-    meta.put(ClusterMeta.SERVER_HOST, zServerHost);
-    meta.put(ClusterMeta.SERVER_PORT, zServerPort);
-    meta.put(ClusterMeta.INTP_TSERVER_HOST, "INTP_TSERVER_HOST");
-    meta.put(ClusterMeta.INTP_TSERVER_PORT, "INTP_TSERVER_PORT");
-    meta.put(ClusterMeta.CPU_CAPACITY, "CPU_CAPACITY");
-    meta.put(ClusterMeta.CPU_USED, "CPU_USED");
-    meta.put(ClusterMeta.MEMORY_CAPACITY, "MEMORY_CAPACITY");
-    meta.put(ClusterMeta.MEMORY_USED, "MEMORY_USED");
-
-    // put IntpProcess Meta
-    clusterClient.putClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey, meta);
-
-    // get IntpProcess Meta
-    HashMap<String, HashMap<String, Object>> check
-        = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey);
-
-    LOGGER.info(check.toString());
-
-    assertNotNull(check);
-    assertNotNull(check.get(metaKey));
-    assertEquals(true, check.get(metaKey).size()>0);
-  }
+        assertNotNull(check);
+        assertNotNull(check.get(metaKey));
+        assertEquals(true, check.get(metaKey).size() > 0);
+    }
 }

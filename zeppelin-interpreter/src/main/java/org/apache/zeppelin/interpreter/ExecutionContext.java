@@ -23,57 +23,57 @@ package org.apache.zeppelin.interpreter;
  */
 public class ExecutionContext {
 
-  private final String user;
-  private final String noteId;
-  private final String interpreterGroupId;
-  private final String defaultInterpreterGroup;
-  private final boolean inIsolatedMode;
-  // When is the execution triggered, e.g. when the cron job is triggered or when the rest api is triggered.
-  private final String startTime;
+    private final String user;
+    private final String noteId;
+    private final String interpreterGroupId;
+    private final String defaultInterpreterGroup;
+    private final boolean inIsolatedMode;
+    // When is the execution triggered, e.g. when the cron job is triggered or when the rest api is triggered.
+    private final String startTime;
 
-  public ExecutionContext(String user, String noteId, String interpreterGroupId, String defaultInterpreterGroup,
-                          boolean inIsolatedMode, String startTime) {
-    this.user = user;
-    this.noteId = noteId;
-    this.interpreterGroupId = interpreterGroupId;
-    this.defaultInterpreterGroup = defaultInterpreterGroup;
-    this.inIsolatedMode = inIsolatedMode;
-    this.startTime = startTime;
-  }
+    public ExecutionContext(String user, String noteId, String interpreterGroupId, String defaultInterpreterGroup,
+                            boolean inIsolatedMode, String startTime) {
+        this.user = user;
+        this.noteId = noteId;
+        this.interpreterGroupId = interpreterGroupId;
+        this.defaultInterpreterGroup = defaultInterpreterGroup;
+        this.inIsolatedMode = inIsolatedMode;
+        this.startTime = startTime;
+    }
 
-  public String getUser() {
-    return user;
-  }
+    public String getUser() {
+        return user;
+    }
 
-  public String getNoteId() {
-    return noteId;
-  }
+    public String getNoteId() {
+        return noteId;
+    }
 
-  public String getInterpreterGroupId() {
-    return interpreterGroupId;
-  }
+    public String getInterpreterGroupId() {
+        return interpreterGroupId;
+    }
 
-  public String getDefaultInterpreterGroup() {
-    return defaultInterpreterGroup;
-  }
+    public String getDefaultInterpreterGroup() {
+        return defaultInterpreterGroup;
+    }
 
-  public boolean isInIsolatedMode() {
-    return inIsolatedMode;
-  }
+    public boolean isInIsolatedMode() {
+        return inIsolatedMode;
+    }
 
-  public String getStartTime() {
-    return startTime;
-  }
+    public String getStartTime() {
+        return startTime;
+    }
 
-  @Override
-  public String toString() {
-    return "ExecutionContext{" +
-            "user='" + user + '\'' +
-            ", noteId='" + noteId + '\'' +
-            ", interpreterGroupId='" + interpreterGroupId + '\'' +
-            ", defaultInterpreterGroup='" + defaultInterpreterGroup + '\'' +
-            ", inIsolatedMode=" + inIsolatedMode +
-            ", startTime=" + startTime +
-            '}';
-  }
+    @Override
+    public String toString() {
+        return "ExecutionContext{" +
+                "user='" + user + '\'' +
+                ", noteId='" + noteId + '\'' +
+                ", interpreterGroupId='" + interpreterGroupId + '\'' +
+                ", defaultInterpreterGroup='" + defaultInterpreterGroup + '\'' +
+                ", inIsolatedMode=" + inIsolatedMode +
+                ", startTime=" + startTime +
+                '}';
+    }
 }

@@ -16,11 +16,7 @@
  */
 package org.apache.zeppelin.realm;
 
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -38,47 +34,47 @@ import java.util.Set;
  * An {@code AuthorizingRealm} based on libpam4j.
  */
 public class PamRealm extends AuthorizingRealm {
-  private static final Logger LOG = LoggerFactory.getLogger(PamRealm.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PamRealm.class);
 
-  private String service;
+    private String service;
 
-  @Override
-  protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-    Set<String> roles = new LinkedHashSet<>();
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        Set<String> roles = new LinkedHashSet<>();
 
-    UserPrincipal user = principals.oneByType(UserPrincipal.class);
+        UserPrincipal user = principals.oneByType(UserPrincipal.class);
 
-    if (user != null){
-      roles.addAll(user.getUnixUser().getGroups());
+        if (user != null) {
+            roles.addAll(user.getUnixUser().getGroups());
+        }
+
+        return new SimpleAuthorizationInfo(roles);
     }
 
-    return new SimpleAuthorizationInfo(roles);
-  }
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
+            throws AuthenticationException {
+        UsernamePasswordToken userToken = (UsernamePasswordToken) token;
+        UnixUser user;
 
-  @Override
-  protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
-          throws AuthenticationException {
-    UsernamePasswordToken userToken = (UsernamePasswordToken) token;
-    UnixUser user;
+        try {
+            user = (new PAM(this.getService()))
+                    .authenticate(userToken.getUsername(), new String(userToken.getPassword()));
+        } catch (PAMException e) {
+            throw new AuthenticationException("Authentication failed for PAM.", e);
+        }
 
-    try {
-      user = (new PAM(this.getService()))
-          .authenticate(userToken.getUsername(), new String(userToken.getPassword()));
-    } catch (PAMException e) {
-      throw new AuthenticationException("Authentication failed for PAM.", e);
+        return new SimpleAuthenticationInfo(
+                new UserPrincipal(user),
+                userToken.getCredentials(),
+                getName());
     }
 
-    return new SimpleAuthenticationInfo(
-        new UserPrincipal(user),
-        userToken.getCredentials(),
-        getName());
-  }
+    public String getService() {
+        return service;
+    }
 
-  public String getService() {
-    return service;
-  }
-
-  public void setService(String service) {
-    this.service = service;
-  }
+    public void setService(String service) {
+        this.service = service;
+    }
 }

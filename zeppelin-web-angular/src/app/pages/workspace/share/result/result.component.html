@@ -10,65 +10,71 @@
   ~ limitations under the License.
   -->
 
-<div class="setting-bar" *ngIf="result.type === datasetType.TABLE && !published">
+<div *ngIf="result.type === datasetType.TABLE && !published" class="setting-bar">
   <div class="visualization-selector">
-    <nz-radio-group [(ngModel)]="config?.graph.mode" (ngModelChange)="switchMode($event)" nzButtonStyle="solid">
+    <nz-radio-group (ngModelChange)="switchMode($event)" [(ngModel)]="config?.graph.mode" nzButtonStyle="solid">
       <label *ngFor="let item of visualizations"
-             nz-radio-button
              [nz-tooltip]="item.name"
-             [nzValue]="item.id">
-        <i nz-icon [nzType]="item.icon"></i>
+             [nzValue]="item.id"
+             nz-radio-button>
+        <i [nzType]="item.icon" nz-icon></i>
       </label>
     </nz-radio-group>
   </div>
 
   <nz-button-group class="export-dropdown">
-    <button nz-button (click)="exportFile('csv')">
-      <i nz-icon nzType="download" nz-tooltip="Download Data as CSV"></i>
+    <button (click)="exportFile('csv')" nz-button>
+      <i nz-icon nz-tooltip="Download Data as CSV" nzType="download"></i>
     </button>
-    <button class="export-dropdown-icon-btn" nz-button nz-dropdown [nzDropdownMenu]="exportMenu" nzPlacement="bottomRight">
+    <button [nzDropdownMenu]="exportMenu" class="export-dropdown-icon-btn" nz-button nz-dropdown
+            nzPlacement="bottomRight">
       <i nz-icon nzType="down"></i>
     </button>
   </nz-button-group>
-  <nz-dropdown-menu  #exportMenu="nzDropdownMenu">
+  <nz-dropdown-menu #exportMenu="nzDropdownMenu">
     <ul nz-menu>
-      <li nz-menu-item (click)="exportFile('csv')">CSV</li>
-      <li nz-menu-item (click)="exportFile('tsv')">TSV</li>
+      <li (click)="exportFile('csv')" nz-menu-item>CSV</li>
+      <li (click)="exportFile('tsv')" nz-menu-item>TSV</li>
     </ul>
   </nz-dropdown-menu>
 
-  <a class="setting-trigger" tabindex="-1" (click)="switchSetting()">
+  <a (click)="switchSetting()" class="setting-trigger" tabindex="-1">
     Setting
     <i
-      nz-icon
-      nzType="caret-down"
       [nzRotate]="config?.graph.optionOpen ? 180 : 0"
       class="setting-icon"
       nz-dropdown
+      nz-icon
+      nzType="caret-down"
     ></i>
   </a>
 </div>
-<div nz-resizable
-     nzPreview
-     (nzResizeEnd)="onResize($event)"
+<div (nzResizeEnd)="onResize($event)"
      [nzGridColumnCount]="12"
-     [nzMinColumn]="1">
-  <nz-resize-handle nzDirection="bottomRight" *ngIf="!published">
+     [nzMinColumn]="1"
+     nz-resizable
+     nzPreview>
+  <nz-resize-handle *ngIf="!published" nzDirection="bottomRight">
     <zeppelin-resize-handle></zeppelin-resize-handle>
   </nz-resize-handle>
   <ng-template cdkPortalOutlet></ng-template>
   <ng-container [ngSwitch]="result?.type">
     <div *ngSwitchCase="datasetType.HTML"
+         [innerHTML]="innerHTML"
+         [scriptsContent]="innerHTML"
          class="inner-html"
          zeppelinMathJax
-         zeppelinRunScripts
-         [scriptsContent]="innerHTML"
-         [innerHTML]="innerHTML"></div>
-    <div *ngSwitchCase="datasetType.TEXT" class="text-plain"><pre [innerHTML]="plainText"></pre></div>
+         zeppelinRunScripts></div>
+    <div *ngSwitchCase="datasetType.TEXT" class="text-plain">
+      <pre [innerHTML]="plainText"></pre>
+    </div>
     <div *ngSwitchCase="datasetType.IMG" class="img"><img [src]="imgData" alt="img"></div>
   </ng-container>
-  <div *ngIf="frontEndError" class="text-plain"><pre>{{frontEndError}}</pre></div>
+  <div *ngIf="frontEndError" class="text-plain">
+    <pre>{{frontEndError}}</pre>
+  </div>
   <div *ngIf="angularComponent">
-    <ng-container *ngComponentOutlet="angularComponent.component;ngModuleFactory: angularComponent.moduleFactory;injector: injector"></ng-container>
+    <ng-container
+      *ngComponentOutlet="angularComponent.component;ngModuleFactory: angularComponent.moduleFactory;injector: injector"></ng-container>
   </div>
 </div>

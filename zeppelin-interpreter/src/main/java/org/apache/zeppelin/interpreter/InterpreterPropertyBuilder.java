@@ -24,22 +24,22 @@ import java.util.Map;
  * InterpreterPropertyBuilder
  */
 public class InterpreterPropertyBuilder {
-  Map<String, DefaultInterpreterProperty> properties = new HashMap<>();
+    Map<String, DefaultInterpreterProperty> properties = new HashMap<>();
 
-  public InterpreterPropertyBuilder add(String name, String defaultValue, String description){
-    properties.put(name,
-        new DefaultInterpreterProperty(defaultValue, description));
-    return this;
-  }
+    public InterpreterPropertyBuilder add(String name, String defaultValue, String description) {
+        properties.put(name,
+                new DefaultInterpreterProperty(defaultValue, description));
+        return this;
+    }
 
-  public InterpreterPropertyBuilder add(String name, String envName, String propertyName,
-        String defaultValue, String description){
-    properties.put(name,
-            new DefaultInterpreterProperty(envName, propertyName, defaultValue, description));
-    return this;
-  }
+    public InterpreterPropertyBuilder add(String name, String envName, String propertyName,
+                                          String defaultValue, String description) {
+        properties.put(name,
+                new DefaultInterpreterProperty(envName, propertyName, defaultValue, description));
+        return this;
+    }
 
-  public Map<String, DefaultInterpreterProperty> build(){
-    return properties;
-  }
+    public Map<String, DefaultInterpreterProperty> build() {
+        return properties;
+    }
 }

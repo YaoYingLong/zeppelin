@@ -17,55 +17,54 @@
 package org.apache.zeppelin.rest.message;
 
 import com.google.gson.Gson;
-
-import java.util.List;
-import java.util.Map;
-
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.dep.Dependency;
 import org.apache.zeppelin.interpreter.InterpreterOption;
 import org.apache.zeppelin.interpreter.InterpreterProperty;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * NewInterpreterSetting REST API request message.
  */
 public class NewInterpreterSettingRequest implements JsonSerializable {
-  private static final Gson gson = new Gson();
-  private String name;
-  private String group;
+    private static final Gson gson = new Gson();
+    private String name;
+    private String group;
 
-  private Map<String, InterpreterProperty> properties;
-  private List<Dependency> dependencies;
-  private InterpreterOption option;
+    private Map<String, InterpreterProperty> properties;
+    private List<Dependency> dependencies;
+    private InterpreterOption option;
 
-  public NewInterpreterSettingRequest() {
-  }
+    public NewInterpreterSettingRequest() {
+    }
 
-  public String getName() {
-    return name;
-  }
+    public static NewInterpreterSettingRequest fromJson(String json) {
+        return gson.fromJson(json, NewInterpreterSettingRequest.class);
+    }
 
-  public String getGroup() {
-    return group;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public Map<String, InterpreterProperty> getProperties() {
-    return properties;
-  }
+    public String getGroup() {
+        return group;
+    }
 
-  public List<Dependency> getDependencies() {
-    return dependencies;
-  }
+    public Map<String, InterpreterProperty> getProperties() {
+        return properties;
+    }
 
-  public InterpreterOption getOption() {
-    return option;
-  }
+    public List<Dependency> getDependencies() {
+        return dependencies;
+    }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public InterpreterOption getOption() {
+        return option;
+    }
 
-  public static NewInterpreterSettingRequest fromJson(String json) {
-    return gson.fromJson(json, NewInterpreterSettingRequest.class);
-  }
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

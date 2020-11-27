@@ -1,10 +1,10 @@
 describe('Collaborative mode tests', function () {
 
-  let clickOn = function(elem) {
+  let clickOn = function (elem) {
     browser.actions().mouseMove(elem).click().perform()
   };
 
-  let waitVisibility = function(elem) {
+  let waitVisibility = function (elem) {
     browser.wait(protractor.ExpectedConditions.visibilityOf(elem))
   };
 
@@ -29,15 +29,15 @@ describe('Collaborative mode tests', function () {
     browser.sleep(500);
     user1Browser.isElementPresent(by.xpath('//span[contains(text(), \'' + test_text_1 + '\')]'))
       .then(function (isPresent) {
-      expect(isPresent).toBe(true);
-    });
+        expect(isPresent).toBe(true);
+      });
   });
 
   it('user 2 received the first patch', function () {
     user2Browser.isElementPresent(by.xpath('//span[contains(text(), \'' + test_text_1 + '\')]'))
       .then(function (isPresent) {
-      expect(isPresent).toBe(true);
-    });
+        expect(isPresent).toBe(true);
+      });
   });
 
   it('user root received a first patch', function () {

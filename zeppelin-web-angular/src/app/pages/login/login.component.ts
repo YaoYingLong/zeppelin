@@ -27,6 +27,17 @@ export class LoginComponent implements OnInit {
   loading = false;
   private returnUrl: string | undefined;
 
+  constructor(
+    private ticketService: TicketService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    route.queryParams.subscribe(params => {
+      this.returnUrl = params.returnUrl;
+    });
+  }
+
   login() {
     this.loading = true;
     this.ticketService.login(this.userName, this.password).subscribe(
@@ -40,17 +51,6 @@ export class LoginComponent implements OnInit {
         this.cdr.markForCheck();
       }
     );
-  }
-
-  constructor(
-    private ticketService: TicketService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
-    route.queryParams.subscribe(params => {
-      this.returnUrl = params.returnUrl;
-    });
   }
 
   ngOnInit() {}

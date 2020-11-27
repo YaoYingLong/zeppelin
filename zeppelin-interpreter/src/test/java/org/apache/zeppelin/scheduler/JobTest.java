@@ -29,56 +29,55 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JobTest {
 
-  @Mock private JobListener mockJobListener;
-  @Mock private Interpreter mockInterpreter;
-  @Mock private InterpreterContext mockInterpreterContext;
-  private InterpretJob spyInterpretJob;
+    @Mock
+    private JobListener mockJobListener;
+    @Mock
+    private Interpreter mockInterpreter;
+    @Mock
+    private InterpreterContext mockInterpreterContext;
+    private InterpretJob spyInterpretJob;
 
-  @Before
-  public void setUp() throws Exception {
-    InterpretJob interpretJob =
-        new InterpretJob(
-            "jobid",
-            "jobName",
-            mockJobListener,
-            mockInterpreter,
-            "script",
-            mockInterpreterContext);
-    spyInterpretJob = spy(interpretJob);
-  }
+    @Before
+    public void setUp() throws Exception {
+        InterpretJob interpretJob =
+                new InterpretJob(
+                        "jobid",
+                        "jobName",
+                        mockJobListener,
+                        mockInterpreter,
+                        "script",
+                        mockInterpreterContext);
+        spyInterpretJob = spy(interpretJob);
+    }
 
-  @Test
-  public void testNormalCase() throws Throwable {
+    @Test
+    public void testNormalCase() throws Throwable {
 
-    InterpreterResult successInterpreterResult =
-        new InterpreterResult(Code.SUCCESS, "success result");
-    doReturn(successInterpreterResult).when(spyInterpretJob).jobRun();
+        InterpreterResult successInterpreterResult =
+                new InterpreterResult(Code.SUCCESS, "success result");
+        doReturn(successInterpreterResult).when(spyInterpretJob).jobRun();
 
-    spyInterpretJob.run();
+        spyInterpretJob.run();
 
-    assertEquals(successInterpreterResult, spyInterpretJob.getReturn());
-  }
+        assertEquals(successInterpreterResult, spyInterpretJob.getReturn());
+    }
 
-  @Test
-  public void testErrorCase() throws Throwable {
-    String failedMessage = "failed message";
-    InterpreterException interpreterException = new InterpreterException(failedMessage);
-    doThrow(interpreterException).when(spyInterpretJob).jobRun();
+    @Test
+    public void testErrorCase() throws Throwable {
+        String failedMessage = "failed message";
+        InterpreterException interpreterException = new InterpreterException(failedMessage);
+        doThrow(interpreterException).when(spyInterpretJob).jobRun();
 
-    spyInterpretJob.run();
+        spyInterpretJob.run();
 
-    Object failedResult = spyInterpretJob.getReturn();
-    assertNull(failedResult);
-    assertNotNull(spyInterpretJob.getException());
-  }
+        Object failedResult = spyInterpretJob.getReturn();
+        assertNull(failedResult);
+        assertNotNull(spyInterpretJob.getException());
+    }
 }

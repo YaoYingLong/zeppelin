@@ -24,45 +24,45 @@ import java.util.Map;
  *
  */
 public class OldNoteInfo {
-  String id;
-  String name;
-  private Map<String, Object> config = new HashMap<>();
+    String id;
+    String name;
+    private Map<String, Object> config = new HashMap<>();
 
-  public OldNoteInfo(String id, String name, Map<String, Object> config) {
-    super();
-    this.id = id;
-    this.name = name;
-    this.config = config;
-  }
+    public OldNoteInfo(String id, String name, Map<String, Object> config) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.config = config;
+    }
 
-  public OldNoteInfo(Note note) {
-    id = note.getId();
-    name = note.getName();
-    config = note.getConfig();
-  }
+    public OldNoteInfo(Note note) {
+        id = note.getId();
+        name = note.getName();
+        config = note.getConfig();
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public Map<String, Object> getConfig() {
-    return config;
-  }
+    public Map<String, Object> getConfig() {
+        return config;
+    }
 
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
-  }
+    public void setConfig(Map<String, Object> config) {
+        this.config = config;
+    }
 
 }

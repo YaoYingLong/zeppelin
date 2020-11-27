@@ -29,85 +29,80 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.SUBMARINE_ALGORITHM_HDFS_PATH;
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.SUBMARINE_HADOOP_KEYTAB;
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.SUBMARINE_HADOOP_PRINCIPAL;
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.TF_CHECKPOINT_PATH;
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.USERNAME_SYMBOL;
-import static org.apache.zeppelin.submarine.commons.SubmarineConstants.ZEPPELIN_SUBMARINE_AUTH_TYPE;
+import static org.apache.zeppelin.submarine.commons.SubmarineConstants.*;
 
 /**
  * Submarine Shell interpreter for Zeppelin.
  */
 public class SubmarineShellInterpreter extends ShellInterpreter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SubmarineShellInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmarineShellInterpreter.class);
 
-  private final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-  private final String shell = isWindows ? "cmd /c" : "bash -c";
+    private final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+    private final String shell = isWindows ? "cmd /c" : "bash -c";
 
-  public SubmarineShellInterpreter(Properties property) {
-    super(property);
-  }
-
-  @Override
-  public InterpreterResult internalInterpret(String cmd, InterpreterContext context) {
-    setParagraphConfig(context);
-
-    // algorithm path & checkpoint path support replaces ${username} with real user name
-    String algorithmPath = properties.getProperty(SUBMARINE_ALGORITHM_HDFS_PATH, "");
-    if (algorithmPath.contains(USERNAME_SYMBOL)) {
-      algorithmPath = algorithmPath.replace(USERNAME_SYMBOL, userName);
-      properties.setProperty(SUBMARINE_ALGORITHM_HDFS_PATH, algorithmPath);
-    }
-    String checkpointPath = properties.getProperty(
-        TF_CHECKPOINT_PATH, "");
-    if (checkpointPath.contains(USERNAME_SYMBOL)) {
-      checkpointPath = checkpointPath.replace(USERNAME_SYMBOL, userName);
-      properties.setProperty(TF_CHECKPOINT_PATH, checkpointPath);
+    public SubmarineShellInterpreter(Properties property) {
+        super(property);
     }
 
-    return super.internalInterpret(cmd, context);
-  }
+    @Override
+    public InterpreterResult internalInterpret(String cmd, InterpreterContext context) {
+        setParagraphConfig(context);
 
-  private void setParagraphConfig(InterpreterContext context) {
-    context.getConfig().put("editorHide", false);
-    context.getConfig().put("title", true);
-  }
+        // algorithm path & checkpoint path support replaces ${username} with real user name
+        String algorithmPath = properties.getProperty(SUBMARINE_ALGORITHM_HDFS_PATH, "");
+        if (algorithmPath.contains(USERNAME_SYMBOL)) {
+            algorithmPath = algorithmPath.replace(USERNAME_SYMBOL, userName);
+            properties.setProperty(SUBMARINE_ALGORITHM_HDFS_PATH, algorithmPath);
+        }
+        String checkpointPath = properties.getProperty(
+                TF_CHECKPOINT_PATH, "");
+        if (checkpointPath.contains(USERNAME_SYMBOL)) {
+            checkpointPath = checkpointPath.replace(USERNAME_SYMBOL, userName);
+            properties.setProperty(TF_CHECKPOINT_PATH, checkpointPath);
+        }
 
-  @Override
-  protected boolean runKerberosLogin() {
-    try {
-      createSecureConfiguration();
-      return true;
-    } catch (Exception e) {
-      LOGGER.error("Unable to run kinit for zeppelin", e);
+        return super.internalInterpret(cmd, context);
     }
-    return false;
-  }
 
-  public void createSecureConfiguration() throws InterpreterException {
-    Properties properties = getProperties();
-    CommandLine cmdLine = CommandLine.parse(shell);
-    cmdLine.addArgument("-c", false);
-    String kinitCommand = String.format("kinit -k -t %s %s",
-        properties.getProperty(SUBMARINE_HADOOP_KEYTAB),
-        properties.getProperty(SUBMARINE_HADOOP_PRINCIPAL));
-    cmdLine.addArgument(kinitCommand, false);
-    DefaultExecutor executor = new DefaultExecutor();
-    try {
-      executor.execute(cmdLine);
-    } catch (Exception e) {
-      LOGGER.error("Unable to run kinit for zeppelin user " + kinitCommand, e);
-      throw new InterpreterException(e);
+    private void setParagraphConfig(InterpreterContext context) {
+        context.getConfig().put("editorHide", false);
+        context.getConfig().put("title", true);
     }
-  }
 
-  @Override
-  protected boolean isKerboseEnabled() {
-    String authType = getProperty(ZEPPELIN_SUBMARINE_AUTH_TYPE, "");
-    if (StringUtils.equals(authType, "kerberos")) {
-      return true;
+    @Override
+    protected boolean runKerberosLogin() {
+        try {
+            createSecureConfiguration();
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Unable to run kinit for zeppelin", e);
+        }
+        return false;
     }
-    return false;
-  }
+
+    public void createSecureConfiguration() throws InterpreterException {
+        Properties properties = getProperties();
+        CommandLine cmdLine = CommandLine.parse(shell);
+        cmdLine.addArgument("-c", false);
+        String kinitCommand = String.format("kinit -k -t %s %s",
+                properties.getProperty(SUBMARINE_HADOOP_KEYTAB),
+                properties.getProperty(SUBMARINE_HADOOP_PRINCIPAL));
+        cmdLine.addArgument(kinitCommand, false);
+        DefaultExecutor executor = new DefaultExecutor();
+        try {
+            executor.execute(cmdLine);
+        } catch (Exception e) {
+            LOGGER.error("Unable to run kinit for zeppelin user " + kinitCommand, e);
+            throw new InterpreterException(e);
+        }
+    }
+
+    @Override
+    protected boolean isKerboseEnabled() {
+        String authType = getProperty(ZEPPELIN_SUBMARINE_AUTH_TYPE, "");
+        if (StringUtils.equals(authType, "kerberos")) {
+            return true;
+        }
+        return false;
+    }
 }

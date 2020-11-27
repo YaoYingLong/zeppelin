@@ -16,16 +16,16 @@
 language: java
 
 before_cache:
-    - sudo chown -R travis:travis $HOME/.m2
-    # Ensure that jobs do not influence each other with installed Zeppelin Jars
-    - rm -rf $HOME/.m2/repository/org/apache/zeppelin/
+  - sudo chown -R travis:travis $HOME/.m2
+  # Ensure that jobs do not influence each other with installed Zeppelin Jars
+  - rm -rf $HOME/.m2/repository/org/apache/zeppelin/
 
 cache:
   apt: true
   directories:
     - ${HOME}/.m2
-    -  zeppelin-web/node
-    -  zeppelin-web/node_modules
+    - zeppelin-web/node
+    - zeppelin-web/node_modules
 
 env:
   global:
@@ -77,7 +77,7 @@ jobs:
       addons:
         apt:
           packages:
-          - google-chrome-stable
+            - google-chrome-stable
       before_install:
         - export PYTHON=2
         - export SPARK_VER="2.1.0"

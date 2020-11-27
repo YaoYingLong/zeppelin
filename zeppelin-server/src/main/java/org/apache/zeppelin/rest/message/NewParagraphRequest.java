@@ -17,51 +17,50 @@
 package org.apache.zeppelin.rest.message;
 
 import com.google.gson.Gson;
+import org.apache.zeppelin.common.JsonSerializable;
 
 import java.util.HashMap;
 
-import org.apache.zeppelin.common.JsonSerializable;
-
 /**
  * NewParagraphRequest rest api request message
- *
+ * <p>
  * index field will be ignored when it's used to provide initial paragraphs
  * visualization (optional) one of:
  * table,pieChart,multibarChart,stackedAreaChart,lineChart,scatterChart
  * colWidth (optional), e.g. 12.0
  */
 public class NewParagraphRequest implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  String title;
-  String text;
-  Double index;
-  HashMap< String, Object > config;
+    String title;
+    String text;
+    Double index;
+    HashMap<String, Object> config;
 
-  public NewParagraphRequest() {
-  }
+    public NewParagraphRequest() {
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public static NewParagraphRequest fromJson(String json) {
+        return gson.fromJson(json, NewParagraphRequest.class);
+    }
 
-  public String getText() {
-    return text;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public Double getIndex() {
-    return index;
-  }
+    public String getText() {
+        return text;
+    }
 
-  public HashMap< String, Object > getConfig() {
-    return config;
-  }
+    public Double getIndex() {
+        return index;
+    }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public HashMap<String, Object> getConfig() {
+        return config;
+    }
 
-  public static NewParagraphRequest fromJson(String json) {
-    return gson.fromJson(json, NewParagraphRequest.class);
-  }
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

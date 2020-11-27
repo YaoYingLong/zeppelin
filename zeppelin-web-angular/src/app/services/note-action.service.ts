@@ -23,6 +23,8 @@ import { NoteRenameComponent } from '@zeppelin/share/note-rename/note-rename.com
   providedIn: 'root'
 })
 export class NoteActionService {
+  constructor(private nzModalService: NzModalService) {}
+
   renameNote(id: string, path: string, name: string) {
     this.nzModalService.create({
       nzTitle: 'Rename note',
@@ -67,6 +69,4 @@ export class NoteActionService {
       nzFooter: null
     });
   }
-
-  constructor(private nzModalService: NzModalService) {}
 }

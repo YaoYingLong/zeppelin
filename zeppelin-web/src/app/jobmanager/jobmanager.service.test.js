@@ -23,7 +23,7 @@ describe('JobManagerService', () => {
 
     $httpBackend
       .when('POST', url)
-      .respond(200, { /** return nothing */ });
+      .respond(200, { /** return nothing */});
     $httpBackend.expectPOST(url);
     $httpBackend.flush();
 
@@ -41,7 +41,7 @@ describe('JobManagerService', () => {
 
     $httpBackend
       .when('DELETE', url)
-      .respond(200, { /** return nothing */ });
+      .respond(200, { /** return nothing */});
     $httpBackend.expectDELETE(url);
     $httpBackend.flush();
 

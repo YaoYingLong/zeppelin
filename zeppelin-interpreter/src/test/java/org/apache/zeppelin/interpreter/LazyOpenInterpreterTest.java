@@ -26,19 +26,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LazyOpenInterpreterTest {
-  Interpreter interpreter = mock(Interpreter.class);
+    Interpreter interpreter = mock(Interpreter.class);
 
-  @Test
-  public void isOpenTest() throws InterpreterException {
-    InterpreterResult interpreterResult = new InterpreterResult(InterpreterResult.Code.SUCCESS, "");
-    when(interpreter.interpret(any(String.class), any(InterpreterContext.class)))
-        .thenReturn(interpreterResult);
+    @Test
+    public void isOpenTest() throws InterpreterException {
+        InterpreterResult interpreterResult = new InterpreterResult(InterpreterResult.Code.SUCCESS, "");
+        when(interpreter.interpret(any(String.class), any(InterpreterContext.class)))
+                .thenReturn(interpreterResult);
 
-    LazyOpenInterpreter lazyOpenInterpreter = new LazyOpenInterpreter(interpreter);
+        LazyOpenInterpreter lazyOpenInterpreter = new LazyOpenInterpreter(interpreter);
 
-    assertFalse("Interpreter is not open", lazyOpenInterpreter.isOpen());
-    InterpreterContext interpreterContext = mock(InterpreterContext.class);
-    lazyOpenInterpreter.interpret("intp 1", interpreterContext);
-    assertTrue("Interpeter is open", lazyOpenInterpreter.isOpen());
-  }
+        assertFalse("Interpreter is not open", lazyOpenInterpreter.isOpen());
+        InterpreterContext interpreterContext = mock(InterpreterContext.class);
+        lazyOpenInterpreter.interpret("intp 1", interpreterContext);
+        assertTrue("Interpeter is open", lazyOpenInterpreter.isOpen());
+    }
 }

@@ -137,7 +137,7 @@ export default class TableVisualization extends Visualization {
              `,
           minWidth: this.getColumnMinWidth(colName),
           width: '*',
-          sortingAlgorithm: function(a, b, row1, row2, sortType, gridCol) {
+          sortingAlgorithm: function (a, b, row1, row2, sortType, gridCol) {
             const colType = gridCol.colDef.type.toLowerCase();
             if (colType === TableColumnType.NUMBER) {
               return self.getSortedValue(Number(a), Number(b));
@@ -189,7 +189,7 @@ export default class TableVisualization extends Visualization {
       gridElem.css('height', this.targetEl.height() - 10);
       const gridApiId = this.getGridApiId();
       const scope = this.getScope();
-      if(scope[gridApiId]!==undefined) {
+      if (scope[gridApiId] !== undefined) {
         scope[gridApiId].core.handleWindowResize();
       }
     }
@@ -232,37 +232,37 @@ export default class TableVisualization extends Visualization {
       colDef.menuItems = [
         {
           title: 'Copy Column Name',
-          action: function() {
+          action: function () {
             self.copyStringToClipboard(this.context.col.displayName);
           },
-          active: function() {
+          active: function () {
             return false;
           },
         },
         {
           title: 'Type: String',
-          action: function() {
+          action: function () {
             self.updateColDefType(this.context.col.colDef, TableColumnType.STRING);
           },
-          active: function() {
+          active: function () {
             return this.context.col.colDef.type === TableColumnType.STRING;
           },
         },
         {
           title: 'Type: Number',
-          action: function() {
+          action: function () {
             self.updateColDefType(this.context.col.colDef, TableColumnType.NUMBER);
           },
-          active: function() {
+          active: function () {
             return this.context.col.colDef.type === TableColumnType.NUMBER;
           },
         },
         {
           title: 'Type: Date',
-          action: function() {
+          action: function () {
             self.updateColDefType(this.context.col.colDef, TableColumnType.DATE);
           },
-          active: function() {
+          active: function () {
             return this.context.col.colDef.type === TableColumnType.DATE;
           },
         },
@@ -364,12 +364,12 @@ export default class TableVisualization extends Visualization {
       gridApi.colResizable.on.columnSizeChanged(scope, () => {
         self.persistConfigWithGridState(self.config);
       });
-      gridApi.edit.on.beginCellEdit(scope, function(rowEntity, colDef, triggerEvent) {
+      gridApi.edit.on.beginCellEdit(scope, function (rowEntity, colDef, triggerEvent) {
         let textArea = triggerEvent.currentTarget.children[1].children[0].children[0];
         textArea.style.height = textArea.scrollHeight + 'px';
-        textArea.addEventListener('keydown', function() {
+        textArea.addEventListener('keydown', function () {
           let elem = this;
-          setTimeout(function() {
+          setTimeout(function () {
             elem.style.height = 'auto';
             elem.style.height = elem.scrollHeight + 'px';
           });

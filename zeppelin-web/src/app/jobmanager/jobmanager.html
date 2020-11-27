@@ -11,7 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div id="job-manager-header" class="job-manager-header">
+<div class="job-manager-header" id="job-manager-header">
   <div class="header">
     <div class="row">
       <div class="col-md-12">
@@ -27,7 +27,7 @@ limitations under the License.
     </div>
   </div>
 
-  <hr style="margin-top: 15px; margin-bottom: 15px;" />
+  <hr style="margin-top: 15px; margin-bottom: 15px;"/>
 
   <div class="row">
     <!-- search tools (input, drop-down, sorting) -->
@@ -37,11 +37,11 @@ limitations under the License.
           <!-- search tool: input -->
           <div class="input-group search-input">
             <input class="form-control btn-xs"
-                   placeholder="&#xf002 Search jobs..."
-                   type="text"
+                   ng-change="filterJobs(jobs, filterConfig)"
                    ng-model="filterConfig.noteNameFilterValue"
                    ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 300, 'blur': 0 } }"
-                   ng-change="filterJobs(jobs, filterConfig)" />
+                   placeholder="&#xf002 Search jobs..."
+                   type="text"/>
           </div>
 
           <!-- search tool: default interpreter dropdown -->
@@ -56,9 +56,9 @@ limitations under the License.
           </div>
           <ul class="dropdown-menu dropdown-menu-right search-tool-dropdown-content" role="menu">
            <li ng-repeat="interpreter in defaultInterpreters">
-             <a ng-click="setFilterValue(interpreter.value)"
-                ng-style="(filterValueToName(interpreter.value) === 'ALL' || filterValueToName(interpreter.value) === 'NONE') ? { 'font-weight': 500 } : {}"
-                class="dropdown-list-value">
+             <a class="dropdown-list-value"
+                ng-click="setFilterValue(interpreter.value)"
+                ng-style="(filterValueToName(interpreter.value) === 'ALL' || filterValueToName(interpreter.value) === 'NONE') ? { 'font-weight': 500 } : {}">
                {{filterValueToName(interpreter.value)}}
              </a>
            </li>
@@ -78,7 +78,7 @@ limitations under the License.
           </div>
           <ul class="dropdown-menu dropdown-menu-right search-tool-dropdown-content" role="menu">
            <li ng-repeat="dateSorter in sorter.availableDateSorter">
-             <a ng-click="setJobDateSorter(dateSorter)" class="dropdown-list-value">
+             <a class="dropdown-list-value" ng-click="setJobDateSorter(dateSorter)">
                {{dateSorter}}
              </a>
            </li>
@@ -96,8 +96,8 @@ limitations under the License.
       <span ng-repeat="jobStatus in ['READY', 'FINISHED', 'ABORT', 'ERROR','PENDING','RUNNING']">
         <span style="margin-right: 2px;">
           <i class="job-desc-icon"
-             ng-style="{'color': getJobColorByStatus(jobStatus)}"
-             ng-class="getJobIconByStatus(jobStatus)" ></i>
+             ng-class="getJobIconByStatus(jobStatus)"
+             ng-style="{'color': getJobColorByStatus(jobStatus)}"></i>
           {{jobStatus}}
         </span>
       </span>
@@ -110,34 +110,34 @@ limitations under the License.
 
 <div>
   <div class="note-jump"></div>
-  <div ng-if="!isFilterLoaded" class="paragraph-col">
+  <div class="paragraph-col" ng-if="!isFilterLoaded">
     <div class="job-space box job-margin text-center">
-      <i style="color: blue" class="fa fa-spinner spinAnimation"></i>
+      <i class="fa fa-spinner spinAnimation" style="color: blue"></i>
       Loading...
     </div>
   </div>
-  <div ng-if="filteredJobs.length > 0"
-       ng-repeat="note in getJobsInCurrentPage(filteredJobs)"
-       class="paragraph-col">
+  <div class="paragraph-col"
+       ng-if="filteredJobs.length > 0"
+       ng-repeat="note in getJobsInCurrentPage(filteredJobs)">
     <div class="job-space box job-margin">
       <job note="note"></job>
     </div>
   </div>
-  <div ng-if="isFilterLoaded === false && filteredJobs.length <= 0"
-       class="paragraph-col">
+  <div class="paragraph-col"
+       ng-if="isFilterLoaded === false && filteredJobs.length <= 0">
     <div class="job-space box job-margin text-center">No Job found</div>
   </div>
 
   <!-- pagination -->
   <div class="job-pagination-container">
-    <ul uib-pagination class="pagination-sm"
-        total-items="filteredJobs.length"
-        ng-model="pagination.currentPage"
+    <ul boundary-links="true" class="pagination-sm"
+        first-text="&laquo;"
         items-per-page="pagination.itemsPerPage"
-        boundary-links="true" rotate="false"
-        max-size="pagination.maxPageCount"
-        previous-text="&lsaquo;" next-text="&rsaquo;"
-        first-text="&laquo;" last-text="&raquo;"></ul>
+        last-text="&raquo;"
+        max-size="pagination.maxPageCount" next-text="&rsaquo;"
+        ng-model="pagination.currentPage"
+        previous-text="&lsaquo;" rotate="false"
+        total-items="filteredJobs.length" uib-pagination></ul>
   </div>
 
 </div>

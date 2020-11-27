@@ -16,35 +16,36 @@
  */
 package org.apache.zeppelin.utils;
 
-import java.util.Arrays;
 import org.apache.zeppelin.server.ZeppelinServer;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 
+import java.util.Arrays;
+
 //TODO(zjffdu) refactor this class, it should not be called by non-test code. Or rename it.
 public class TestUtils {
-  public static <T> T getInstance(Class<T> clazz) {
-    checkCalledByTestMethod();
-    return getInstance(ZeppelinServer.sharedServiceLocator, clazz);
-  }
-
-  public static void clearInstances() {
-    checkCalledByTestMethod();
-    ServiceLocatorFactory.getInstance().destroy("shared-locator");
-  }
-
-  static <T> T getInstance(ServiceLocator serviceLocator, Class<T> clazz) {
-    return serviceLocator.getService(clazz);
-  }
-
-  static void checkCalledByTestMethod() {
-    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-    // The first element of [0] indicates 'java.lang.Thread.getStackTrace'.
-    // The second element of [1] indicates this method.
-    // The third element of [2] indicates a caller of this method.
-    if (Arrays.stream(stackTraceElements)
-        .noneMatch(stackTraceElement -> stackTraceElement.getClassName().contains("Test"))) {
-      throw new RuntimeException("This method shouldn't be used in production");
+    public static <T> T getInstance(Class<T> clazz) {
+        checkCalledByTestMethod();
+        return getInstance(ZeppelinServer.sharedServiceLocator, clazz);
     }
-  }
+
+    public static void clearInstances() {
+        checkCalledByTestMethod();
+        ServiceLocatorFactory.getInstance().destroy("shared-locator");
+    }
+
+    static <T> T getInstance(ServiceLocator serviceLocator, Class<T> clazz) {
+        return serviceLocator.getService(clazz);
+    }
+
+    static void checkCalledByTestMethod() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        // The first element of [0] indicates 'java.lang.Thread.getStackTrace'.
+        // The second element of [1] indicates this method.
+        // The third element of [2] indicates a caller of this method.
+        if (Arrays.stream(stackTraceElements)
+                .noneMatch(stackTraceElement -> stackTraceElement.getClassName().contains("Test"))) {
+            throw new RuntimeException("This method shouldn't be used in production");
+        }
+    }
 }

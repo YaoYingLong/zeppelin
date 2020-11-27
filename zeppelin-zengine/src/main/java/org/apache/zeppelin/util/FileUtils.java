@@ -24,56 +24,52 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 
 public class FileUtils {
 
-  private FileUtils() {
-    throw new IllegalStateException("Utility class");
-  }
+    private FileUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-  public static void atomicWriteToFile(String content, File file, Set<PosixFilePermission> permissions) throws IOException {
-    FileSystem defaultFileSystem = FileSystems.getDefault();
-    Path destinationFilePath = defaultFileSystem.getPath(file.getCanonicalPath());
-    Path destinationDirectory = destinationFilePath.getParent();
-    Files.createDirectories(destinationDirectory);
-    File tempFile = Files.createTempFile(destinationDirectory, file.getName(), null).toFile();
-    if (permissions != null && !permissions.isEmpty()) {
-      Files.setPosixFilePermissions(tempFile.toPath(), permissions);
+    public static void atomicWriteToFile(String content, File file, Set<PosixFilePermission> permissions) throws IOException {
+        FileSystem defaultFileSystem = FileSystems.getDefault();
+        Path destinationFilePath = defaultFileSystem.getPath(file.getCanonicalPath());
+        Path destinationDirectory = destinationFilePath.getParent();
+        Files.createDirectories(destinationDirectory);
+        File tempFile = Files.createTempFile(destinationDirectory, file.getName(), null).toFile();
+        if (permissions != null && !permissions.isEmpty()) {
+            Files.setPosixFilePermissions(tempFile.toPath(), permissions);
+        }
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.write(content, out, StandardCharsets.UTF_8);
+        } catch (IOException iox) {
+            if (!tempFile.delete()) {
+                tempFile.deleteOnExit();
+            }
+            throw iox;
+        }
+        try {
+            file.getParentFile().mkdirs();
+            Files.move(tempFile.toPath(), destinationFilePath,
+                    StandardCopyOption.REPLACE_EXISTING); //StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException iox) {
+            if (!tempFile.delete()) {
+                tempFile.deleteOnExit();
+            }
+            throw iox;
+        }
     }
-    try (FileOutputStream out = new FileOutputStream(tempFile)) {
-      IOUtils.write(content, out, StandardCharsets.UTF_8);
-    } catch (IOException iox) {
-      if (!tempFile.delete()) {
-        tempFile.deleteOnExit();
-      }
-      throw iox;
-    }
-    try {
-      file.getParentFile().mkdirs();
-      Files.move(tempFile.toPath(), destinationFilePath,
-              StandardCopyOption.REPLACE_EXISTING); //StandardCopyOption.ATOMIC_MOVE);
-    } catch (IOException iox) {
-      if (!tempFile.delete()) {
-        tempFile.deleteOnExit();
-      }
-      throw iox;
-    }
-  }
 
-  public static void atomicWriteToFile(String content, File file) throws IOException {
-    atomicWriteToFile(content, file, null);
-  }
-
-  public static String readFromFile(File file) throws IOException {
-    try (FileInputStream is = new FileInputStream(file)) {
-      return IOUtils.toString(is, StandardCharsets.UTF_8);
+    public static void atomicWriteToFile(String content, File file) throws IOException {
+        atomicWriteToFile(content, file, null);
     }
-  }
+
+    public static String readFromFile(File file) throws IOException {
+        try (FileInputStream is = new FileInputStream(file)) {
+            return IOUtils.toString(is, StandardCharsets.UTF_8);
+        }
+    }
 }

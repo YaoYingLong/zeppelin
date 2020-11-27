@@ -23,13 +23,14 @@ import java.util.UUID;
  * This is a LAZY implementation, we might want to update this later on :)
  */
 public class WatcherSecurityKey {
-  public static final String HTTP_HEADER = "X-Watcher-Key";
-  private static final String KEY = UUID.randomUUID().toString();
+    public static final String HTTP_HEADER = "X-Watcher-Key";
+    private static final String KEY = UUID.randomUUID().toString();
 
-  protected WatcherSecurityKey() {}
+    protected WatcherSecurityKey() {
+    }
 
-  public static String getKey() {
-    return KEY;
-  }
+    public static String getKey() {
+        return KEY;
+    }
 
 }

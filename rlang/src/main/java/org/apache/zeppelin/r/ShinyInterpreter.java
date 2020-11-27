@@ -18,11 +18,7 @@
 package org.apache.zeppelin.r;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.AbstractInterpreter;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +31,9 @@ import java.util.Properties;
  * One shiny Interpreter can host more than one Shiny app.
  * They are organized by app name which you specify by paragraph local properties.
  * e.g.  %shiny(app=app_1)
- *
+ * <p>
  * If you don't specify 'app', then default app name 'default' will be used.
- *
+ * <p>
  * One shiny app is composed of at least 3 paragraph (last one is optional)
  * <p>
  *   <ul>
@@ -50,105 +46,106 @@ import java.util.Properties;
  */
 public class ShinyInterpreter extends AbstractInterpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ShinyInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShinyInterpreter.class);
 
-  private static final String DEFAULT_APP_NAME = "default";
-  private Map<String, IRInterpreter> shinyIRInterpreters = new HashMap<>();
-  private RZeppelinContext z;
+    private static final String DEFAULT_APP_NAME = "default";
+    private Map<String, IRInterpreter> shinyIRInterpreters = new HashMap<>();
+    private RZeppelinContext z;
 
-  public ShinyInterpreter(Properties properties) {
-    super(properties);
-  }
-
-  @Override
-  public void open() throws InterpreterException {
-    this.z = new RZeppelinContext(getInterpreterGroup().getInterpreterHookRegistry(), 1000);
-  }
-
-
-  @Override
-  public void close() throws InterpreterException {
-    for (Map.Entry<String,IRInterpreter> entry : shinyIRInterpreters.entrySet()) {
-      LOGGER.info("Closing IRInterpreter: " + entry.getKey());
-      // Stop shiny app first otherwise the R process can not be terminated.
-      entry.getValue().cancel(InterpreterContext.get());
-      entry.getValue().close();
+    public ShinyInterpreter(Properties properties) {
+        super(properties);
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
-    String shinyApp = context.getStringLocalProperty("app", DEFAULT_APP_NAME);
-    IRInterpreter irInterpreter = getIRInterpreter(shinyApp);
-    irInterpreter.cancel(context);
-  }
-
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return FormType.NATIVE;
-  }
-
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return 0;
-  }
-
-  @Override
-  public ZeppelinContext getZeppelinContext() {
-    return this.z;
-  }
-
-  @Override
-  public InterpreterResult internalInterpret(String st, InterpreterContext context)
-          throws InterpreterException {
-    String shinyApp = context.getStringLocalProperty("app", DEFAULT_APP_NAME);
-    String shinyType = context.getStringLocalProperty("type", "");
-    IRInterpreter irInterpreter = getIRInterpreter(shinyApp);
-    if (StringUtils.isBlank(shinyType)) {
-      return irInterpreter.internalInterpret(st, context);
-    } else if (shinyType.equals("run")) {
-      try {
-        return irInterpreter.runShinyApp(context);
-      } catch (IOException e) {
-        throw new InterpreterException(e);
-      }
-    } else if (shinyType.equals("ui")) {
-      return irInterpreter.shinyUI(st, context);
-    } else if (shinyType.equals("server")) {
-      return irInterpreter.shinyServer(st, context);
-    } else {
-      throw new InterpreterException("Unknown shiny type: " + shinyType);
+    @Override
+    public void open() throws InterpreterException {
+        this.z = new RZeppelinContext(getInterpreterGroup().getInterpreterHookRegistry(), 1000);
     }
-  }
 
-  /**
-   * Get the specific IRInterpreter for this shinyApp.
-   * One ShinyApp is owned by one IRInterpreter(R session).
-   *
-   * @param shinyApp
-   * @return
-   * @throws InterpreterException
-   */
-  private IRInterpreter getIRInterpreter(String shinyApp) throws InterpreterException {
-    IRInterpreter irInterpreter = null;
-    synchronized (shinyIRInterpreters) {
-      irInterpreter = shinyIRInterpreters.get(shinyApp);
-      if (irInterpreter == null) {
-        irInterpreter = createIRInterpreter();
-        irInterpreter.setInterpreterGroup(getInterpreterGroup());
-        irInterpreter.open();
-        shinyIRInterpreters.put(shinyApp, irInterpreter);
-      }
+
+    @Override
+    public void close() throws InterpreterException {
+        for (Map.Entry<String, IRInterpreter> entry : shinyIRInterpreters.entrySet()) {
+            LOGGER.info("Closing IRInterpreter: " + entry.getKey());
+            // Stop shiny app first otherwise the R process can not be terminated.
+            entry.getValue().cancel(InterpreterContext.get());
+            entry.getValue().close();
+        }
     }
-    return irInterpreter;
-  }
 
-  /**
-   * Subclass can overwrite this. e.g. SparkShinyInterpreter.
-   * @return
-   */
-  protected IRInterpreter createIRInterpreter() {
-    return new IRInterpreter(properties);
-  }
+    @Override
+    public void cancel(InterpreterContext context) throws InterpreterException {
+        String shinyApp = context.getStringLocalProperty("app", DEFAULT_APP_NAME);
+        IRInterpreter irInterpreter = getIRInterpreter(shinyApp);
+        irInterpreter.cancel(context);
+    }
+
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return FormType.NATIVE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return 0;
+    }
+
+    @Override
+    public ZeppelinContext getZeppelinContext() {
+        return this.z;
+    }
+
+    @Override
+    public InterpreterResult internalInterpret(String st, InterpreterContext context)
+            throws InterpreterException {
+        String shinyApp = context.getStringLocalProperty("app", DEFAULT_APP_NAME);
+        String shinyType = context.getStringLocalProperty("type", "");
+        IRInterpreter irInterpreter = getIRInterpreter(shinyApp);
+        if (StringUtils.isBlank(shinyType)) {
+            return irInterpreter.internalInterpret(st, context);
+        } else if (shinyType.equals("run")) {
+            try {
+                return irInterpreter.runShinyApp(context);
+            } catch (IOException e) {
+                throw new InterpreterException(e);
+            }
+        } else if (shinyType.equals("ui")) {
+            return irInterpreter.shinyUI(st, context);
+        } else if (shinyType.equals("server")) {
+            return irInterpreter.shinyServer(st, context);
+        } else {
+            throw new InterpreterException("Unknown shiny type: " + shinyType);
+        }
+    }
+
+    /**
+     * Get the specific IRInterpreter for this shinyApp.
+     * One ShinyApp is owned by one IRInterpreter(R session).
+     *
+     * @param shinyApp
+     * @return
+     * @throws InterpreterException
+     */
+    private IRInterpreter getIRInterpreter(String shinyApp) throws InterpreterException {
+        IRInterpreter irInterpreter = null;
+        synchronized (shinyIRInterpreters) {
+            irInterpreter = shinyIRInterpreters.get(shinyApp);
+            if (irInterpreter == null) {
+                irInterpreter = createIRInterpreter();
+                irInterpreter.setInterpreterGroup(getInterpreterGroup());
+                irInterpreter.open();
+                shinyIRInterpreters.put(shinyApp, irInterpreter);
+            }
+        }
+        return irInterpreter;
+    }
+
+    /**
+     * Subclass can overwrite this. e.g. SparkShinyInterpreter.
+     *
+     * @return
+     */
+    protected IRInterpreter createIRInterpreter() {
+        return new IRInterpreter(properties);
+    }
 
 }

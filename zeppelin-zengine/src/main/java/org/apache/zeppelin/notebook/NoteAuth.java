@@ -30,125 +30,124 @@ import java.util.Set;
 
 /**
  * Represent note authorization info, including (readers, writers, runners, owners)
- *
  */
 public class NoteAuth {
 
-  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  private String noteId;
-  private Set<String> readers = new HashSet<>();
-  private Set<String> writers = new HashSet<>();
-  private Set<String> runners = new HashSet<>();
-  private Set<String> owners = new HashSet<>();
+    private String noteId;
+    private Set<String> readers = new HashSet<>();
+    private Set<String> writers = new HashSet<>();
+    private Set<String> runners = new HashSet<>();
+    private Set<String> owners = new HashSet<>();
 
-  public NoteAuth(String noteId) {
-    this(noteId, AuthenticationInfo.ANONYMOUS);
-  }
-
-  public NoteAuth(String noteId, AuthenticationInfo subject) {
-    this.noteId = noteId;
-    initPermissions(subject);
-  }
-
-  public NoteAuth(String noteId, Map<String, Set<String>> permissions) {
-    this.noteId = noteId;
-    this.readers = permissions.getOrDefault("readers", Sets.newHashSet());
-    this.writers = permissions.getOrDefault("writers", Sets.newHashSet());
-    this.runners = permissions.getOrDefault("runners", Sets.newHashSet());
-    this.owners = permissions.getOrDefault("owners", Sets.newHashSet());
-  }
-
-  // used when creating new note
-  public void initPermissions(AuthenticationInfo subject) {
-    if (!AuthenticationInfo.isAnonymous(subject)) {
-      if (ZeppelinConfiguration.create().isNotebookPublic()) {
-        // add current user to owners - can be public
-        this.owners.add(checkCaseAndConvert(subject.getUser()));
-      } else {
-        // add current user to owners, readers, runners, writers - private note
-        this.owners.add(checkCaseAndConvert(subject.getUser()));
-        this.readers.add(checkCaseAndConvert(subject.getUser()));
-        this.writers.add(checkCaseAndConvert(subject.getUser()));
-        this.runners.add(checkCaseAndConvert(subject.getUser()));
-      }
+    public NoteAuth(String noteId) {
+        this(noteId, AuthenticationInfo.ANONYMOUS);
     }
-  }
 
-  public String getNoteId() {
-    return noteId;
-  }
-
-  public void setOwners(Set<String> entities) {
-    this.owners = checkCaseAndConvert(entities);
-  }
-
-  public void setReaders(Set<String> entities) {
-    this.readers = checkCaseAndConvert(entities);
-  }
-
-  public void setWriters(Set<String> entities) {
-    this.writers = checkCaseAndConvert(entities);
-  }
-
-  public void setRunners(Set<String> entities) {
-    this.runners = checkCaseAndConvert(entities);
-  }
-
-  public Set<String> getOwners() {
-    return this.owners;
-  }
-
-  public Set<String> getReaders() {
-    return this.readers;
-  }
-
-  public Set<String> getWriters() {
-    return this.writers;
-  }
-
-  public Set<String> getRunners() {
-    return this.runners;
-  }
-
-  /*
-   * If case conversion is enforced, then change entity names to lower case
-   */
-  private Set<String> checkCaseAndConvert(Set<String> entities) {
-    if (ZeppelinConfiguration.create().isUsernameForceLowerCase()) {
-      Set<String> set2 = new HashSet<>();
-      for (String name : entities) {
-        set2.add(name.toLowerCase());
-      }
-      return set2;
-    } else {
-      return entities;
+    public NoteAuth(String noteId, AuthenticationInfo subject) {
+        this.noteId = noteId;
+        initPermissions(subject);
     }
-  }
 
-  private String checkCaseAndConvert(String entity) {
-    if (ZeppelinConfiguration.create().isUsernameForceLowerCase()) {
-      return entity.toLowerCase();
-    } else {
-      return entity;
+    public NoteAuth(String noteId, Map<String, Set<String>> permissions) {
+        this.noteId = noteId;
+        this.readers = permissions.getOrDefault("readers", Sets.newHashSet());
+        this.writers = permissions.getOrDefault("writers", Sets.newHashSet());
+        this.runners = permissions.getOrDefault("runners", Sets.newHashSet());
+        this.owners = permissions.getOrDefault("owners", Sets.newHashSet());
     }
-  }
 
-  public Map<String, Set<String>> toMap() {
-    Map<String, Set<String>> map = new HashMap<>();
-    map.put("readers", readers);
-    map.put("writers", writers);
-    map.put("runners", runners);
-    map.put("owners", owners);
-    return map;
-  }
+    public static NoteAuth fromJson(String json) {
+        return gson.fromJson(json, NoteAuth.class);
+    }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    // used when creating new note
+    public void initPermissions(AuthenticationInfo subject) {
+        if (!AuthenticationInfo.isAnonymous(subject)) {
+            if (ZeppelinConfiguration.create().isNotebookPublic()) {
+                // add current user to owners - can be public
+                this.owners.add(checkCaseAndConvert(subject.getUser()));
+            } else {
+                // add current user to owners, readers, runners, writers - private note
+                this.owners.add(checkCaseAndConvert(subject.getUser()));
+                this.readers.add(checkCaseAndConvert(subject.getUser()));
+                this.writers.add(checkCaseAndConvert(subject.getUser()));
+                this.runners.add(checkCaseAndConvert(subject.getUser()));
+            }
+        }
+    }
 
-  public static NoteAuth fromJson(String json) {
-    return gson.fromJson(json, NoteAuth.class);
-  }
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public Set<String> getOwners() {
+        return this.owners;
+    }
+
+    public void setOwners(Set<String> entities) {
+        this.owners = checkCaseAndConvert(entities);
+    }
+
+    public Set<String> getReaders() {
+        return this.readers;
+    }
+
+    public void setReaders(Set<String> entities) {
+        this.readers = checkCaseAndConvert(entities);
+    }
+
+    public Set<String> getWriters() {
+        return this.writers;
+    }
+
+    public void setWriters(Set<String> entities) {
+        this.writers = checkCaseAndConvert(entities);
+    }
+
+    public Set<String> getRunners() {
+        return this.runners;
+    }
+
+    public void setRunners(Set<String> entities) {
+        this.runners = checkCaseAndConvert(entities);
+    }
+
+    /*
+     * If case conversion is enforced, then change entity names to lower case
+     */
+    private Set<String> checkCaseAndConvert(Set<String> entities) {
+        if (ZeppelinConfiguration.create().isUsernameForceLowerCase()) {
+            Set<String> set2 = new HashSet<>();
+            for (String name : entities) {
+                set2.add(name.toLowerCase());
+            }
+            return set2;
+        } else {
+            return entities;
+        }
+    }
+
+    private String checkCaseAndConvert(String entity) {
+        if (ZeppelinConfiguration.create().isUsernameForceLowerCase()) {
+            return entity.toLowerCase();
+        } else {
+            return entity;
+        }
+    }
+
+    public Map<String, Set<String>> toMap() {
+        Map<String, Set<String>> map = new HashMap<>();
+        map.put("readers", readers);
+        map.put("writers", writers);
+        map.put("runners", runners);
+        map.put("owners", owners);
+        return map;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 
 }

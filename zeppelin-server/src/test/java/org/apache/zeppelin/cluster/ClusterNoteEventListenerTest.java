@@ -30,55 +30,54 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class ClusterNoteEventListenerTest implements ClusterEventListener {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterNoteEventListenerTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterNoteEventListenerTest.class);
 
-  public String receiveMsg = null;
+    public String receiveMsg = null;
 
-  @Override
-  public void onClusterEvent(String msg) {
-    receiveMsg = msg;
-    LOGGER.debug("ClusterNoteEventListenerTest#onClusterEvent : {}", msg);
-    ClusterMessage message = ClusterMessage.deserializeMessage(msg);
+    @Override
+    public void onClusterEvent(String msg) {
+        receiveMsg = msg;
+        LOGGER.debug("ClusterNoteEventListenerTest#onClusterEvent : {}", msg);
+        ClusterMessage message = ClusterMessage.deserializeMessage(msg);
 
-    Note note = null;
-    Paragraph paragraph = null;
-    Set<String> userAndRoles = null;
-    Map<String, Paragraph> userParagraphMap = null;
-    AuthenticationInfo authenticationInfo = null;
-    for (Map.Entry<String, String> entry : message.getData().entrySet()) {
-      String key = entry.getKey();
-      String json = entry.getValue();
-      if (key.equals("AuthenticationInfo")) {
-        authenticationInfo = AuthenticationInfo.fromJson(json);
-        LOGGER.debug(authenticationInfo.toJson());
-      } else if (key.equals("Note")) {
-        try {
-          note = Note.fromJson(json);
-        } catch (IOException e) {
-          LOGGER.warn("Fail to parse note json", e);
+        Note note = null;
+        Paragraph paragraph = null;
+        Set<String> userAndRoles = null;
+        Map<String, Paragraph> userParagraphMap = null;
+        AuthenticationInfo authenticationInfo = null;
+        for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+            String key = entry.getKey();
+            String json = entry.getValue();
+            if (key.equals("AuthenticationInfo")) {
+                authenticationInfo = AuthenticationInfo.fromJson(json);
+                LOGGER.debug(authenticationInfo.toJson());
+            } else if (key.equals("Note")) {
+                try {
+                    note = Note.fromJson(json);
+                } catch (IOException e) {
+                    LOGGER.warn("Fail to parse note json", e);
+                }
+                LOGGER.debug(note.toJson());
+            } else if (key.equals("Paragraph")) {
+                paragraph = Paragraph.fromJson(json);
+                LOGGER.debug(paragraph.toJson());
+            } else if (key.equals("Set<String>")) {
+                Gson gson = new Gson();
+                userAndRoles = gson.fromJson(json, new TypeToken<Set<String>>() {
+                }.getType());
+                LOGGER.debug(userAndRoles.toString());
+            } else if (key.equals("Map<String, Paragraph>")) {
+                Gson gson = new Gson();
+                userParagraphMap = gson.fromJson(json, new TypeToken<Map<String, Paragraph>>() {
+                }.getType());
+                LOGGER.debug(userParagraphMap.toString());
+            } else {
+                receiveMsg = null;
+                fail("Unknown clusterEvent : " + message.clusterEvent);
+            }
         }
-        LOGGER.debug(note.toJson());
-      } else if (key.equals("Paragraph")) {
-        paragraph = Paragraph.fromJson(json);
-        LOGGER.debug(paragraph.toJson());
-      } else if (key.equals("Set<String>")) {
-        Gson gson = new Gson();
-        userAndRoles = gson.fromJson(json, new TypeToken<Set<String>>() {
-        }.getType());
-        LOGGER.debug(userAndRoles.toString());
-      } else if (key.equals("Map<String, Paragraph>")) {
-        Gson gson = new Gson();
-        userParagraphMap = gson.fromJson(json, new TypeToken<Map<String, Paragraph>>() {
-        }.getType());
-        LOGGER.debug(userParagraphMap.toString());
-      } else {
-        receiveMsg = null;
-        fail("Unknown clusterEvent : " + message.clusterEvent);
-      }
     }
-  }
 }

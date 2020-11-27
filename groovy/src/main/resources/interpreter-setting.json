@@ -1,7 +1,7 @@
 [
   {
     "group": "groovy",
-    "name":  "groovy",
+    "name": "groovy",
     "className": "org.apache.zeppelin.groovy.GroovyInterpreter",
     "properties": {
       "GROOVY_CLASSES": {

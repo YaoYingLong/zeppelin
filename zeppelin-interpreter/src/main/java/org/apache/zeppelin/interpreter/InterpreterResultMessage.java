@@ -22,23 +22,23 @@ import java.io.Serializable;
  * Interpreter result message
  */
 public class InterpreterResultMessage implements Serializable {
-  InterpreterResult.Type type;
-  String data;
+    InterpreterResult.Type type;
+    String data;
 
-  public InterpreterResultMessage(InterpreterResult.Type type, String data) {
-    this.type = type;
-    this.data = data;
-  }
+    public InterpreterResultMessage(InterpreterResult.Type type, String data) {
+        this.type = type;
+        this.data = data;
+    }
 
-  public InterpreterResult.Type getType() {
-    return type;
-  }
+    public InterpreterResult.Type getType() {
+        return type;
+    }
 
-  public String getData() {
-    return data;
-  }
+    public String getData() {
+        return data;
+    }
 
-  public String toString() {
-    return "%" + type.name().toLowerCase() + " " + data;
-  }
+    public String toString() {
+        return "%" + type.name().toLowerCase() + " " + data;
+    }
 }

@@ -26,16 +26,16 @@ import static org.junit.Assert.assertTrue;
 
 public class HiveUtilsTest {
 
-  @Test
-  public void testJobURL() {
-    Optional<String> jobURL = HiveUtils.extractMRJobURL(
-            "INFO  : The url to track the job: " +
-            "http://localhost:8088/proxy/application_1591195707498_0064/\n" +
-            "INFO  : Starting Job = job_1591195707498_0064, " +
-            "Tracking URL = http://localhost:8088/proxy/application_1591195707498_0064/\n" +
-            "INFO  : Kill Command = /Users/abc/Java/lib/hadoop-2.7.7/bin/hadoop job " +
-            " -kill job_1591195707498_0064");
-    assertTrue(jobURL.isPresent());
-    assertEquals("http://localhost:8088/proxy/application_1591195707498_0064/", jobURL.get());
-  }
+    @Test
+    public void testJobURL() {
+        Optional<String> jobURL = HiveUtils.extractMRJobURL(
+                "INFO  : The url to track the job: " +
+                        "http://localhost:8088/proxy/application_1591195707498_0064/\n" +
+                        "INFO  : Starting Job = job_1591195707498_0064, " +
+                        "Tracking URL = http://localhost:8088/proxy/application_1591195707498_0064/\n" +
+                        "INFO  : Kill Command = /Users/abc/Java/lib/hadoop-2.7.7/bin/hadoop job " +
+                        " -kill job_1591195707498_0064");
+        assertTrue(jobURL.isPresent());
+        assertEquals("http://localhost:8088/proxy/application_1591195707498_0064/", jobURL.get());
+    }
 }

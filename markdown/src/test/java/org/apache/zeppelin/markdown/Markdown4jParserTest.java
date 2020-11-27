@@ -17,35 +17,34 @@
 
 package org.apache.zeppelin.markdown;
 
-import static org.junit.Assert.assertEquals;
-
+import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import static org.junit.Assert.assertEquals;
 
 public class Markdown4jParserTest {
-  Markdown md;
+    Markdown md;
 
-  @Before
-  public void setUp() {
-    Properties props = new Properties();
-    props.put(Markdown.MARKDOWN_PARSER_TYPE, Markdown.PARSER_TYPE_MARKDOWN4J);
-    md = new Markdown(props);
-    md.open();
-  }
+    @Before
+    public void setUp() {
+        Properties props = new Properties();
+        props.put(Markdown.MARKDOWN_PARSER_TYPE, Markdown.PARSER_TYPE_MARKDOWN4J);
+        md = new Markdown(props);
+        md.open();
+    }
 
-  @After
-  public void tearDown() {
-    md.close();
-  }
+    @After
+    public void tearDown() {
+        md.close();
+    }
 
-  @Test
-  public void testStrikethrough() {
-    InterpreterResult result = md.interpret("This is ~~deleted~~ text", null);
-    assertEquals("<p>This is <s>deleted</s> text</p>\n", result.message().get(0).getData());
-  }
+    @Test
+    public void testStrikethrough() {
+        InterpreterResult result = md.interpret("This is ~~deleted~~ text", null);
+        assertEquals("<p>This is <s>deleted</s> text</p>\n", result.message().get(0).getData());
+    }
 }

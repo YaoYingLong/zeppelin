@@ -34,66 +34,66 @@ import static org.junit.Assert.assertEquals;
  */
 public class HazelcastJetInterpreterTest {
 
-  private static HazelcastJetInterpreter jet;
-  private static InterpreterContext context;
+    private static HazelcastJetInterpreter jet;
+    private static InterpreterContext context;
 
-  @BeforeClass
-  public static void setUp() {
-    Properties p = new Properties();
-    jet = new HazelcastJetInterpreter(p);
-    jet.open();
-    context = InterpreterContext.builder().build();
-  }
+    @BeforeClass
+    public static void setUp() {
+        Properties p = new Properties();
+        jet = new HazelcastJetInterpreter(p);
+        jet.open();
+        context = InterpreterContext.builder().build();
+    }
 
-  @AfterClass
-  public static void tearDown() {
-    jet.close();
-  }
+    @AfterClass
+    public static void tearDown() {
+        jet.close();
+    }
 
-  @Test
-  public void testStaticRepl() {
+    @Test
+    public void testStaticRepl() {
 
-    StringWriter writer = new StringWriter();
-    PrintWriter out = new PrintWriter(writer);
-    out.println("public class HelloWorld {");
-    out.println("  public static void main(String args[]) {");
-    out.println("    System.out.println(\"This is in another java file\");");
-    out.println("  }");
-    out.println("}");
-    out.close();
+        StringWriter writer = new StringWriter();
+        PrintWriter out = new PrintWriter(writer);
+        out.println("public class HelloWorld {");
+        out.println("  public static void main(String args[]) {");
+        out.println("    System.out.println(\"This is in another java file\");");
+        out.println("  }");
+        out.println("}");
+        out.close();
 
-    InterpreterResult res = jet.interpret(writer.toString(), context);
+        InterpreterResult res = jet.interpret(writer.toString(), context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, res.code());
-    assertEquals(InterpreterResult.Type.TEXT, res.message().get(0).getType());
-  }
+        assertEquals(InterpreterResult.Code.SUCCESS, res.code());
+        assertEquals(InterpreterResult.Type.TEXT, res.message().get(0).getType());
+    }
 
-  @Test
-  public void testStaticReplWithoutMain() {
+    @Test
+    public void testStaticReplWithoutMain() {
 
-    StringBuffer sourceCode = new StringBuffer();
-    sourceCode.append("package org.mdkt;\n");
-    sourceCode.append("public class HelloClass {\n");
-    sourceCode.append("   public String hello() { return \"hello\"; }");
-    sourceCode.append("}");
-    InterpreterResult res = jet.interpret(sourceCode.toString(), context);
-    assertEquals(InterpreterResult.Code.ERROR, res.code());
-  }
+        StringBuffer sourceCode = new StringBuffer();
+        sourceCode.append("package org.mdkt;\n");
+        sourceCode.append("public class HelloClass {\n");
+        sourceCode.append("   public String hello() { return \"hello\"; }");
+        sourceCode.append("}");
+        InterpreterResult res = jet.interpret(sourceCode.toString(), context);
+        assertEquals(InterpreterResult.Code.ERROR, res.code());
+    }
 
-  @Test
-  public void testStaticReplWithSyntaxError() {
+    @Test
+    public void testStaticReplWithSyntaxError() {
 
-    StringWriter writer = new StringWriter();
-    PrintWriter out = new PrintWriter(writer);
-    out.println("public class HelloWorld {");
-    out.println("  public static void main(String args[]) {");
-    out.println("    System.out.prin(\"This is in another java file\");");
-    out.println("  }");
-    out.println("}");
-    out.close();
-    InterpreterResult res = jet.interpret(writer.toString(), context);
+        StringWriter writer = new StringWriter();
+        PrintWriter out = new PrintWriter(writer);
+        out.println("public class HelloWorld {");
+        out.println("  public static void main(String args[]) {");
+        out.println("    System.out.prin(\"This is in another java file\");");
+        out.println("  }");
+        out.println("}");
+        out.close();
+        InterpreterResult res = jet.interpret(writer.toString(), context);
 
-    assertEquals(InterpreterResult.Code.ERROR, res.code());
-  }
+        assertEquals(InterpreterResult.Code.ERROR, res.code());
+    }
 
 }

@@ -25,15 +25,15 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
   websocketCalls.ws = $websocket(baseUrlSrv.getWebsocketUrl());
   websocketCalls.ws.reconnectIfNotNormalClose = true;
 
-  websocketCalls.ws.onOpen(function() {
+  websocketCalls.ws.onOpen(function () {
     console.log('Websocket created');
     $rootScope.$broadcast('setConnectedStatus', true);
-    pingIntervalId = setInterval(function() {
+    pingIntervalId = setInterval(function () {
       websocketCalls.sendNewEvent({op: 'PING'});
     }, 10000);
   });
 
-  websocketCalls.sendNewEvent = function(data) {
+  websocketCalls.sendNewEvent = function (data) {
     if ($rootScope.ticket !== undefined) {
       data.principal = $rootScope.ticket.principal;
       data.ticket = $rootScope.ticket.ticket;
@@ -49,11 +49,11 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
     return websocketCalls.ws.send(JSON.stringify(data));
   };
 
-  websocketCalls.isConnected = function() {
+  websocketCalls.isConnected = function () {
     return (websocketCalls.ws.socket.readyState === 1);
   };
 
-  websocketCalls.ws.onMessage(function(event) {
+  websocketCalls.ws.onMessage(function (event) {
     let payload;
     if (event.data) {
       payload = angular.fromJson(event.data);
@@ -85,14 +85,14 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
       if ($rootScope.ticket.roles === '[]') {
         btn = [{
           label: 'Close',
-          action: function(dialog) {
+          action: function (dialog) {
             dialog.close();
           },
         }];
       } else {
         btn = [{
           label: 'Login',
-          action: function(dialog) {
+          action: function (dialog) {
             dialog.close();
             angular.element('#loginModal').modal({
               show: 'true',
@@ -100,11 +100,11 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
           },
         }, {
           label: 'Cancel',
-          action: function(dialog) {
+          action: function (dialog) {
             dialog.close();
             // using $rootScope.apply to trigger angular digest cycle
             // changing $location.path inside bootstrap modal wont trigger digest
-            $rootScope.$apply(function() {
+            $rootScope.$apply(function () {
               $location.path('/');
             });
           },
@@ -121,7 +121,7 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
       });
     } else if (op === 'PARAGRAPH') {
       if (isResponseForRequestFromThisClient &&
-          lastMsgIdSeqSent > msgIdSeqReceived
+        lastMsgIdSeqSent > msgIdSeqReceived
       ) {
         // paragraph is already updated by short circuit.
         console.log('PARAPGRAPH is already updated by shortcircuit');
@@ -176,7 +176,7 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
         buttons: [{
           // close all the dialogs when there are error on running all paragraphs
           label: 'Close',
-          action: function() {
+          action: function () {
             BootstrapDialog.closeAll();
           },
         }],
@@ -212,12 +212,12 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
     }
   });
 
-  websocketCalls.ws.onError(function(event) {
+  websocketCalls.ws.onError(function (event) {
     console.log('error message: ', event);
     $rootScope.$broadcast('setConnectedStatus', false);
   });
 
-  websocketCalls.ws.onClose(function(event) {
+  websocketCalls.ws.onClose(function (event) {
     console.log('close message: ', event);
     if (pingIntervalId !== undefined) {
       clearInterval(pingIntervalId);

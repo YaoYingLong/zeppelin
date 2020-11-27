@@ -23,6 +23,6 @@ package org.apache.zeppelin.client.websocket;
  */
 public interface MessageHandler {
 
-  void onMessage(String msg);
+    void onMessage(String msg);
 
 }

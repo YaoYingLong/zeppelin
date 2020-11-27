@@ -19,81 +19,81 @@ package org.apache.zeppelin.common;
 
 public class SessionInfo {
 
-  private String sessionId;
-  private String noteId;
-  private String interpreter;
-  private String state;
-  private String weburl;
-  private String startTime;
+    private String sessionId;
+    private String noteId;
+    private String interpreter;
+    private String state;
+    private String weburl;
+    private String startTime;
 
-  public SessionInfo(){
+    public SessionInfo() {
 
-  }
+    }
 
-  public SessionInfo(String sessionId) {
-    this.sessionId = sessionId;
-  }
+    public SessionInfo(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
-  public SessionInfo(String sessionId, String noteId, String interpreter) {
-    this.sessionId = sessionId;
-    this.noteId = noteId;
-    this.interpreter = interpreter;
-  }
+    public SessionInfo(String sessionId, String noteId, String interpreter) {
+        this.sessionId = sessionId;
+        this.noteId = noteId;
+        this.interpreter = interpreter;
+    }
 
-  public SessionInfo(String sessionId, String noteId, String interpreter, String state, String weburl, String startTime) {
-    this.sessionId = sessionId;
-    this.noteId = noteId;
-    this.interpreter = interpreter;
-    this.state = state;
-    this.weburl = weburl;
-    this.startTime = startTime;
-  }
+    public SessionInfo(String sessionId, String noteId, String interpreter, String state, String weburl, String startTime) {
+        this.sessionId = sessionId;
+        this.noteId = noteId;
+        this.interpreter = interpreter;
+        this.state = state;
+        this.weburl = weburl;
+        this.startTime = startTime;
+    }
 
-  public String getSessionId() {
-    return sessionId;
-  }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-  public String getNoteId() {
-    return noteId;
-  }
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
-  public String getState() {
-    return state;
-  }
+    public String getNoteId() {
+        return noteId;
+    }
 
-  public String getInterpreter() {
-    return interpreter;
-  }
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
 
-  public String getWeburl() {
-    return weburl;
-  }
+    public String getState() {
+        return state;
+    }
 
-  public String getStartTime() {
-    return startTime;
-  }
+    public void setState(String state) {
+        this.state = state;
+    }
 
-  public void setState(String state) {
-    this.state = state;
-  }
+    public String getInterpreter() {
+        return interpreter;
+    }
 
-  public void setStartTime(String startTime) {
-    this.startTime = startTime;
-  }
+    public void setInterpreter(String interpreter) {
+        this.interpreter = interpreter;
+    }
 
-  public void setWeburl(String weburl) {
-    this.weburl = weburl;
-  }
+    public String getWeburl() {
+        return weburl;
+    }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
-  }
+    public void setWeburl(String weburl) {
+        this.weburl = weburl;
+    }
 
-  public void setNoteId(String noteId) {
-    this.noteId = noteId;
-  }
+    public String getStartTime() {
+        return startTime;
+    }
 
-  public void setInterpreter(String interpreter) {
-    this.interpreter = interpreter;
-  }
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
 }

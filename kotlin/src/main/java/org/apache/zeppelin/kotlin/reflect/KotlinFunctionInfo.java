@@ -17,53 +17,54 @@
 
 package org.apache.zeppelin.kotlin.reflect;
 
+import kotlin.reflect.KFunction;
+import org.jetbrains.annotations.NotNull;
+
 import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.functionSignature;
 import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.shorten;
-import org.jetbrains.annotations.NotNull;
-import kotlin.reflect.KFunction;
 
 public class KotlinFunctionInfo implements Comparable<KotlinFunctionInfo> {
-  private final KFunction<?> function;
+    private final KFunction<?> function;
 
-  public KotlinFunctionInfo(KFunction<?> function) {
-    this.function = function;
-  }
-
-  public KFunction<?> getFunction() {
-    return function;
-  }
-
-  public String getName() {
-    return function.getName();
-  }
-
-  public String toString(boolean shortenTypes) {
-    if (shortenTypes) {
-      return shorten(toString());
+    public KotlinFunctionInfo(KFunction<?> function) {
+        this.function = function;
     }
-    return toString();
-  }
 
-  @Override
-  public String toString() {
-    return functionSignature(function);
-  }
-
-  @Override
-  public int compareTo(@NotNull KotlinFunctionInfo f) {
-    return this.toString().compareTo(f.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return this.toString().hashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof KotlinFunctionInfo) {
-      return this.toString().equals(obj.toString());
+    public KFunction<?> getFunction() {
+        return function;
     }
-    return false;
-  }
+
+    public String getName() {
+        return function.getName();
+    }
+
+    public String toString(boolean shortenTypes) {
+        if (shortenTypes) {
+            return shorten(toString());
+        }
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return functionSignature(function);
+    }
+
+    @Override
+    public int compareTo(@NotNull KotlinFunctionInfo f) {
+        return this.toString().compareTo(f.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof KotlinFunctionInfo) {
+            return this.toString().equals(obj.toString());
+        }
+        return false;
+    }
 }

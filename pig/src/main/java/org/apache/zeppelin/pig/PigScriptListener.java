@@ -31,62 +31,62 @@ import java.util.Set;
  *
  */
 public class PigScriptListener implements PigProgressNotificationListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PigScriptListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PigScriptListener.class);
 
-  private Set<String> jobIds = new HashSet();
-  private int progress;
+    private Set<String> jobIds = new HashSet();
+    private int progress;
 
-  @Override
-  public void initialPlanNotification(String scriptId, OperatorPlan<?> plan) {
+    @Override
+    public void initialPlanNotification(String scriptId, OperatorPlan<?> plan) {
 
-  }
+    }
 
-  @Override
-  public void launchStartedNotification(String scriptId, int numJobsToLaunch) {
+    @Override
+    public void launchStartedNotification(String scriptId, int numJobsToLaunch) {
 
-  }
+    }
 
-  @Override
-  public void jobsSubmittedNotification(String scriptId, int numJobsSubmitted) {
+    @Override
+    public void jobsSubmittedNotification(String scriptId, int numJobsSubmitted) {
 
-  }
+    }
 
-  @Override
-  public void jobStartedNotification(String scriptId, String assignedJobId) {
-    this.jobIds.add(assignedJobId);
-  }
+    @Override
+    public void jobStartedNotification(String scriptId, String assignedJobId) {
+        this.jobIds.add(assignedJobId);
+    }
 
-  @Override
-  public void jobFinishedNotification(String scriptId, JobStats jobStats) {
+    @Override
+    public void jobFinishedNotification(String scriptId, JobStats jobStats) {
 
-  }
+    }
 
-  @Override
-  public void jobFailedNotification(String scriptId, JobStats jobStats) {
+    @Override
+    public void jobFailedNotification(String scriptId, JobStats jobStats) {
 
-  }
+    }
 
-  @Override
-  public void outputCompletedNotification(String scriptId, OutputStats outputStats) {
+    @Override
+    public void outputCompletedNotification(String scriptId, OutputStats outputStats) {
 
-  }
+    }
 
-  @Override
-  public void progressUpdatedNotification(String scriptId, int progress) {
-    LOGGER.debug("scriptId:" + scriptId + ", progress:" + progress);
-    this.progress = progress;
-  }
+    @Override
+    public void progressUpdatedNotification(String scriptId, int progress) {
+        LOGGER.debug("scriptId:" + scriptId + ", progress:" + progress);
+        this.progress = progress;
+    }
 
-  @Override
-  public void launchCompletedNotification(String scriptId, int numJobsSucceeded) {
+    @Override
+    public void launchCompletedNotification(String scriptId, int numJobsSucceeded) {
 
-  }
+    }
 
-  public Set<String> getJobIds() {
-    return jobIds;
-  }
+    public Set<String> getJobIds() {
+        return jobIds;
+    }
 
-  public int getProgress() {
-    return progress;
-  }
+    public int getProgress() {
+        return progress;
+    }
 }

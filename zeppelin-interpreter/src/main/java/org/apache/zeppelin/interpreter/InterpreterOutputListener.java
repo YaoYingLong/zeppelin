@@ -20,23 +20,25 @@ package org.apache.zeppelin.interpreter;
  * Listen InterpreterOutput buffer flush
  */
 public interface InterpreterOutputListener {
-  /**
-   * update all message outputs
-   */
-  void onUpdateAll(InterpreterOutput out);
+    /**
+     * update all message outputs
+     */
+    void onUpdateAll(InterpreterOutput out);
 
-  /**
-   * called when newline is detected
-   * @param index
-   * @param out
-   * @param line
-   */
-  void onAppend(int index, InterpreterResultMessageOutput out, byte[] line);
+    /**
+     * called when newline is detected
+     *
+     * @param index
+     * @param out
+     * @param line
+     */
+    void onAppend(int index, InterpreterResultMessageOutput out, byte[] line);
 
-  /**
-   * when entire output is updated. eg) after detecting new display system
-   * @param index
-   * @param out
-   */
-  void onUpdate(int index, InterpreterResultMessageOutput out);
+    /**
+     * when entire output is updated. eg) after detecting new display system
+     *
+     * @param index
+     * @param out
+     */
+    void onUpdate(int index, InterpreterResultMessageOutput out);
 }

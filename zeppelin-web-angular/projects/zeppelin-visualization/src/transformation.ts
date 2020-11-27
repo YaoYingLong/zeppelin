@@ -10,9 +10,9 @@
  * limitations under the License.
  */
 
-import { GraphConfig } from '@zeppelin/sdk';
+import {GraphConfig} from '@zeppelin/sdk';
 
-import { DataSet } from './data-set';
+import {DataSet} from './data-set';
 
 export interface Setting {
   // tslint:disable-next-line:no-any
@@ -23,7 +23,9 @@ export interface Setting {
 
 export abstract class Transformation {
   dataset: DataSet;
-  constructor(private config: GraphConfig) {}
+
+  constructor(private config: GraphConfig) {
+  }
 
   // tslint:disable-next-line:no-any
   abstract transform(tableData): any;

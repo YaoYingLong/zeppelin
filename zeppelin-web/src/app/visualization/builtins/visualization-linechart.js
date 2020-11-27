@@ -78,7 +78,7 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
     let self = this;
     let configObj = self.config;
 
-    chart.xAxis.tickFormat(function(d) {
+    chart.xAxis.tickFormat(function (d) {
       if (self.config.isDateFormat) {
         if (self.config.dateFormat) {
           return moment(new Date(self.xAxisTickFormat(d, self.xLabels))).format(self.config.dateFormat);
@@ -88,7 +88,7 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
       }
       return self.xAxisTickFormat(d, self.xLabels);
     });
-    chart.yAxis.tickFormat(function(d) {
+    chart.yAxis.tickFormat(function (d) {
       if (d === undefined) {
         return 'N/A';
       }
@@ -104,7 +104,7 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
       chart.forceY([]);
     }
 
-    self.config.changeXLabel = function(type) {
+    self.config.changeXLabel = function (type) {
       switch (type) {
         case 'default':
           self.chart._options['showXAxis'] = true;
@@ -128,7 +128,7 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
       self.emitConfig(configObj);
     };
 
-    self.config.isXLabelStatus = function(type) {
+    self.config.isXLabelStatus = function (type) {
       if (configObj.xLabelStatus === type) {
         return true;
       } else {
@@ -136,13 +136,13 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
       }
     };
 
-    self.config.setDegree = function(type) {
+    self.config.setDegree = function (type) {
       configObj.rotate.degree = type;
       self.chart.xAxis.rotateLabels(type);
       self.emitConfig(configObj);
     };
 
-    self.config.setDateFormat = function(format) {
+    self.config.setDateFormat = function (format) {
       configObj.dateFormat = format;
       self.emitConfig(configObj);
     };
@@ -178,8 +178,8 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
                ng-click="save()" />
           zoom
         </label>
-        
-        <br/>        
+
+        <br/>
         <label>
           <input type="checkbox"
                ng-model="config.isDateFormat"
@@ -199,7 +199,7 @@ export default class LinechartVisualization extends Nvd3ChartVisualization {
       </ng-include>`,
       scope: {
         config: configObj,
-        save: function() {
+        save: function () {
           self.emitConfig(configObj);
         },
       },

@@ -17,26 +17,26 @@
 
 package org.apache.zeppelin.user;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class AuthenticationInfoTest {
 
-  @Test
-  public void testRoles() {
-    final String roles = "[\"role1\", \"role2\", \"role with space\"]";
+    @Test
+    public void testRoles() {
+        final String roles = "[\"role1\", \"role2\", \"role with space\"]";
 
-    final AuthenticationInfo authenticationInfo = new AuthenticationInfo("foo",
-        roles, "bar");
+        final AuthenticationInfo authenticationInfo = new AuthenticationInfo("foo",
+                roles, "bar");
 
-    assertEquals(
-        new ArrayList<>(Arrays.asList("role1", "role2", "role with space")),
-        authenticationInfo.getRoles());
+        assertEquals(
+                new ArrayList<>(Arrays.asList("role1", "role2", "role with space")),
+                authenticationInfo.getRoles());
 
-  }
+    }
 
 }

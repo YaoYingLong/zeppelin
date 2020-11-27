@@ -18,6 +18,8 @@ import { Injectable } from '@angular/core';
 export class NoteVarShareService {
   private store = new Map();
 
+  constructor() {}
+
   clear() {
     this.store.clear();
   }
@@ -33,6 +35,4 @@ export class NoteVarShareService {
   del(key) {
     return this.store.delete(key);
   }
-
-  constructor() {}
 }

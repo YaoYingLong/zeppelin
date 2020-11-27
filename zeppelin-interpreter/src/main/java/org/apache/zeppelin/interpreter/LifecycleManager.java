@@ -27,16 +27,16 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer;
  */
 public abstract class LifecycleManager {
 
-  protected ZeppelinConfiguration zConf;
-  protected RemoteInterpreterServer remoteInterpreterServer;
+    protected ZeppelinConfiguration zConf;
+    protected RemoteInterpreterServer remoteInterpreterServer;
 
-  public LifecycleManager(ZeppelinConfiguration zConf, RemoteInterpreterServer remoteInterpreterServer) {
-    this.zConf = zConf;
-    this.remoteInterpreterServer = remoteInterpreterServer;
-  }
+    public LifecycleManager(ZeppelinConfiguration zConf, RemoteInterpreterServer remoteInterpreterServer) {
+        this.zConf = zConf;
+        this.remoteInterpreterServer = remoteInterpreterServer;
+    }
 
-  public abstract void onInterpreterProcessStarted(String interpreterGroupId);
+    public abstract void onInterpreterProcessStarted(String interpreterGroupId);
 
-  public abstract void onInterpreterUse(String interpreterGroupId);
+    public abstract void onInterpreterUse(String interpreterGroupId);
 
 }

@@ -25,52 +25,50 @@ import java.util.Map;
 import java.util.Properties;
 
 public class SubmarineContext {
-  private Logger LOGGER = LoggerFactory.getLogger(SubmarineContext.class);
+    private static SubmarineContext instance = null;
+    private Logger LOGGER = LoggerFactory.getLogger(SubmarineContext.class);
+    // noteId -> SubmarineJob
+    private Map<String, SubmarineJob> mapSubmarineJob = new HashMap<>();
 
-  private static SubmarineContext instance = null;
-
-  // noteId -> SubmarineJob
-  private Map<String, SubmarineJob> mapSubmarineJob = new HashMap<>();
-
-  public static SubmarineContext getInstance() {
-    synchronized (SubmarineContext.class) {
-      if (instance == null) {
-        instance = new SubmarineContext();
-      }
-      return instance;
-    }
-  }
-
-  public SubmarineJob addOrGetSubmarineJob(Properties properties, InterpreterContext context) {
-    SubmarineJob submarineJob = null;
-    String noteId = context.getNoteId();
-    if (!mapSubmarineJob.containsKey(noteId)) {
-      submarineJob = new SubmarineJob(context, properties);
-      mapSubmarineJob.put(noteId, submarineJob);
-    } else {
-      submarineJob = mapSubmarineJob.get(noteId);
-    }
-    // need update InterpreterContext
-    submarineJob.setIntpContext(context);
-
-    return submarineJob;
-  }
-
-  public SubmarineJob getSubmarineJob(String nodeId) {
-    if (!mapSubmarineJob.containsKey(nodeId)) {
-      return null;
+    public static SubmarineContext getInstance() {
+        synchronized (SubmarineContext.class) {
+            if (instance == null) {
+                instance = new SubmarineContext();
+            }
+            return instance;
+        }
     }
 
-    return mapSubmarineJob.get(nodeId);
-  }
+    public SubmarineJob addOrGetSubmarineJob(Properties properties, InterpreterContext context) {
+        SubmarineJob submarineJob = null;
+        String noteId = context.getNoteId();
+        if (!mapSubmarineJob.containsKey(noteId)) {
+            submarineJob = new SubmarineJob(context, properties);
+            mapSubmarineJob.put(noteId, submarineJob);
+        } else {
+            submarineJob = mapSubmarineJob.get(noteId);
+        }
+        // need update InterpreterContext
+        submarineJob.setIntpContext(context);
 
-  public void stopAllSubmarineJob() {
-    Iterator<Map.Entry<String, SubmarineJob>> iterator = mapSubmarineJob.entrySet().iterator();
-
-    while (iterator.hasNext()) {
-      Map.Entry<String, SubmarineJob> entry = iterator.next();
-
-      entry.getValue().stopRunning();
+        return submarineJob;
     }
-  }
+
+    public SubmarineJob getSubmarineJob(String nodeId) {
+        if (!mapSubmarineJob.containsKey(nodeId)) {
+            return null;
+        }
+
+        return mapSubmarineJob.get(nodeId);
+    }
+
+    public void stopAllSubmarineJob() {
+        Iterator<Map.Entry<String, SubmarineJob>> iterator = mapSubmarineJob.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, SubmarineJob> entry = iterator.next();
+
+            entry.getValue().stopRunning();
+        }
+    }
 }

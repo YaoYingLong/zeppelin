@@ -19,19 +19,19 @@ package org.apache.zeppelin.interpreter.launcher.utils;
 import java.io.File;
 
 public class TarFileEntry {
-  private File file;
-  private String archivePath;
+    private File file;
+    private String archivePath;
 
-  public TarFileEntry(File file, String archivePath) {
-    this.file = file;
-    this.archivePath = archivePath;
-  }
+    public TarFileEntry(File file, String archivePath) {
+        this.file = file;
+        this.archivePath = archivePath;
+    }
 
-  public File getFile() {
-    return file;
-  }
+    public File getFile() {
+        return file;
+    }
 
-  public String getArchivePath() {
-    return archivePath;
-  }
+    public String getArchivePath() {
+        return archivePath;
+    }
 }

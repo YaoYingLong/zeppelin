@@ -20,7 +20,6 @@ import org.apache.zeppelin.helium.Application;
 import org.apache.zeppelin.helium.ApplicationContext;
 import org.apache.zeppelin.helium.ApplicationException;
 import org.apache.zeppelin.helium.ZeppelinApplicationDevServer;
-import org.apache.zeppelin.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,81 +32,79 @@ import java.util.Date;
  * Get java.util.Date from resource pool and display it
  */
 public class Clock extends Application {
-  private final Logger logger = LoggerFactory.getLogger(Clock.class);
+    private final Logger logger = LoggerFactory.getLogger(Clock.class);
 
-  Date date;
-  boolean shutdown = false;
-  private Thread updateThread;
+    Date date;
+    boolean shutdown = false;
+    private Thread updateThread;
 
-  public Clock(ApplicationContext context) {
-    super(context);
-  }
-
-  @Override
-  public void run(ResourceSet resources) throws ApplicationException {
-    // Get data from resource args
-    date = (Date) resources.get(0).get();
-
-    // print view template
-    try {
-      context().out.writeResource("example/app/clock/clock.html");
-    } catch (IOException e) {
-      throw new ApplicationException(e);
+    public Clock(ApplicationContext context) {
+        super(context);
     }
 
-    if (updateThread == null) {
-      start();
+    /**
+     * Development mode
+     */
+    public static void main(String[] args) throws Exception {
+        LocalResourcePool pool = new LocalResourcePool("dev");
+        pool.put("date", new Date());
+
+        ZeppelinApplicationDevServer devServer = new ZeppelinApplicationDevServer(
+                Clock.class.getName(),
+                pool.getAll());
+
+        devServer.start();
+        devServer.join();
     }
-  }
 
+    @Override
+    public void run(ResourceSet resources) throws ApplicationException {
+        // Get data from resource args
+        date = (Date) resources.get(0).get();
 
-  public void start() {
-    updateThread = new Thread() {
-      public void run() {
-        while (!shutdown) {
-          // format date
-          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-          // put formatted string to angular object.
-          context().getAngularObjectRegistry().add("date", df.format(date));
-
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            // nothing todo
-          }
-          date = new Date(date.getTime() + 1000);
+        // print view template
+        try {
+            context().out.writeResource("example/app/clock/clock.html");
+        } catch (IOException e) {
+            throw new ApplicationException(e);
         }
-      }
-    };
 
-    updateThread.start();
-  }
-
-
-  @Override
-  public void unload() throws ApplicationException {
-    shutdown = true;
-    try {
-      updateThread.join();
-    } catch (InterruptedException e) {
-      // nothing to do
+        if (updateThread == null) {
+            start();
+        }
     }
-    context().getAngularObjectRegistry().remove("date");
-  }
 
-  /**
-   * Development mode
-   */
-  public static void main(String[] args) throws Exception {
-    LocalResourcePool pool = new LocalResourcePool("dev");
-    pool.put("date", new Date());
+    public void start() {
+        updateThread = new Thread() {
+            public void run() {
+                while (!shutdown) {
+                    // format date
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    ZeppelinApplicationDevServer devServer = new ZeppelinApplicationDevServer(
-        Clock.class.getName(),
-        pool.getAll());
+                    // put formatted string to angular object.
+                    context().getAngularObjectRegistry().add("date", df.format(date));
 
-    devServer.start();
-    devServer.join();
-  }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        // nothing todo
+                    }
+                    date = new Date(date.getTime() + 1000);
+                }
+            }
+        };
+
+        updateThread.start();
+    }
+
+    @Override
+    public void unload() throws ApplicationException {
+        shutdown = true;
+        try {
+            updateThread.join();
+        } catch (InterruptedException e) {
+            // nothing to do
+        }
+        context().getAngularObjectRegistry().remove("date");
+    }
 }

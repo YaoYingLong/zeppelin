@@ -17,10 +17,6 @@
 
 package org.apache.zeppelin.angular;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
@@ -30,51 +26,55 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
 /**
  *
  */
 public class AngularInterpreter extends Interpreter {
 
-  public AngularInterpreter(Properties property) {
-    super(property);
-  }
+    public AngularInterpreter(Properties property) {
+        super(property);
+    }
 
-  @Override
-  public void open() {
-  }
+    @Override
+    public void open() {
+    }
 
-  @Override
-  public void close() {
-  }
+    @Override
+    public void close() {
+    }
 
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(Code.SUCCESS, Type.ANGULAR, st);
-  }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context) {
+        return new InterpreterResult(Code.SUCCESS, Type.ANGULAR, st);
+    }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
+    }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.NATIVE;
-  }
+    @Override
+    public FormType getFormType() {
+        return FormType.NATIVE;
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
-    return new LinkedList<>();
-  }
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return new LinkedList<>();
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton().createOrGetFIFOScheduler(
-        AngularInterpreter.class.getName() + this.hashCode());
-  }
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton().createOrGetFIFOScheduler(
+                AngularInterpreter.class.getName() + this.hashCode());
+    }
 }

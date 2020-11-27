@@ -17,36 +17,36 @@ limitations under the License.
 </div>
 
 <div class='btn-group'>
-  <button type="button"
-          class="btn btn-default btn-sm"
+  <button class="btn btn-default btn-sm"
           ng-class="{'active' : config.isXLabelStatus('default')}"
-          ng-click="config.changeXLabel('default')" >
+          ng-click="config.changeXLabel('default')"
+          type="button">
     Default
   </button>
 
-  <button type="button"
-          class="btn btn-default btn-sm"
+  <button class="btn btn-default btn-sm"
           ng-class="{'active' : config.isXLabelStatus('rotate')}"
-          ng-click="config.changeXLabel('rotate')" >
+          ng-click="config.changeXLabel('rotate')"
+          type="button">
     Rotate
   </button>
 
-  <button type="button"
-          class="btn btn-default btn-sm"
+  <button class="btn btn-default btn-sm"
           ng-class="{'active' : config.isXLabelStatus('hide')}"
-          ng-click="config.changeXLabel('hide')" >
+          ng-click="config.changeXLabel('hide')"
+          type="button">
     Hide
   </button>
   &nbsp;
 
-  <span style="line-height: 2.5;"
-        ng-show="config.isXLabelStatus('rotate')">
+  <span ng-show="config.isXLabelStatus('rotate')"
+        style="line-height: 2.5;">
           degree :
-    <input type="text" class="input-rotate"
-           placeholder="-45"
-           ng-model="config.rotate.degree"
+    <input class="input-rotate" ng-blur="config.setDegree(config.rotate.degree)"
            ng-enter="config.setDegree(config.rotate.degree)"
-           ng-blur="config.setDegree(config.rotate.degree)"
-           ng-pattern="/^-?[0-9]{1,3}$/" />
+           ng-model="config.rotate.degree"
+           ng-pattern="/^-?[0-9]{1,3}$/"
+           placeholder="-45"
+           type="text"/>
   </span>
 </div>

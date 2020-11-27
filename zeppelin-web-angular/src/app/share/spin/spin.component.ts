@@ -20,6 +20,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 })
 export class SpinComponent implements OnInit {
   @Input() transparent = false;
+
   constructor() {}
 
   ngOnInit() {}

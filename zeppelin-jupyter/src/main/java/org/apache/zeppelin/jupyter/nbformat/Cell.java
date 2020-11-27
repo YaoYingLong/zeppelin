@@ -23,24 +23,24 @@ import com.google.gson.annotations.SerializedName;
  */
 public abstract class Cell {
 
-  @SerializedName("cell_type")
-  private String cellType;
+    @SerializedName("cell_type")
+    private String cellType;
 
-  @SerializedName("metadata")
-  private CellMetadata metadata;
+    @SerializedName("metadata")
+    private CellMetadata metadata;
 
-  @SerializedName("source")
-  private Object source;
+    @SerializedName("source")
+    private Object source;
 
-  public String getCellType() {
-    return cellType;
-  }
+    public String getCellType() {
+        return cellType;
+    }
 
-  public CellMetadata getMetadata() {
-    return metadata;
-  }
+    public CellMetadata getMetadata() {
+        return metadata;
+    }
 
-  public Object getSource() {
-    return source;
-  }
+    public Object getSource() {
+        return source;
+    }
 }

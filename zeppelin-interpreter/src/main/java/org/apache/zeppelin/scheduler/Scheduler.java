@@ -21,26 +21,30 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 用于管理作业的生命周期包括查询，提交及取消工作
+ * <p>
  * Interface for scheduler. Scheduler is used for manage the lifecycle of job.
  * Including query, submit and cancel job.
- *
+ * Scheduler可以在Zeppelin Server和Interpreter Process中运行
+ * 例如RemoveScheduler在Zeppelin服务器端运行，而FIFOScheduler在解释器进程中运行。
+ * <p>
  * Scheduler can run both in Zeppelin Server and Interpreter Process. e.g. RemoveScheduler run
  * in Zeppelin Server side while FIFOScheduler run in Interpreter Process.
  */
 public interface Scheduler extends Runnable {
 
-  String getName();
+    String getName();
 
-  List<Job> getAllJobs();
+    List<Job> getAllJobs();
 
-  Job getJob(String jobId);
+    Job getJob(String jobId);
 
-  void submit(Job job);
+    void submit(Job job);
 
-  Job cancel(String jobId);
+    Job cancel(String jobId);
 
-  void stop();
+    void stop();
 
-  void stop(int stopTimeoutVal, TimeUnit stopTimeoutUnit);
+    void stop(int stopTimeoutVal, TimeUnit stopTimeoutUnit);
 
 }

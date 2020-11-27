@@ -1,6 +1,6 @@
 {
   "name": "zeppelin_horizontalbar",
-  "description" : "Horizontal Bar chart (example)",
+  "description": "Horizontal Bar chart (example)",
   "version": "1.0.0",
   "main": "horizontalbar",
   "author": "",

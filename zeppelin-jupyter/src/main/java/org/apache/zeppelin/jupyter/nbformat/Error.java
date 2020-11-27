@@ -28,36 +28,36 @@ import java.util.List;
  *
  */
 public class Error extends Output {
-  @SerializedName("ename")
-  private String ename;
+    @SerializedName("ename")
+    private String ename;
 
-  @SerializedName("evalue")
-  private String evalue;
+    @SerializedName("evalue")
+    private String evalue;
 
-  @SerializedName("traceback")
-  private List<String> traceback;
+    @SerializedName("traceback")
+    private List<String> traceback;
 
-  public String getEname() {
-    return ename;
-  }
+    public String getEname() {
+        return ename;
+    }
 
-  public String getEvalue() {
-    return evalue;
-  }
+    public String getEvalue() {
+        return evalue;
+    }
 
-  public List<String> getTraceback() {
-    return traceback;
-  }
+    public List<String> getTraceback() {
+        return traceback;
+    }
 
-  @Override
-  public ZeppelinOutputType getTypeOfZeppelin() {
-    return ZeppelinOutputType.TEXT;
-  }
+    @Override
+    public ZeppelinOutputType getTypeOfZeppelin() {
+        return ZeppelinOutputType.TEXT;
+    }
 
-  @Override
-  public TypeData toZeppelinResult() {
-    List<String> text = verifyEndOfLine(Arrays.asList(getEname(), getEvalue()));
-    String result = StringUtils.join(text, "");
-    return new TypeData(getTypeOfZeppelin().toString(), result);
-  }
+    @Override
+    public TypeData toZeppelinResult() {
+        List<String> text = verifyEndOfLine(Arrays.asList(getEname(), getEvalue()));
+        String result = StringUtils.join(text, "");
+        return new TypeData(getTypeOfZeppelin().toString(), result);
+    }
 }

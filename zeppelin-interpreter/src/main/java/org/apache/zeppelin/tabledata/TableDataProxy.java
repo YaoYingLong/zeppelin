@@ -24,24 +24,24 @@ import java.util.Iterator;
  * Proxy TableData for ResourcePool
  */
 public class TableDataProxy implements TableData {
-  private final Resource resource;
+    private final Resource resource;
 
-  public TableDataProxy(Resource tableDataRemoteResource) {
-    this.resource = tableDataRemoteResource;
-  }
+    public TableDataProxy(Resource tableDataRemoteResource) {
+        this.resource = tableDataRemoteResource;
+    }
 
-  @Override
-  public ColumnDef[] columns() {
-    return (ColumnDef[]) resource.invokeMethod(
-        "columns");
-  }
+    @Override
+    public ColumnDef[] columns() {
+        return (ColumnDef[]) resource.invokeMethod(
+                "columns");
+    }
 
-  @Override
-  public Iterator<Row> rows() {
-    String resourceName = resource.getResourceId().getName() + ".rows";
-    Resource rows = resource.invokeMethod("rows", resourceName);
+    @Override
+    public Iterator<Row> rows() {
+        String resourceName = resource.getResourceId().getName() + ".rows";
+        Resource rows = resource.invokeMethod("rows", resourceName);
 
-    ProxyRowIterator it = new ProxyRowIterator(rows);
-    return it;
-  }
+        ProxyRowIterator it = new ProxyRowIterator(rows);
+        return it;
+    }
 }

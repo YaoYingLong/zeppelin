@@ -20,6 +20,7 @@ package org.apache.zeppelin.notebook.scheduler;
 import java.util.Set;
 
 public interface SchedulerService {
-  boolean refreshCron(String noteId);
-  Set<?> getJobs();
+    boolean refreshCron(String noteId);
+
+    Set<?> getJobs();
 }

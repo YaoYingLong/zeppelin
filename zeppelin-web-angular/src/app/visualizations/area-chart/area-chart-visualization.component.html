@@ -19,11 +19,11 @@
     mode="stackedAreaChart">
   </zeppelin-visualization-x-axis-setting>
 </div>
-<div nz-form nzLayout="inline" class="area-chart-setting">
+<div class="area-chart-setting" nz-form nzLayout="inline">
   <nz-form-item>
     <nz-form-label>View</nz-form-label>
     <nz-form-control>
-      <nz-radio-group [(ngModel)]="style" (ngModelChange)="viewChange()" [nzButtonStyle]="'solid'">
+      <nz-radio-group (ngModelChange)="viewChange()" [(ngModel)]="style" [nzButtonStyle]="'solid'">
         <label nz-radio-button nzValue="stack">Stacked</label>
         <label nz-radio-button nzValue="stream">Stream</label>
         <label nz-radio-button nzValue="expand">Expanded</label>

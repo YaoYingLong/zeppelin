@@ -41,6 +41,13 @@ export class InterpreterComponent implements OnInit, OnDestroy {
   availableInterpreters: Interpreter[] = [];
   filteredInterpreterSettings: Interpreter[] = [];
 
+  constructor(
+    private interpreterService: InterpreterService,
+    private cdr: ChangeDetectorRef,
+    private nzModalService: NzModalService,
+    private nzMessageService: NzMessageService
+  ) {}
+
   onSearchChange(value: string) {
     this.search$.next(value);
   }
@@ -163,13 +170,6 @@ export class InterpreterComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
   }
-
-  constructor(
-    private interpreterService: InterpreterService,
-    private cdr: ChangeDetectorRef,
-    private nzModalService: NzModalService,
-    private nzMessageService: NzMessageService
-  ) {}
 
   ngOnInit() {
     this.getPropertyTypes();

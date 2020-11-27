@@ -35,7 +35,7 @@ limitations under the License.
 
       <div class="col-md-12">
         <h3 class="interpreter-title">{{repo.name}}</h3>
-        <span style="float:right" ng-show="repo.settings.length > 0">
+        <span ng-show="repo.settings.length > 0" style="float:right">
           <button class="btn btn-default btn-xs"
                   ng-click="valueform.$show();">
             <span class="fa fa-pencil"></span> edit</button>
@@ -47,25 +47,26 @@ limitations under the License.
         <h5>Settings</h5>
         <table class="table table-striped">
           <thead>
-            <tr>
-              <th style="width:40%">name</th>
-              <th style="width:60%">value</th>
-            </tr>
+          <tr>
+            <th style="width:40%">name</th>
+            <th style="width:60%">value</th>
+          </tr>
           </thead>
-          <tr ng-repeat="setting in repo.settings" >
+          <tr ng-repeat="setting in repo.settings">
             <td ng-bind="setting.name"></td>
             <td>
               <span class="btn-group">
                 <span ng-show="setting.type === 'DROPDOWN'">
-                  <span editable-select="setting.selected"
-                          e-name="{{setting.name}}"
-                          e-ng-options="s.value as s.name for s in setting.value"
-                          class="selectpicker" ng-disabled="!valueform.$visible" e-form="valueform">
+                  <span class="selectpicker"
+                        e-form="valueform"
+                        e-name="{{setting.name}}"
+                        e-ng-options="s.value as s.name for s in setting.value" editable-select="setting.selected" ng-disabled="!valueform.$visible">
                           {{noterepo.showDropdownSelected(setting)}}
                   </span>
                 </span>
                 <span ng-show="setting.type === 'INPUT'">
-                  <span editable-textarea="setting.selected" e-name="{{setting.name}}" e-form="valueform" e-msd-elastic e-cols="100">
+                  <span e-cols="100" e-form="valueform" e-msd-elastic e-name="{{setting.name}}"
+                        editable-textarea="setting.selected">
                     {{setting.selected | breakFilter}}
                   </span>
                 </span>
@@ -75,22 +76,22 @@ limitations under the License.
         </table>
       </div>
     </div>
-    <span style="float:right" ng-show="valueform.$visible">
+    <span ng-show="valueform.$visible" style="float:right">
       <form editable-form name="valueform"
-            onbeforesave="noterepo.saveNotebookRepo(valueform, repo, $data)"
-            ng-show="valueform.$visible">
-        <button type="submit" class="btn btn-primary btn-xs">
+            ng-show="valueform.$visible"
+            onbeforesave="noterepo.saveNotebookRepo(valueform, repo, $data)">
+        <button class="btn btn-primary btn-xs" type="submit">
           <span class="fa fa-check"></span> Save
         </button>
-        <button type="button" class="btn btn-default btn-xs"
+        <button class="btn btn-default btn-xs" ng-click="valueform.$cancel();"
                 ng-disabled="valueform.$waiting"
-                ng-click="valueform.$cancel();">
+                type="button">
           <span class="fa fa-remove"></span> Cancel
         </button>
       </form>
     </span>
     <div class="row interpreter">
-      <div ng-show="repo.settings.length === 0 || valueform.$hidden" class="col-md-12 gray40-message">
+      <div class="col-md-12 gray40-message" ng-show="repo.settings.length === 0 || valueform.$hidden">
         <em>Currently there are no settings for this Notebook Repository</em>
       </div>
     </div>

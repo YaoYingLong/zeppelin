@@ -17,153 +17,151 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.conf.ZeppelinConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
-import org.apache.zeppelin.conf.ZeppelinConfiguration;
 
 /**
  *
  */
 public class InterpreterOption {
-  public static final transient String SHARED = "shared";
-  public static final transient String SCOPED = "scoped";
-  public static final transient String ISOLATED = "isolated";
-  private static ZeppelinConfiguration conf =  ZeppelinConfiguration.create();
+    public static final transient String SHARED = "shared";
+    public static final transient String SCOPED = "scoped";
+    public static final transient String ISOLATED = "isolated";
+    private static ZeppelinConfiguration conf = ZeppelinConfiguration.create();
 
-  // always set it as true, keep this field just for backward compatibility
-  boolean remote = true;
-  String host = null;
-  int port = -1;
+    // always set it as true, keep this field just for backward compatibility
+    boolean remote = true;
+    String host = null;
+    int port = -1;
 
-  String perNote;
-  String perUser;
+    String perNote;
+    String perUser;
 
-  boolean isExistingProcess;
-  boolean setPermission;
-  List<String> owners;
-  boolean isUserImpersonate;
+    boolean isExistingProcess;
+    boolean setPermission;
+    List<String> owners;
+    boolean isUserImpersonate;
 
-  public boolean isExistingProcess() {
-    return isExistingProcess;
-  }
-
-  public void setExistingProcess(boolean isExistingProcess) {
-    this.isExistingProcess = isExistingProcess;
-  }
-
-  public void setPort(int port) {
-    this.port = port;
-  }
-
-  public void setHost(String host) {
-    this.host = host;
-  }
-
-  public boolean permissionIsSet() {
-    return setPermission;
-  }
-
-  public void setUserPermission(boolean setPermission) {
-    this.setPermission = setPermission;
-  }
-
-  public List<String> getOwners() {
-    if (null != owners && conf.isUsernameForceLowerCase()) {
-      List<String> lowerCaseUsers = new ArrayList<String>();
-      for (String owner : owners) {
-        lowerCaseUsers.add(owner.toLowerCase());
-      }
-      return lowerCaseUsers;
-    }
-    return owners;
-  }
-
-  public boolean isUserImpersonate() {
-    return isUserImpersonate;
-  }
-
-  public void setUserImpersonate(boolean userImpersonate) {
-    isUserImpersonate = userImpersonate;
-  }
-
-  public InterpreterOption() {
-  }
-
-  public InterpreterOption(String perUser, String perNote) {
-    if (perUser == null) {
-      throw new NullPointerException("perUser can not be null.");
-    }
-    if (perNote == null) {
-      throw new NullPointerException("perNote can not be null.");
+    public InterpreterOption() {
     }
 
-    this.perUser = perUser;
-    this.perNote = perNote;
-  }
+    public InterpreterOption(String perUser, String perNote) {
+        if (perUser == null) {
+            throw new NullPointerException("perUser can not be null.");
+        }
+        if (perNote == null) {
+            throw new NullPointerException("perNote can not be null.");
+        }
 
-  public static InterpreterOption fromInterpreterOption(InterpreterOption other) {
-    InterpreterOption option = new InterpreterOption();
-    option.remote = other.remote;
-    option.host = other.host;
-    option.port = other.port;
-    option.perNote = other.perNote;
-    option.perUser = other.perUser;
-    option.isExistingProcess = other.isExistingProcess;
-    option.setPermission = other.setPermission;
-    option.owners = (null == other.owners) ?
-        new ArrayList<String>() : new ArrayList<>(other.owners);
+        this.perUser = perUser;
+        this.perNote = perNote;
+    }
 
-    return option;
-  }
+    public static InterpreterOption fromInterpreterOption(InterpreterOption other) {
+        InterpreterOption option = new InterpreterOption();
+        option.remote = other.remote;
+        option.host = other.host;
+        option.port = other.port;
+        option.perNote = other.perNote;
+        option.perUser = other.perUser;
+        option.isExistingProcess = other.isExistingProcess;
+        option.setPermission = other.setPermission;
+        option.owners = (null == other.owners) ?
+                new ArrayList<String>() : new ArrayList<>(other.owners);
 
-  public String getHost() {
-    return host;
-  }
+        return option;
+    }
 
-  public int getPort() {
-    return port;
-  }
+    public boolean isExistingProcess() {
+        return isExistingProcess;
+    }
 
+    public void setExistingProcess(boolean isExistingProcess) {
+        this.isExistingProcess = isExistingProcess;
+    }
 
-  public boolean perUserShared() {
-    return SHARED.equals(perUser);
-  }
+    public boolean permissionIsSet() {
+        return setPermission;
+    }
 
-  public boolean perUserScoped() {
-    return SCOPED.equals(perUser);
-  }
+    public void setUserPermission(boolean setPermission) {
+        this.setPermission = setPermission;
+    }
 
-  public boolean perUserIsolated() {
-    return ISOLATED.equals(perUser);
-  }
+    public List<String> getOwners() {
+        if (null != owners && conf.isUsernameForceLowerCase()) {
+            List<String> lowerCaseUsers = new ArrayList<String>();
+            for (String owner : owners) {
+                lowerCaseUsers.add(owner.toLowerCase());
+            }
+            return lowerCaseUsers;
+        }
+        return owners;
+    }
 
-  public boolean perNoteShared() {
-    return SHARED.equals(perNote);
-  }
+    public boolean isUserImpersonate() {
+        return isUserImpersonate;
+    }
 
-  public boolean perNoteScoped() {
-    return SCOPED.equals(perNote);
-  }
+    public void setUserImpersonate(boolean userImpersonate) {
+        isUserImpersonate = userImpersonate;
+    }
 
-  public boolean perNoteIsolated() {
-    return ISOLATED.equals(perNote);
-  }
+    public String getHost() {
+        return host;
+    }
 
-  public boolean isIsolated() {
-    return perUserIsolated() || perNoteIsolated();
-  }
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-  public boolean isSession() {
-    return perUserScoped() || perNoteScoped();
-  }
+    public int getPort() {
+        return port;
+    }
 
-  public void setPerNote(String perNote) {
-    this.perNote = perNote;
-  }
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-  public void setPerUser(String perUser) {
-    this.perUser = perUser;
-  }
+    public boolean perUserShared() {
+        return SHARED.equals(perUser);
+    }
+
+    public boolean perUserScoped() {
+        return SCOPED.equals(perUser);
+    }
+
+    public boolean perUserIsolated() {
+        return ISOLATED.equals(perUser);
+    }
+
+    public boolean perNoteShared() {
+        return SHARED.equals(perNote);
+    }
+
+    public boolean perNoteScoped() {
+        return SCOPED.equals(perNote);
+    }
+
+    public boolean perNoteIsolated() {
+        return ISOLATED.equals(perNote);
+    }
+
+    public boolean isIsolated() {
+        return perUserIsolated() || perNoteIsolated();
+    }
+
+    public boolean isSession() {
+        return perUserScoped() || perNoteScoped();
+    }
+
+    public void setPerNote(String perNote) {
+        this.perNote = perNote;
+    }
+
+    public void setPerUser(String perUser) {
+        this.perUser = perUser;
+    }
 }

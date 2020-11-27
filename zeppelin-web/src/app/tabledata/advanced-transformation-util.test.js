@@ -22,7 +22,13 @@ const MockParameter = {
   'stringParam1': {valueType: 'string', defaultValue: '', description: ''},
   'stringParam2': {valueType: 'string', defaultValue: '', description: '', widget: 'input'},
   'boolParam': {valueType: 'boolean', defaultValue: false, description: '', widget: 'checkbox'},
-  'optionParam': {valueType: 'string', defaultValue: 'line', description: '', widget: 'option', optionValues: ['line', 'smoothedLine']},
+  'optionParam': {
+    valueType: 'string',
+    defaultValue: 'line',
+    description: '',
+    widget: 'option',
+    optionValues: ['line', 'smoothedLine']
+  },
 };
 /* eslint-enable max-len */
 
@@ -367,7 +373,7 @@ describe('advanced-transformation-util', () => {
     });
 
     it('should remove duplicated axis names in config when axis is not aggregator', () => {
-      const addColumn = function(config, col) {
+      const addColumn = function (config, col) {
         const axis = Util.getCurrentChartAxis(config)['groupAxis'];
         axis.push(col);
         const axisSpecs = Util.getCurrentChartAxisSpecs(config);
@@ -382,7 +388,7 @@ describe('advanced-transformation-util', () => {
     });
 
     it('should remove duplicated axis names in config when axis is aggregator', () => {
-      const addColumn = function(config, value) {
+      const addColumn = function (config, value) {
         const axis = Util.getCurrentChartAxis(config)['limitedAggrAxis'];
         axis.push(value);
         const axisSpecs = Util.getCurrentChartAxisSpecs(config);
@@ -403,7 +409,7 @@ describe('advanced-transformation-util', () => {
     const spec = JSON.parse(JSON.stringify(MockSpec));
     Util.initializeConfig(config, spec);
 
-    const addColumn = function(config, value) {
+    const addColumn = function (config, value) {
       const axis = Util.getCurrentChartAxis(config)['limitedAggrAxis'];
       axis.push(value);
       const axisSpecs = Util.getCurrentChartAxisSpecs(config);
@@ -1485,8 +1491,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual(['-88', '106', '4789', '9374']);
         expect(key1ColumnName).toEqual('balance');
@@ -1516,8 +1524,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual([]);
         expect(key1ColumnName).toEqual('');
@@ -1548,8 +1558,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual(['-88', '106', '4789', '9374']);
         expect(key1ColumnName).toEqual('balance');
@@ -1580,8 +1592,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual([]);
         expect(key1ColumnName).toEqual('');
@@ -1613,8 +1627,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual(['-1', '147', '339']);
         expect(key1ColumnName).toEqual('pdays');
@@ -1653,8 +1669,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual(['-1', '147', '339']);
         expect(key1ColumnName).toEqual('pdays');
@@ -1694,8 +1712,10 @@ describe('advanced-transformation-util', () => {
         const axis = config.axis[chart];
         const transformer = Util.getTransformer(config, tableDataRows, axisSpecs, axis).transformer;
 
-        const {rows, key1Names, key1ColumnName,
-          key2Names, key2ColumnName, groupNames, selectors} = transformer();
+        const {
+          rows, key1Names, key1ColumnName,
+          key2Names, key2ColumnName, groupNames, selectors
+        } = transformer();
 
         expect(key1Names).toEqual(['-1', '147', '339']);
         expect(key1ColumnName).toEqual('pdays');

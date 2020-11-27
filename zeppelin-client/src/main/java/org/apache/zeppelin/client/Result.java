@@ -25,32 +25,32 @@ import kong.unirest.json.JSONObject;
  * multiple Results.
  */
 public class Result {
-  private String type;
-  private String data;
+    private String type;
+    private String data;
 
-  public Result(JSONObject jsonObject) {
-    this.type = jsonObject.getString("type");
-    this.data = jsonObject.getString("data");
-  }
+    public Result(JSONObject jsonObject) {
+        this.type = jsonObject.getString("type");
+        this.data = jsonObject.getString("data");
+    }
 
-  public Result(String type, String data) {
-    this.type = type;
-    this.data = data;
-  }
+    public Result(String type, String data) {
+        this.type = type;
+        this.data = data;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public String getData() {
-    return data;
-  }
+    public String getData() {
+        return data;
+    }
 
-  @Override
-  public String toString() {
-    return "Result{" +
-            "type='" + type + '\'' +
-            ", data='" + data + '\'' +
-            '}';
-  }
+    @Override
+    public String toString() {
+        return "Result{" +
+                "type='" + type + '\'' +
+                ", data='" + data + '\'' +
+                '}';
+    }
 }

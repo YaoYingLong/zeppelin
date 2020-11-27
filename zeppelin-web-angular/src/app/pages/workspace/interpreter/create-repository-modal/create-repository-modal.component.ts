@@ -31,6 +31,14 @@ export class InterpreterCreateRepositoryModalComponent extends DestroyHookCompon
   submitting = false;
   urlProtocol = 'http://';
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private nzModalRef: NzModalRef,
+    private interpreterService: InterpreterService
+  ) {
+    super();
+  }
+
   handleCancel() {
     this.nzModalRef.close();
   }
@@ -48,14 +56,6 @@ export class InterpreterCreateRepositoryModalComponent extends DestroyHookCompon
       .subscribe(() => {
         this.nzModalRef.close('Done');
       });
-  }
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private nzModalRef: NzModalRef,
-    private interpreterService: InterpreterService
-  ) {
-    super();
   }
 
   ngOnInit() {

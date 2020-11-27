@@ -38,6 +38,8 @@ export class VisualizationScatterSettingComponent implements OnInit {
     size: []
   };
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   // tslint:disable-next-line
   drop(event: CdkDragDrop<any[]>) {
     this.clean(event.container.data, false);
@@ -72,8 +74,6 @@ export class VisualizationScatterSettingComponent implements OnInit {
     scatterSetting.group = this.field.group[0];
     this.visualization.configChange$.next(this.config);
   }
-
-  constructor(private cdr: ChangeDetectorRef) {}
 
   init() {
     this.tableData = this.visualization.getTransformation().getTableData() as TableData;

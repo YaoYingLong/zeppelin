@@ -16,6 +16,8 @@
 from __future__ import print_function
 
 import jupyter_client
+import kernel_pb2
+import kernel_pb2_grpc
 import os
 import sys
 import threading
@@ -23,8 +25,6 @@ import time
 from concurrent import futures
 
 import grpc
-import kernel_pb2
-import kernel_pb2_grpc
 
 is_py2 = sys.version[0] == '2'
 if is_py2:
@@ -54,8 +54,9 @@ class KernelServer(kernel_pb2_grpc.JupyterKernelServicer):
         # print("execute code:\n")
         # print(request.code.encode('utf-8'))
         sys.stdout.flush()
-        stream_reply_queue = queue.Queue(maxsize = 30)
+        stream_reply_queue = queue.Queue(maxsize=30)
         payload_reply = []
+
         def _output_hook(msg):
             # print("msg: " + str(msg))
             msg_type = msg['header']['msg_type']
@@ -101,12 +102,13 @@ class KernelServer(kernel_pb2_grpc.JupyterKernelServicer):
             if outType is not None:
                 stream_reply_queue.put(
                     kernel_pb2.ExecuteResponse(status=outStatus,
-                                                type=outType,
-                                                output=output))
+                                               type=outType,
+                                               output=output))
+
         def execute_worker():
             reply = self._kc.execute_interactive(request.code,
-                                          output_hook=_output_hook,
-                                          timeout=None)
+                                                 output_hook=_output_hook,
+                                                 timeout=None)
             payload_reply.append(reply)
 
         t = threading.Thread(name="ConsumerThread", target=execute_worker)
@@ -128,8 +130,8 @@ class KernelServer(kernel_pb2_grpc.JupyterKernelServicer):
             # if kernel is not alive or thread is still alive, it means that we face an issue.
             if not self.isKernelAlive() or t.is_alive():
                 yield kernel_pb2.ExecuteResponse(status=kernel_pb2.ERROR,
-                                                  type=kernel_pb2.TEXT,
-                                                  output="Ipython kernel has been stopped. Please check logs. It might be because of an out of memory issue.")
+                                                 type=kernel_pb2.TEXT,
+                                                 output="Ipython kernel has been stopped. Please check logs. It might be because of an out of memory issue.")
         if payload_reply:
             result = []
             for payload in payload_reply[0]['content']['payload']:
@@ -137,8 +139,8 @@ class KernelServer(kernel_pb2_grpc.JupyterKernelServicer):
                     result.append(payload['data']['text/plain'])
             if result:
                 yield kernel_pb2.ExecuteResponse(status=kernel_pb2.SUCCESS,
-                                                  type=kernel_pb2.TEXT,
-                                                  output='\n'.join(result))
+                                                 type=kernel_pb2.TEXT,
+                                                 output='\n'.join(result))
 
     def cancel(self, request, context):
         self._km.interrupt_kernel()
@@ -150,7 +152,7 @@ class KernelServer(kernel_pb2_grpc.JupyterKernelServicer):
         return kernel_pb2.CompletionResponse(matches=reply['content']['matches'])
 
     def status(self, request, context):
-        return kernel_pb2.StatusResponse(status = self._status)
+        return kernel_pb2.StatusResponse(status=self._status)
 
     def isKernelAlive(self):
         return self._km.is_alive()
@@ -181,6 +183,7 @@ def serve(kernel_name, port):
         server.stop(2)
         kernel.terminate()
         os._exit(0)
+
 
 if __name__ == '__main__':
     serve(sys.argv[1], sys.argv[2])

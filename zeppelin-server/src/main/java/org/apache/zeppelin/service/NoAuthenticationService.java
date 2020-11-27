@@ -19,52 +19,52 @@ package org.apache.zeppelin.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-
 import org.apache.shiro.realm.Realm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 public class NoAuthenticationService implements AuthenticationService {
-  private static Logger logger = LoggerFactory.getLogger(NoAuthenticationService.class);
-  private final String ANONYMOUS = "anonymous";
+    private static Logger logger = LoggerFactory.getLogger(NoAuthenticationService.class);
+    private final String ANONYMOUS = "anonymous";
 
-  @Inject
-  public NoAuthenticationService() {
-    logger.info("NoAuthenticationService is initialized");
-  }
+    @Inject
+    public NoAuthenticationService() {
+        logger.info("NoAuthenticationService is initialized");
+    }
 
-  @Override
-  public String getPrincipal() {
-    return ANONYMOUS;
-  }
+    @Override
+    public String getPrincipal() {
+        return ANONYMOUS;
+    }
 
-  @Override
-  public Set<String> getAssociatedRoles() {
-    return Sets.newHashSet();
-  }
+    @Override
+    public Set<String> getAssociatedRoles() {
+        return Sets.newHashSet();
+    }
 
-  @Override
-  public Collection<Realm> getRealmsList() {
-    return Collections.emptyList();
-  }
+    @Override
+    public Collection<Realm> getRealmsList() {
+        return Collections.emptyList();
+    }
 
-  @Override
-  public boolean isAuthenticated() {
-    return false;
-  }
+    @Override
+    public boolean isAuthenticated() {
+        return false;
+    }
 
-  @Override
-  public List<String> getMatchedUsers(String searchText, int numUsersToFetch) {
-    return Lists.newArrayList();
-  }
+    @Override
+    public List<String> getMatchedUsers(String searchText, int numUsersToFetch) {
+        return Lists.newArrayList();
+    }
 
-  @Override
-  public List<String> getMatchedRoles() {
-    return Lists.newArrayList();
-  }
+    @Override
+    public List<String> getMatchedRoles() {
+        return Lists.newArrayList();
+    }
 }

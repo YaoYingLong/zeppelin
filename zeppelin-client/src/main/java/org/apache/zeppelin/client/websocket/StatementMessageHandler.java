@@ -22,23 +22,23 @@ package org.apache.zeppelin.client.websocket;
  */
 public interface StatementMessageHandler {
 
-  /**
-   * Invoked when there's new statement output appended.
-   *
-   * @param statementId
-   * @param index
-   * @param output
-   */
-  void onStatementAppendOutput(String statementId, int index, String output);
+    /**
+     * Invoked when there's new statement output appended.
+     *
+     * @param statementId
+     * @param index
+     * @param output
+     */
+    void onStatementAppendOutput(String statementId, int index, String output);
 
-  /**
-   * Invoked when statement's output is updated.
-   *
-   * @param statementId
-   * @param index
-   * @param type
-   * @param output
-   */
-  void onStatementUpdateOutput(String statementId, int index, String type, String output);
+    /**
+     * Invoked when statement's output is updated.
+     *
+     * @param statementId
+     * @param index
+     * @param type
+     * @param output
+     */
+    void onStatementUpdateOutput(String statementId, int index, String type, String output);
 
 }

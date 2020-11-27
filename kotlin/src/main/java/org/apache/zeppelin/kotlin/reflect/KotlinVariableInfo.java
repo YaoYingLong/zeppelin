@@ -17,44 +17,45 @@
 
 package org.apache.zeppelin.kotlin.reflect;
 
-import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.shorten;
 import kotlin.reflect.KProperty;
 
+import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.shorten;
+
 public class KotlinVariableInfo {
-  private final Object value;
-  private final KProperty<?> descriptor;
+    private final Object value;
+    private final KProperty<?> descriptor;
 
-  public KotlinVariableInfo(Object value, KProperty<?> descriptor) {
-    this.value = value;
-    this.descriptor = descriptor;
-  }
-
-  public Object getValue() {
-    return value;
-  }
-
-  public KProperty<?> getDescriptor() {
-    return descriptor;
-  }
-
-  public String getName() {
-    return descriptor.getName();
-  }
-
-  public String getType() {
-    return descriptor.getReturnType().toString();
-  }
-
-  public String toString(boolean shortenTypes) {
-    String type = getType();
-    if (shortenTypes) {
-      type = shorten(type);
+    public KotlinVariableInfo(Object value, KProperty<?> descriptor) {
+        this.value = value;
+        this.descriptor = descriptor;
     }
-    return getName() + ": " + type + " = " + getValue();
-  }
 
-  @Override
-  public String toString() {
-    return toString(false);
-  }
+    public Object getValue() {
+        return value;
+    }
+
+    public KProperty<?> getDescriptor() {
+        return descriptor;
+    }
+
+    public String getName() {
+        return descriptor.getName();
+    }
+
+    public String getType() {
+        return descriptor.getReturnType().toString();
+    }
+
+    public String toString(boolean shortenTypes) {
+        String type = getType();
+        if (shortenTypes) {
+            type = shorten(type);
+        }
+        return getName() + ": " + type + " = " + getValue();
+    }
+
+    @Override
+    public String toString() {
+        return toString(false);
+    }
 }

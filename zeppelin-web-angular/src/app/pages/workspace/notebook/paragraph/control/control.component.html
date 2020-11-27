@@ -10,72 +10,72 @@
   ~ limitations under the License.
   -->
 
-<div class="job-link" *ngIf="runtimeInfos && runtimeInfos.jobUrl">
+<div *ngIf="runtimeInfos && runtimeInfos.jobUrl" class="job-link">
   <a [attr.href]="runtimeInfos.jobUrl.values[0].jobUrl"
-     target="_blank"
+     [nzTitle]="runtimeInfos.jobUrl.tooltip"
      nz-tooltip
-     [nzTitle]="runtimeInfos.jobUrl.tooltip">
-    <i nz-icon nzType="build" nzTheme="fill"></i>
+     target="_blank">
+    <i nz-icon nzTheme="fill" nzType="build"></i>
     {{runtimeInfos.jobUrl.label}}
   </a>
 </div>
 <div class="status">{{status}}</div>
-<div class="progress" *ngIf="status === 'RUNNING'">{{progress}}%</div>
+<div *ngIf="status === 'RUNNING'" class="progress">{{progress}}%</div>
 <ng-container *ngIf="!revisionView">
   <a class="operate">
-    <i nz-icon
+    <i (click)="runParagraph.emit()"
        *ngIf="status!=='RUNNING' && status!=='PENDING' && enabled"
-       (click)="runParagraph.emit()"
-       nzType="play-circle"
        class="run-para"
-       nzTheme="outline"></i>
-    <i nz-icon
+       nz-icon
+       nzTheme="outline"
+       nzType="play-circle"></i>
+    <i (click)="cancelParagraph.emit()"
        *ngIf="status=='RUNNING' || status=='PENDING'"
-       (click)="cancelParagraph.emit()"
        class="cancel-para"
-       nzType="pause-circle"
-       nzTheme="outline"></i>
+       nz-icon
+       nzTheme="outline"
+       nzType="pause-circle"></i>
   </a>
   <a (click)="toggleEditor()">
-    <i nz-icon [nzType]="editorHide ? 'fullscreen' : 'fullscreen-exit'" nzTheme="outline"></i>
+    <i [nzType]="editorHide ? 'fullscreen' : 'fullscreen-exit'" nz-icon nzTheme="outline"></i>
   </a>
   <a (click)="toggleOutput()">
-    <i nz-icon [nzType]="tableHide ? 'book' : 'read'" nzTheme="outline"></i>
+    <i [nzType]="tableHide ? 'book' : 'read'" nz-icon nzTheme="outline"></i>
   </a>
-  <a nz-dropdown [nzDropdownMenu]="menu" [nzTrigger]="'click'" [nzClickHide]="false" [(nzVisible)]="dropdownVisible">
-    <i nz-icon nzType="setting" nzTheme="outline"></i>
+  <a [(nzVisible)]="dropdownVisible" [nzClickHide]="false" [nzDropdownMenu]="menu" [nzTrigger]="'click'" nz-dropdown>
+    <i nz-icon nzTheme="outline" nzType="setting"></i>
   </a>
   <nz-dropdown-menu #menu="nzDropdownMenu">
-    <ul nz-menu class="setting-menu">
-      <li nz-menu-item class="paragraph-id">
+    <ul class="setting-menu" nz-menu>
+      <li class="paragraph-id" nz-menu-item>
         <a (click)="copyClipboard(pid)">{{ pid }}</a>
       </li>
       <li nz-menu-divider></li>
-      <li nz-menu-item *ngIf="runOnSelectionChange == true || runOnSelectionChange == false" class="list-item">
-        <span><i nz-icon nzType="filter" nzTheme="outline"></i> Run on selection change</span>
-        <span><nz-switch nzSize="small"
+      <li *ngIf="runOnSelectionChange == true || runOnSelectionChange == false" class="list-item" nz-menu-item>
+        <span><i nz-icon nzTheme="outline" nzType="filter"></i> Run on selection change</span>
+        <span><nz-switch (ngModelChange)="toggleRunOnSelectionChange()"
                          [ngModel]="runOnSelectionChange"
-                         (ngModelChange)="toggleRunOnSelectionChange()"></nz-switch></span>
+                         nzSize="small"></nz-switch></span>
       </li>
-      <li nz-menu-item class="list-item">
-        <span><i nz-icon nzType="gateway" nzTheme="outline"></i> Width</span>
+      <li class="list-item" nz-menu-item>
+        <span><i nz-icon nzTheme="outline" nzType="gateway"></i> Width</span>
         <span>
-          <select [ngModel]="colWidth" (ngModelChange)="changeColWidth($event)">
-            <option [value]="col" [label]="col" *ngFor="let col of colWidthOption"></option>
+          <select (ngModelChange)="changeColWidth($event)" [ngModel]="colWidth">
+            <option *ngFor="let col of colWidthOption" [label]="col" [value]="col"></option>
           </select>
         </span>
       </li>
-      <li nz-menu-item class="list-item">
-        <span><i nz-icon nzType="font-size" nzTheme="outline"></i> Font size</span>
+      <li class="list-item" nz-menu-item>
+        <span><i nz-icon nzTheme="outline" nzType="font-size"></i> Font size</span>
         <span>
-          <select [ngModel]="fontSize" (ngModelChange)="changeFontSize($event)">
-            <option [value]="size" [label]="size" *ngFor="let size of fontSizeOption"></option>
+          <select (ngModelChange)="changeFontSize($event)" [ngModel]="fontSize">
+            <option *ngFor="let size of fontSizeOption" [label]="size" [value]="size"></option>
           </select>
         </span>
       </li>
       <ng-container *ngFor="let menu of listOfMenu">
-        <li nz-menu-item class="list-item" [nzDisabled]="menu.disabled" *ngIf="menu.show" (click)="menu.trigger()">
-          <span><i nz-icon [nzType]="menu.icon" nzTheme="outline"></i>
+        <li (click)="menu.trigger()" *ngIf="menu.show" [nzDisabled]="menu.disabled" class="list-item" nz-menu-item>
+          <span><i [nzType]="menu.icon" nz-icon nzTheme="outline"></i>
             {{menu.label}}</span>
           <span class="short-cut">{{menu.shortCut}}</span>
         </li>

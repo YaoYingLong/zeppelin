@@ -11,16 +11,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div id="noteCreateModal" class="modal fade" role="dialog"
-     modalvisible previsiblecallback="noteCreateCtrl.preVisible"
-     targetinput="noteName" tabindex="-1">
+<div class="modal fade" id="noteCreateModal" modalvisible
+     previsiblecallback="noteCreateCtrl.preVisible" role="dialog"
+     tabindex="-1" targetinput="noteName">
   <div class="modal-dialog">
 
     <!-- modal content-->
     <div class="modal-content" id="NoteCreateCtrl">
       <!-- modal header -->
       <div class="modal-header modal-header-note-name">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button class="close" data-dismiss="modal" type="button">&times;</button>
         <h4 class="modal-title" ng-show="!noteCreateCtrl.clone">Create New Note</h4>
         <h4 class="modal-title" ng-show="noteCreateCtrl.clone">Clone Note</h4>
       </div>
@@ -31,17 +31,17 @@ limitations under the License.
           <!-- note name -->
           <div>
             <label for="noteName">Note Name</label>
-            <input placeholder="Insert Note Name" type="text"
-                   class="form-control note-name-create-input"
-                   id="noteName" ng-model="note.notename"
-                   ng-enter="noteCreateCtrl.handleNameEnter()" />
+            <input class="form-control note-name-create-input" id="noteName"
+                   ng-enter="noteCreateCtrl.handleNameEnter()"
+                   ng-model="note.notename" placeholder="Insert Note Name"
+                   type="text"/>
           </div>
           <!-- default interpreter -->
           <div class="btn-group default-interpreter-select" ng-show="!noteCreateCtrl.clone">
             <label for="defaultInterpreter">Default Interpreter</label>
-            <select id="defaultInterpreter"
+            <select class="form-control"
+                    id="defaultInterpreter"
                     name="defaultInterpreter"
-                    class="form-control"
                     ng-model="note.defaultInterpreter"
                     ng-options="option.name for option in interpreterSettings">
             </select>
@@ -54,9 +54,9 @@ limitations under the License.
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" id="createNoteButton"
-                class="btn btn-primary"
-                data-dismiss="modal" ng-click="noteCreateCtrl.createNote()">
+        <button class="btn btn-primary" data-dismiss="modal"
+                id="createNoteButton"
+                ng-click="noteCreateCtrl.createNote()" type="button">
           <span ng-show="!noteCreateCtrl.clone">Create</span>
           <span ng-show="noteCreateCtrl.clone">Clone</span>
         </button>

@@ -17,6 +17,7 @@
 package org.apache.zeppelin.jupyter.zformat;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -24,25 +25,25 @@ import java.util.List;
  */
 public class Note {
 
-  @SerializedName("name")
-  private String name;
+    @SerializedName("name")
+    private String name;
 
-  @SerializedName("paragraphs")
-  private List<Paragraph> paragraphs;
+    @SerializedName("paragraphs")
+    private List<Paragraph> paragraphs;
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public List<Paragraph> getParagraphs() {
-    return paragraphs;
-  }
+    public List<Paragraph> getParagraphs() {
+        return paragraphs;
+    }
 
-  public void setParagraphs(List<Paragraph> paragraphs) {
-    this.paragraphs = paragraphs;
-  }
+    public void setParagraphs(List<Paragraph> paragraphs) {
+        this.paragraphs = paragraphs;
+    }
 }

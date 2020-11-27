@@ -25,13 +25,20 @@ import { InterpreterService, MessageService } from '@zeppelin/services';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotebookInterpreterBindingComponent {
-  private restarting = false;
   @Input() noteId: string;
   @Input() interpreterBindings: InterpreterBindingItem[] = [];
   @Input() activatedExtension: 'interpreter' | 'permissions' | 'revisions' | 'hide' = 'hide';
   @Output() readonly activatedExtensionChange = new EventEmitter<
     'interpreter' | 'permissions' | 'revisions' | 'hide'
   >();
+  private restarting = false;
+
+  constructor(
+    private nzModalService: NzModalService,
+    private interpreterService: InterpreterService,
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService
+  ) {}
 
   restartInterpreter(interpreter: InterpreterBindingItem) {
     this.nzModalService.create({
@@ -71,11 +78,4 @@ export class NotebookInterpreterBindingComponent {
     this.activatedExtension = 'hide';
     this.activatedExtensionChange.emit('hide');
   }
-
-  constructor(
-    private nzModalService: NzModalService,
-    private interpreterService: InterpreterService,
-    private cdr: ChangeDetectorRef,
-    private messageService: MessageService
-  ) {}
 }

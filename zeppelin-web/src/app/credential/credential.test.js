@@ -1,5 +1,4 @@
-
-describe('Controller: Credential', function() {
+describe('Controller: Credential', function () {
   beforeEach(angular.mock.module('zeppelinWebApp'));
 
   let baseUrlSrvMock = {getRestApiBase: () => ''};
@@ -92,7 +91,7 @@ describe('Controller: Credential', function() {
 
     $httpBackend
       .when('PUT', '/credential', newCredential)
-      .respond(200, { });
+      .respond(200, {});
     $httpBackend.expectPUT('/credential', newCredential);
 
     $scope.entity = newCredential.entity;

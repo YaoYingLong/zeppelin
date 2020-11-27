@@ -12,23 +12,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<div class="job" >
+<div class="job">
   <div>
     <!-- job control: start -->
-    <div id="{{$ctrl.getNoteId()}}_control" class="control">
+    <div class="control" id="{{$ctrl.getNoteId()}}_control">
       <span ng-bind="$ctrl.lastExecuteTime()"></span>
       <span>
         <span ng-bind="$ctrl.isRunning() ? 'RUNNING' : 'READY'"></span>
       </span>
 
-      <span ng-if="$ctrl.isRunning()" ng-bind="$ctrl.getProgress()"></span>
+      <span ng-bind="$ctrl.getProgress()" ng-if="$ctrl.isRunning()"></span>
 
       <span
-        class="job-control-btn" tooltip-placement="left"
-        uib-tooltip-html="!$ctrl.isRunning() ? 'Start All Paragraphs' : 'Stop All Paragraphs'"
+        class="job-control-btn" ng-class="!$ctrl.isRunning() ? 'icon-control-play' : 'icon-control-pause'"
         ng-click="!$ctrl.isRunning() ? $ctrl.runJob() : $ctrl.stopJob()"
-        ng-class="!$ctrl.isRunning() ? 'icon-control-play' : 'icon-control-pause'"
-        ng-style="{'color': $ctrl.isRunning() ? '#CD5C5C' : '#3071A9'}">
+        ng-style="{'color': $ctrl.isRunning() ? '#CD5C5C' : '#3071A9'}"
+        tooltip-placement="left"
+        uib-tooltip-html="!$ctrl.isRunning() ? 'Start All Paragraphs' : 'Stop All Paragraphs'">
       </span>
     </div>
     <!-- job control: end -->
@@ -36,18 +36,18 @@ limitations under the License.
     <span class="job-types">
       <i ng-class="$ctrl.getJobTypeIcon()"></i>
     </span>
-    <a style="text-decoration: none !important;" ng-href="#/notebook/{{$ctrl.getNoteId()}}">
+    <a ng-href="#/notebook/{{$ctrl.getNoteId()}}" style="text-decoration: none !important;">
       <span ng-bind="$ctrl.getNoteName() + ' - '"></span>
-      <span ng-style="$ctrl.getInterpreterNameStyle()"
-            ng-bind="$ctrl.getInterpreterName()">
+      <span ng-bind="$ctrl.getInterpreterName()"
+            ng-style="$ctrl.getInterpreterNameStyle()">
       </span>
     </a>
     <!-- job progress bar: start -->
-    <div id="{{$ctrl.getNoteId()}}_runControl" class="runControl">
-      <div id="{{$ctrl.getNoteId()}}_progress" class="progress" ng-if="$ctrl.isRunning() === true">
-        <div class="progress-bar" role="progressbar"
+    <div class="runControl" id="{{$ctrl.getNoteId()}}_runControl">
+      <div class="progress" id="{{$ctrl.getNoteId()}}_progress" ng-if="$ctrl.isRunning() === true">
+        <div class="progress-bar" ng-class="$ctrl.showPercentProgressBar() ? '' : 'progress-bar-striped active'"
              ng-style="$ctrl.showPercentProgressBar() ? { 'width': $ctrl.getProgress() } : { 'width': '100%' }"
-             ng-class="$ctrl.showPercentProgressBar() ? '' : 'progress-bar-striped active'">
+             role="progressbar">
         </div>
       </div>
     </div>
@@ -56,10 +56,10 @@ limitations under the License.
 
   <div>
     <span ng-repeat="paragraph in $ctrl.getParagraphs()">
-      <a style="text-decoration: none !important;"
-         ng-href="#/notebook/{{$ctrl.getNoteId()}}?paragraph={{paragraph.id}}">
-        <i ng-style="{'color': $ctrl.getJobColorByStatus(paragraph.status)}"
-           ng-class="$ctrl.getJobIconByStatus(paragraph.status)"
+      <a ng-href="#/notebook/{{$ctrl.getNoteId()}}?paragraph={{paragraph.id}}"
+         style="text-decoration: none !important;">
+        <i ng-class="$ctrl.getJobIconByStatus(paragraph.status)"
+           ng-style="{'color': $ctrl.getJobColorByStatus(paragraph.status)}"
            tooltip-placement="top-left"
            uib-tooltip="{{paragraph.name}} is {{paragraph.status}}">
         </i>

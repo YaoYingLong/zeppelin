@@ -53,7 +53,7 @@ input[class *=coltuiGrid] {
 }
 
 .ui-grid-row div[role=row] {
-  display: flex ;
+  display: flex;
   align-content: stretch;
 }
 

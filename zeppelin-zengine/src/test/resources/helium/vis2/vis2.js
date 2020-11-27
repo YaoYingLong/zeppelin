@@ -21,18 +21,19 @@ import PassthroughTransformation from 'zeppelin-tabledata/passthrough'
  * Base class for visualization
  */
 export default class vis2 extends Visualization {
-  constructor(targetEl, config) {
-    super(targetEl, config)
-    this.passthrough = new PassthroughTransformation(config);
+    constructor(targetEl, config) {
+        super(targetEl, config)
+        this.passthrough = new PassthroughTransformation(config);
 
-  }
+    }
 
-  render(tableData) {
-    this.targetEl.html('Vis2')
-    error in the package
-  }
+    render(tableData) {
+        this.targetEl.html('Vis2')
+        error in the
+        package
+    }
 
-  getTransformation() {
-    return this.passthrough
-  }
+    getTransformation() {
+        return this.passthrough
+    }
 }

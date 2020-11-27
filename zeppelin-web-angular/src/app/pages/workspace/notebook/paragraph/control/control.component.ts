@@ -24,7 +24,6 @@ import {
 import { copyTextToClipboard } from '@zeppelin/core';
 
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
 
 import { ActivatedRoute } from '@angular/router';
 import { RuntimeInfos } from '@zeppelin/sdk';
@@ -85,6 +84,13 @@ export class NotebookParagraphControlComponent implements OnInit, OnChanges {
     shortCut: string;
     trigger(): void;
   }> = [];
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private nzMessageService: NzMessageService,
+    private activatedRoute: ActivatedRoute,
+    private messageService: MessageService
+  ) {}
 
   updateListOfMenu() {
     this.listOfMenu = [
@@ -261,13 +267,6 @@ export class NotebookParagraphControlComponent implements OnInit, OnChanges {
       event.emit();
     }
   }
-
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private nzMessageService: NzMessageService,
-    private activatedRoute: ActivatedRoute,
-    private messageService: MessageService
-  ) {}
 
   ngOnInit() {
     this.updateListOfMenu();

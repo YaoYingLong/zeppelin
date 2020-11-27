@@ -19,6 +19,7 @@ import { MessageService } from '@zeppelin/services';
 export class MessageListenersManager implements OnDestroy {
   __zeppelinMessageListeners__: Array<() => void>;
   __zeppelinMessageListeners$__ = new Subscriber();
+
   constructor(public messageService: MessageService) {
     if (this.__zeppelinMessageListeners__) {
       this.__zeppelinMessageListeners__.forEach(fn => fn.apply(this));

@@ -25,39 +25,38 @@ import org.slf4j.LoggerFactory;
  * Zeppelinhub session.
  */
 public class ZeppelinhubSession {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinhubSession.class);
-  private Session session;
-  private final String token;
-  
-  public static final ZeppelinhubSession EMPTY = new ZeppelinhubSession(null, StringUtils.EMPTY);
-  
-  public static ZeppelinhubSession createInstance(Session session, String token) {
-    return new ZeppelinhubSession(session, token);
-  }
-  
-  private ZeppelinhubSession(Session session, String token) {
-    this.session = session;
-    this.token = token;
-  }
-  
-  public boolean isSessionOpen() {
-    return ((session != null) && (session.isOpen()));
-  }
-  
-  public void close() {
-    if (isSessionOpen()) {
-      session.close();
+    public static final ZeppelinhubSession EMPTY = new ZeppelinhubSession(null, StringUtils.EMPTY);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinhubSession.class);
+    private final String token;
+    private Session session;
+
+    private ZeppelinhubSession(Session session, String token) {
+        this.session = session;
+        this.token = token;
     }
-  }
-  
-  public void sendByFuture(String msg) {
-    if (StringUtils.isBlank(msg)) {
-      LOGGER.error("Cannot send event to Zeppelinhub, msg is empty");
+
+    public static ZeppelinhubSession createInstance(Session session, String token) {
+        return new ZeppelinhubSession(session, token);
     }
-    if (isSessionOpen()) {
-      session.getRemote().sendStringByFuture(msg);
-    } else {
-      LOGGER.error("Cannot send event to Zeppelinhub, session is close");
+
+    public boolean isSessionOpen() {
+        return ((session != null) && (session.isOpen()));
     }
-  }
+
+    public void close() {
+        if (isSessionOpen()) {
+            session.close();
+        }
+    }
+
+    public void sendByFuture(String msg) {
+        if (StringUtils.isBlank(msg)) {
+            LOGGER.error("Cannot send event to Zeppelinhub, msg is empty");
+        }
+        if (isSessionOpen()) {
+            session.getRemote().sendStringByFuture(msg);
+        } else {
+            LOGGER.error("Cannot send event to Zeppelinhub, session is close");
+        }
+    }
 }

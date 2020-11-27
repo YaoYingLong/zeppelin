@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { EditorCompletionKey, EditorLanguage, EditorMode } from './message-common.interface';
+import {EditorCompletionKey, EditorLanguage, EditorMode} from './message-common.interface';
 
 export enum DynamicFormsType {
   TextBox = 'TextBox',
@@ -399,7 +399,7 @@ interface TableOptionValue {
 export type XLabelStatus = 'default' | 'rotate' | 'hide';
 
 export class XAxisSetting {
-  rotate = { degree: '-45' };
+  rotate = {degree: '-45'};
   xLabelStatus: XLabelStatus = 'default';
 }
 

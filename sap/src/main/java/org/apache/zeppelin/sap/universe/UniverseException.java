@@ -23,16 +23,16 @@ package org.apache.zeppelin.sap.universe;
  */
 public class UniverseException extends Exception {
 
-  public UniverseException(Throwable e) {
-    super(e);
-  }
+    public UniverseException(Throwable e) {
+        super(e);
+    }
 
-  public UniverseException(String m) {
-    super(m);
-  }
+    public UniverseException(String m) {
+        super(m);
+    }
 
-  public UniverseException(String msg, Throwable t) {
-    super(msg, t);
-  }
+    public UniverseException(String msg, Throwable t) {
+        super(msg, t);
+    }
 
 }

@@ -43,6 +43,14 @@ export class NotebookPermissionsComponent implements OnInit, OnChanges {
   permissionsBack: Permissions;
   listOfUserAndRole = [];
 
+  constructor(
+    private securityService: SecurityService,
+    private cdr: ChangeDetectorRef,
+    private nzMessageService: NzMessageService,
+    private ticketService: TicketService,
+    private nzModalService: NzModalService
+  ) {}
+
   savePermissions() {
     const principal = this.ticketService.ticket.principal;
     const isAnonymous = principal === 'anonymous';
@@ -117,14 +125,6 @@ export class NotebookPermissionsComponent implements OnInit, OnChanges {
       this.cdr.markForCheck();
     });
   }
-
-  constructor(
-    private securityService: SecurityService,
-    private cdr: ChangeDetectorRef,
-    private nzMessageService: NzMessageService,
-    private ticketService: TicketService,
-    private nzModalService: NzModalService
-  ) {}
 
   ngOnInit() {
     this.permissionsBack = { ...this.permissions };

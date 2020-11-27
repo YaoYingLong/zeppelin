@@ -13,15 +13,15 @@ limitations under the License.
 -->
 
 <div class="ui-grid-filter-container"
-     ng-repeat="colFilter in col.filters"
-     ng-class="{'ui-grid-filter-cancel-button-hidden' : colFilter.disableCancelFilterButton === true }">
+     ng-class="{'ui-grid-filter-cancel-button-hidden' : colFilter.disableCancelFilterButton === true }"
+     ng-repeat="colFilter in col.filters">
   <div ng-if="colFilter.type !== 'select'">
-    <input type="text" class="input-sm form-control"
-           style="font-size: 14px; font-weight: 500"
+    <input aria-label="{{colFilter.ariaLabel || aria.defaultFilterLabel}}" class="input-sm form-control"
+           ng-attr-placeholder="{{colFilter.placeholder || ''}}"
 
            ng-model="colFilter.term"
            ng-model-options="{ debounce : { 'default' : 300, 'blur' : 0 }}"
-           ng-attr-placeholder="{{colFilter.placeholder || ''}}"
-           aria-label="{{colFilter.ariaLabel || aria.defaultFilterLabel}}" />
+           style="font-size: 14px; font-weight: 500"
+           type="text"/>
   </div>
 </div>

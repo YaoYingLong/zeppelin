@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 {
-  "type" : "SPELL",
-  "name" : "translator-spell",
-  "description" : "Translate langauges using Google API (examaple)",
-  "artifact" : "./zeppelin-examples/zeppelin-example-spell-translator",
-  "license" : "Apache-2.0",
-  "icon" : "<i class='fa fa-globe '></i>",
+  "type": "SPELL",
+  "name": "translator-spell",
+  "description": "Translate langauges using Google API (examaple)",
+  "artifact": "./zeppelin-examples/zeppelin-example-spell-translator",
+  "license": "Apache-2.0",
+  "icon": "<i class='fa fa-globe '></i>",
   "config": {
     "access-token": {
       "type": "string",

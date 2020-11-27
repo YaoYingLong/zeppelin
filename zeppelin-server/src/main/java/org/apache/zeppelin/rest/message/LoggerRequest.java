@@ -18,24 +18,24 @@
 package org.apache.zeppelin.rest.message;
 
 public class LoggerRequest {
-  private String name;
-  private String level;
+    private String name;
+    private String level;
 
-  public LoggerRequest(String name, String level) {
-    this.name = name;
-    this.level = level;
-  }
+    public LoggerRequest(String name, String level) {
+        this.name = name;
+        this.level = level;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getLevel() {
-    return level;
-  }
+    public String getLevel() {
+        return level;
+    }
 
-  @Override
-  public String toString() {
-    return "[name: " + name + ", level: " + level + "]";
-  }
+    @Override
+    public String toString() {
+        return "[name: " + name + ", level: " + level + "]";
+    }
 }

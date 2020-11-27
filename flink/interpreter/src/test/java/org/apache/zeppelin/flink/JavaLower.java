@@ -20,7 +20,7 @@ package org.apache.zeppelin.flink;
 import org.apache.flink.table.functions.ScalarFunction;
 
 public class JavaLower extends ScalarFunction {
-  public String eval(String str) {
-    return str.toLowerCase();
-  }
+    public String eval(String str) {
+        return str.toLowerCase();
+    }
 }

@@ -24,52 +24,53 @@ import org.apache.thrift.TServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 用于创建thrift socket客户端的工厂类
+ * <p>
  * Factory class for creating thrift socket client.
  */
-public class RemoteClientFactory<T extends TServiceClient> extends BasePooledObjectFactory<T>{
+public class RemoteClientFactory<T extends TServiceClient> extends BasePooledObjectFactory<T> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoteClientFactory.class);
 
-  private Set<T> clientSockets = ConcurrentHashMap.newKeySet();
-  private SupplierWithIO<T> supplier;
+    private Set<T> clientSockets = ConcurrentHashMap.newKeySet();
+    private SupplierWithIO<T> supplier;
 
-  public RemoteClientFactory(SupplierWithIO<T> supplier) {
-    this.supplier = supplier;
-  }
-
-  public void close() {
-    for (T clientSocket: clientSockets) {
-      clientSocket.getInputProtocol().getTransport().close();
-      clientSocket.getOutputProtocol().getTransport().close();
+    public RemoteClientFactory(SupplierWithIO<T> supplier) {
+        this.supplier = supplier;
     }
-  }
 
-  @Override
-  public T create() throws Exception {
-    T clientSocket = supplier.getWithIO();
-    clientSockets.add(clientSocket);
-    return clientSocket;
-  }
+    public void close() {
+        for (T clientSocket : clientSockets) {
+            clientSocket.getInputProtocol().getTransport().close();
+            clientSocket.getOutputProtocol().getTransport().close();
+        }
+    }
 
-  @Override
-  public PooledObject<T> wrap(T client) {
-    return new DefaultPooledObject<>(client);
-  }
+    @Override
+    public T create() throws Exception {
+        T clientSocket = supplier.getWithIO();
+        clientSockets.add(clientSocket);
+        return clientSocket;
+    }
 
-  @Override
-  public void destroyObject(PooledObject<T> p) {
-    p.getObject().getOutputProtocol().getTransport().close();
-    p.getObject().getInputProtocol().getTransport().close();
-    clientSockets.remove(p.getObject());
-  }
+    @Override
+    public PooledObject<T> wrap(T client) {
+        return new DefaultPooledObject<>(client);
+    }
 
-  @Override
-  public boolean validateObject(PooledObject<T> p) {
-    return p.getObject().getOutputProtocol().getTransport().isOpen();
-  }
+    @Override
+    public void destroyObject(PooledObject<T> p) {
+        p.getObject().getOutputProtocol().getTransport().close();
+        p.getObject().getInputProtocol().getTransport().close();
+        clientSockets.remove(p.getObject());
+    }
+
+    @Override
+    public boolean validateObject(PooledObject<T> p) {
+        return p.getObject().getOutputProtocol().getTransport().isOpen();
+    }
 }

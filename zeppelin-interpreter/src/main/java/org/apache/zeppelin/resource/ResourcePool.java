@@ -20,66 +20,73 @@ package org.apache.zeppelin.resource;
  * Interface for ResourcePool
  */
 public interface ResourcePool {
-  /**
-   * Get unique id of the resource pool
-   * @return
-   */
-  String id();
+    /**
+     * Get unique id of the resource pool
+     *
+     * @return
+     */
+    String id();
 
-  /**
-   * Get resource from name
-   * @param name Resource name
-   * @return null if resource not found
-   */
-  Resource get(String name);
+    /**
+     * Get resource from name
+     *
+     * @param name Resource name
+     * @return null if resource not found
+     */
+    Resource get(String name);
 
-  /**
-   * Get resource from name
-   * @param noteId
-   * @param paragraphId
-   * @param name Resource name
-   * @return null if resource not found
-   */
-  Resource get(String noteId, String paragraphId, String name);
+    /**
+     * Get resource from name
+     *
+     * @param noteId
+     * @param paragraphId
+     * @param name        Resource name
+     * @return null if resource not found
+     */
+    Resource get(String noteId, String paragraphId, String name);
 
-  /**
-   * Get all resources
-   * @return
-   */
-  ResourceSet getAll();
+    /**
+     * Get all resources
+     *
+     * @return
+     */
+    ResourceSet getAll();
 
-  /**
-   * Put an object into resource pool
-   * @param name
-   * @param object
-   */
-  void put(String name, Object object);
+    /**
+     * Put an object into resource pool
+     *
+     * @param name
+     * @param object
+     */
+    void put(String name, Object object);
 
-  /**
-   * Put an object into resource pool
-   * Given noteId and paragraphId is identifying resource along with name.
-   * Object will be automatically removed on related note or paragraph removal.
-   *
-   * @param noteId
-   * @param paragraphId
-   * @param name
-   * @param object
-   */
-  void put(String noteId, String paragraphId, String name, Object object);
+    /**
+     * Put an object into resource pool
+     * Given noteId and paragraphId is identifying resource along with name.
+     * Object will be automatically removed on related note or paragraph removal.
+     *
+     * @param noteId
+     * @param paragraphId
+     * @param name
+     * @param object
+     */
+    void put(String noteId, String paragraphId, String name, Object object);
 
-  /**
-   * Remove object
-   * @param name Resource name to remove
-   * @return removed Resource. null if resource not found
-   */
-  Resource remove(String name);
+    /**
+     * Remove object
+     *
+     * @param name Resource name to remove
+     * @return removed Resource. null if resource not found
+     */
+    Resource remove(String name);
 
-  /**
-   * Remove object
-   * @param noteId
-   * @param paragraphId
-   * @param name Resource name to remove
-   * @return removed Resource. null if resource not found
-   */
-  Resource remove(String noteId, String paragraphId, String name);
+    /**
+     * Remove object
+     *
+     * @param noteId
+     * @param paragraphId
+     * @param name        Resource name to remove
+     * @return removed Resource. null if resource not found
+     */
+    Resource remove(String noteId, String paragraphId, String name);
 }

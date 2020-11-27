@@ -23,15 +23,15 @@ import org.apache.zeppelin.interpreter.InterpreterContext;
  *
  */
 public abstract class AngularObjectWatcher {
-  private InterpreterContext context;
+    private InterpreterContext context;
 
-  public AngularObjectWatcher(InterpreterContext context) {
-    this.context = context;
-  }
+    public AngularObjectWatcher(InterpreterContext context) {
+        this.context = context;
+    }
 
-  void watch(Object oldObject, Object newObject) {
-    watch(oldObject, newObject, context);
-  }
+    void watch(Object oldObject, Object newObject) {
+        watch(oldObject, newObject, context);
+    }
 
-  public abstract void watch(Object oldObject, Object newObject, InterpreterContext context);
+    public abstract void watch(Object oldObject, Object newObject, InterpreterContext context);
 }

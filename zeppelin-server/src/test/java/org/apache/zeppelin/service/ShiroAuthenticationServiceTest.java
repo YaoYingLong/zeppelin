@@ -16,15 +16,6 @@
  */
 package org.apache.zeppelin.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Notebook;
@@ -38,62 +29,69 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import sun.security.acl.PrincipalImpl;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(org.apache.shiro.SecurityUtils.class)
 public class ShiroAuthenticationServiceTest {
-  @Mock
-  org.apache.shiro.subject.Subject subject;
+    @Mock
+    org.apache.shiro.subject.Subject subject;
 
-  ShiroAuthenticationService shiroSecurityService;
-  ZeppelinConfiguration zeppelinConfiguration;
+    ShiroAuthenticationService shiroSecurityService;
+    ZeppelinConfiguration zeppelinConfiguration;
 
-  @Before
-  public void setup() throws Exception {
-    zeppelinConfiguration = ZeppelinConfiguration.create();
-    shiroSecurityService = new ShiroAuthenticationService(zeppelinConfiguration);
-  }
-
-  @Test
-  public void canGetPrincipalName()  {
-    String expectedName = "java.security.Principal.getName()";
-    setupPrincipalName(expectedName);
-    assertEquals(expectedName, shiroSecurityService.getPrincipal());
-  }
-
-  @Test
-  public void testUsernameForceLowerCase() throws IOException, InterruptedException {
-    String expectedName = "java.security.Principal.getName()";
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_USERNAME_FORCE_LOWERCASE
-        .getVarName(), String.valueOf(true));
-    setupPrincipalName(expectedName);
-    assertEquals(expectedName.toLowerCase(), shiroSecurityService.getPrincipal());
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_USERNAME_FORCE_LOWERCASE
-        .getVarName(), String.valueOf(false));
-  }
-
-  private void setupPrincipalName(String expectedName) {
-    PowerMockito.mockStatic(org.apache.shiro.SecurityUtils.class);
-    when(org.apache.shiro.SecurityUtils.getSubject()).thenReturn(subject);
-    when(subject.isAuthenticated()).thenReturn(true);
-    when(subject.getPrincipal()).thenReturn(new PrincipalImpl(expectedName));
-
-    Notebook notebook = Mockito.mock(Notebook.class);
-    try {
-      when(notebook.getConf())
-          .thenReturn(new ZeppelinConfiguration(this.getClass().getResource("/zeppelin-site.xml")));
-    } catch (ConfigurationException e) {
-      e.printStackTrace();
+    @Before
+    public void setup() throws Exception {
+        zeppelinConfiguration = ZeppelinConfiguration.create();
+        shiroSecurityService = new ShiroAuthenticationService(zeppelinConfiguration);
     }
-  }
 
-  private void setFinalStatic(Field field, Object newValue)
-      throws NoSuchFieldException, IllegalAccessException {
-    field.setAccessible(true);
-    Field modifiersField = Field.class.getDeclaredField("modifiers");
-    modifiersField.setAccessible(true);
-    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-    field.set(null, newValue);
-  }
+    @Test
+    public void canGetPrincipalName() {
+        String expectedName = "java.security.Principal.getName()";
+        setupPrincipalName(expectedName);
+        assertEquals(expectedName, shiroSecurityService.getPrincipal());
+    }
+
+    @Test
+    public void testUsernameForceLowerCase() throws IOException, InterruptedException {
+        String expectedName = "java.security.Principal.getName()";
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_USERNAME_FORCE_LOWERCASE
+                .getVarName(), String.valueOf(true));
+        setupPrincipalName(expectedName);
+        assertEquals(expectedName.toLowerCase(), shiroSecurityService.getPrincipal());
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_USERNAME_FORCE_LOWERCASE
+                .getVarName(), String.valueOf(false));
+    }
+
+    private void setupPrincipalName(String expectedName) {
+        PowerMockito.mockStatic(org.apache.shiro.SecurityUtils.class);
+        when(org.apache.shiro.SecurityUtils.getSubject()).thenReturn(subject);
+        when(subject.isAuthenticated()).thenReturn(true);
+        when(subject.getPrincipal()).thenReturn(new PrincipalImpl(expectedName));
+
+        Notebook notebook = Mockito.mock(Notebook.class);
+        try {
+            when(notebook.getConf())
+                    .thenReturn(new ZeppelinConfiguration(this.getClass().getResource("/zeppelin-site.xml")));
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setFinalStatic(Field field, Object newValue)
+            throws NoSuchFieldException, IllegalAccessException {
+        field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, newValue);
+    }
 
 
 }

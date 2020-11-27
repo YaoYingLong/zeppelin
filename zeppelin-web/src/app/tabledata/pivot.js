@@ -33,22 +33,22 @@ export default class PivotTransformation extends Transformation {
       scope: {
         config: configObj.common.pivot,
         tableDataColumns: self.tableDataColumns,
-        save: function() {
+        save: function () {
           self.emitConfig(configObj);
         },
-        removeKey: function(idx) {
+        removeKey: function (idx) {
           configObj.common.pivot.keys.splice(idx, 1);
           self.emitConfig(configObj);
         },
-        removeGroup: function(idx) {
+        removeGroup: function (idx) {
           configObj.common.pivot.groups.splice(idx, 1);
           self.emitConfig(configObj);
         },
-        removeValue: function(idx) {
+        removeValue: function (idx) {
           configObj.common.pivot.values.splice(idx, 1);
           self.emitConfig(configObj);
         },
-        setValueAggr: function(idx, aggr) {
+        setValueAggr: function (idx, aggr) {
           configObj.common.pivot.values[idx].aggr = aggr;
           self.emitConfig(configObj);
         },
@@ -84,7 +84,7 @@ export default class PivotTransformation extends Transformation {
   removeUnknown() {
     let config = this.config.common.pivot;
     let tableDataColumns = this.tableDataColumns;
-    let unique = function(list) {
+    let unique = function (list) {
       for (let i = 0; i < list.length; i++) {
         for (let j = i + 1; j < list.length; j++) {
           if (angular.equals(list[i], list[j])) {
@@ -95,7 +95,7 @@ export default class PivotTransformation extends Transformation {
       }
     };
 
-    let removeUnknown = function(list) {
+    let removeUnknown = function (list) {
       for (let i = 0; i < list.length; i++) {
         // remove non existing column
         let found = false;
@@ -123,8 +123,8 @@ export default class PivotTransformation extends Transformation {
   selectDefault() {
     let config = this.config.common.pivot;
     if (config.keys.length === 0 &&
-        config.groups.length === 0 &&
-        config.values.length === 0) {
+      config.groups.length === 0 &&
+      config.values.length === 0) {
       if (config.keys.length === 0 && this.tableDataColumns.length > 0) {
         config.keys.push(this.tableDataColumns[0]);
       }
@@ -137,17 +137,17 @@ export default class PivotTransformation extends Transformation {
 
   pivot(data, keys, groups, values) {
     let aggrFunc = {
-      sum: function(a, b) {
+      sum: function (a, b) {
         let varA = (a !== undefined) ? (isNaN(a) ? 0 : parseFloat(a)) : 0;
         let varB = (b !== undefined) ? (isNaN(b) ? 0 : parseFloat(b)) : 0;
         return varA + varB;
       },
-      count: function(a, b) {
+      count: function (a, b) {
         let varA = (a !== undefined) ? parseInt(a) : 0;
         let varB = (b !== undefined) ? 1 : 0;
         return varA + varB;
       },
-      min: function(a, b) {
+      min: function (a, b) {
         let aIsValid = isValidNumber(a);
         let bIsValid = isValidNumber(b);
         if (!aIsValid) {
@@ -158,7 +158,7 @@ export default class PivotTransformation extends Transformation {
           return Math.min(parseFloat(a), parseFloat(b));
         }
       },
-      max: function(a, b) {
+      max: function (a, b) {
         let aIsValid = isValidNumber(a);
         let bIsValid = isValidNumber(b);
         if (!aIsValid) {
@@ -169,14 +169,14 @@ export default class PivotTransformation extends Transformation {
           return Math.max(parseFloat(a), parseFloat(b));
         }
       },
-      avg: function(a, b, c) {
+      avg: function (a, b, c) {
         let varA = (a !== undefined) ? (isNaN(a) ? 0 : parseFloat(a)) : 0;
         let varB = (b !== undefined) ? (isNaN(b) ? 0 : parseFloat(b)) : 0;
         return varA + varB;
       },
     };
 
-    let isValidNumber = function(num) {
+    let isValidNumber = function (num) {
       return num !== undefined && !isNaN(num);
     };
 

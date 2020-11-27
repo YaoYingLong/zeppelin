@@ -41,103 +41,103 @@ import static org.junit.Assert.assertEquals;
 
 public class FileSystemNotebookRepoTest {
 
-  private ZeppelinConfiguration zConf;
-  private Configuration hadoopConf;
-  private FileSystem fs;
-  private FileSystemNotebookRepo hdfsNotebookRepo;
-  private String notebookDir;
-  private AuthenticationInfo authInfo = AuthenticationInfo.ANONYMOUS;
+    private ZeppelinConfiguration zConf;
+    private Configuration hadoopConf;
+    private FileSystem fs;
+    private FileSystemNotebookRepo hdfsNotebookRepo;
+    private String notebookDir;
+    private AuthenticationInfo authInfo = AuthenticationInfo.ANONYMOUS;
 
-  @Before
-  public void setUp() throws IOException {
-    notebookDir = Files.createTempDirectory("FileSystemNotebookRepoTest").toFile().getAbsolutePath();
-    zConf = ZeppelinConfiguration.create();
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(), notebookDir);
-    hadoopConf = new Configuration();
-    fs = FileSystem.get(hadoopConf);
-    hdfsNotebookRepo = new FileSystemNotebookRepo();
-    hdfsNotebookRepo.init(zConf);
-  }
+    @Before
+    public void setUp() throws IOException {
+        notebookDir = Files.createTempDirectory("FileSystemNotebookRepoTest").toFile().getAbsolutePath();
+        zConf = ZeppelinConfiguration.create();
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(), notebookDir);
+        hadoopConf = new Configuration();
+        fs = FileSystem.get(hadoopConf);
+        hdfsNotebookRepo = new FileSystemNotebookRepo();
+        hdfsNotebookRepo.init(zConf);
+    }
 
-  @After
-  public void tearDown() throws IOException {
-    FileUtils.deleteDirectory(new File(notebookDir));
-  }
+    @After
+    public void tearDown() throws IOException {
+        FileUtils.deleteDirectory(new File(notebookDir));
+    }
 
-  @Test
-  public void testBasics() throws IOException {
-    assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
+    @Test
+    public void testBasics() throws IOException {
+        assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
 
-    // create a new note
-    Note note = new Note();
-    note.setPath("/title_1");
+        // create a new note
+        Note note = new Note();
+        note.setPath("/title_1");
 
-    Map<String, Object> config = new HashMap<>();
-    config.put("config_1", "value_1");
-    config.put("isZeppelinNotebookCronEnable", false);
-    note.setConfig(config);
-    hdfsNotebookRepo.save(note, authInfo);
-    assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
+        Map<String, Object> config = new HashMap<>();
+        config.put("config_1", "value_1");
+        config.put("isZeppelinNotebookCronEnable", false);
+        note.setConfig(config);
+        hdfsNotebookRepo.save(note, authInfo);
+        assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
 
-    // read this note from hdfs
-    Note note_copy = hdfsNotebookRepo.get(note.getId(), note.getPath(), authInfo);
-    assertEquals(note.getName(), note_copy.getName());
-    assertEquals(note.getConfig(), note_copy.getConfig());
+        // read this note from hdfs
+        Note note_copy = hdfsNotebookRepo.get(note.getId(), note.getPath(), authInfo);
+        assertEquals(note.getName(), note_copy.getName());
+        assertEquals(note.getConfig(), note_copy.getConfig());
 
-    // update this note
-    note.setPersonalizedMode(true);
-    hdfsNotebookRepo.save(note, authInfo);
-    assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
-    note_copy = hdfsNotebookRepo.get(note.getId(), note.getPath(), authInfo);
-    assertEquals(note.getName(), note_copy.getName());
-    assertEquals(note.getConfig(), note_copy.getConfig());
+        // update this note
+        note.setPersonalizedMode(true);
+        hdfsNotebookRepo.save(note, authInfo);
+        assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
+        note_copy = hdfsNotebookRepo.get(note.getId(), note.getPath(), authInfo);
+        assertEquals(note.getName(), note_copy.getName());
+        assertEquals(note.getConfig(), note_copy.getConfig());
 
-    // move this note
-    String newPath = "/new_folder/title_1";
-    hdfsNotebookRepo.move(note.getId(), note.getPath(), newPath, authInfo);
-    assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
-    assertEquals("title_1", hdfsNotebookRepo.get(note.getId(), newPath, authInfo).getName());
+        // move this note
+        String newPath = "/new_folder/title_1";
+        hdfsNotebookRepo.move(note.getId(), note.getPath(), newPath, authInfo);
+        assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
+        assertEquals("title_1", hdfsNotebookRepo.get(note.getId(), newPath, authInfo).getName());
 
-    // delete this note
-    hdfsNotebookRepo.remove(note.getId(), newPath, authInfo);
-    assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
+        // delete this note
+        hdfsNotebookRepo.remove(note.getId(), newPath, authInfo);
+        assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
 
-    // create another new note under folder
-    note = new Note();
-    note.setPath("/folder1/title_1");
-    note.setConfig(config);
-    hdfsNotebookRepo.save(note, authInfo);
-    assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
+        // create another new note under folder
+        note = new Note();
+        note.setPath("/folder1/title_1");
+        note.setConfig(config);
+        hdfsNotebookRepo.save(note, authInfo);
+        assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
 
-    hdfsNotebookRepo.move("/folder1", "/folder2/folder3", authInfo);
-    Map<String, NoteInfo> notesInfo = hdfsNotebookRepo.list(authInfo);
-    assertEquals(1, notesInfo.size());
+        hdfsNotebookRepo.move("/folder1", "/folder2/folder3", authInfo);
+        Map<String, NoteInfo> notesInfo = hdfsNotebookRepo.list(authInfo);
+        assertEquals(1, notesInfo.size());
 
-    assertEquals("/folder2/folder3/title_1", notesInfo.get(note.getId()).getPath());
+        assertEquals("/folder2/folder3/title_1", notesInfo.get(note.getId()).getPath());
 
-    // delete folder
-    hdfsNotebookRepo.remove("/folder2", authInfo);
-    assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
-  }
+        // delete folder
+        hdfsNotebookRepo.remove("/folder2", authInfo);
+        assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
+    }
 
-  @Test
-  public void testComplicatedScenarios() throws IOException {
-    // scenario_1: notebook_dir is not clean. There're some unrecognized dir and file under notebook_dir
-    fs.mkdirs(new Path(notebookDir, "1/2"));
-    OutputStream out = fs.create(new Path(notebookDir, "1/a.json"));
-    out.close();
+    @Test
+    public void testComplicatedScenarios() throws IOException {
+        // scenario_1: notebook_dir is not clean. There're some unrecognized dir and file under notebook_dir
+        fs.mkdirs(new Path(notebookDir, "1/2"));
+        OutputStream out = fs.create(new Path(notebookDir, "1/a.json"));
+        out.close();
 
-    assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
+        assertEquals(0, hdfsNotebookRepo.list(authInfo).size());
 
-    // scenario_2: note_folder is existed.
-    // create a new note
-    Note note = new Note();
-    note.setPath("/title_1");
-    Map<String, Object> config = new HashMap<>();
-    config.put("config_1", "value_1");
-    note.setConfig(config);
+        // scenario_2: note_folder is existed.
+        // create a new note
+        Note note = new Note();
+        note.setPath("/title_1");
+        Map<String, Object> config = new HashMap<>();
+        config.put("config_1", "value_1");
+        note.setConfig(config);
 
-    hdfsNotebookRepo.save(note, authInfo);
-    assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
-  }
+        hdfsNotebookRepo.save(note, authInfo);
+        assertEquals(1, hdfsNotebookRepo.list(authInfo).size());
+    }
 }

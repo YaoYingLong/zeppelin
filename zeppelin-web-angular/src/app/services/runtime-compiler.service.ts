@@ -10,18 +10,7 @@
  * limitations under the License.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Compiler,
-  Component,
-  Injectable,
-  NgModule,
-  NgModuleFactory,
-  NO_ERRORS_SCHEMA,
-  Type
-} from '@angular/core';
-
-import { CompileDirectiveMetadata, HtmlParser, TemplateParser } from '@angular/compiler';
+import { Compiler, Component, Injectable, NgModule, NgModuleFactory, Type } from '@angular/core';
 import { RuntimeDynamicModuleModule } from '@zeppelin/core';
 import { NgZService } from './ng-z.service';
 
@@ -43,6 +32,8 @@ export class DynamicTemplateError {
   providedIn: 'root'
 })
 export class RuntimeCompilerService {
+  constructor(private compiler: Compiler, private ngZService: NgZService) {}
+
   public async createAndCompileTemplate(paragraphId: string, template: string): Promise<DynamicTemplate> {
     const ngZService = this.ngZService;
     const dynamicComponent = Component({ template: template, selector: `dynamic-${paragraphId}` })(
@@ -74,6 +65,4 @@ export class RuntimeCompilerService {
       throw new DynamicTemplateError(`${e}`);
     }
   }
-
-  constructor(private compiler: Compiler, private ngZService: NgZService) {}
 }

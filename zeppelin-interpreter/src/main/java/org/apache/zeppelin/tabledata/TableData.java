@@ -22,16 +22,18 @@ import java.util.Iterator;
  * Abstract representation of table data
  */
 public interface TableData {
-  /**
-   * Get column definitions
-   * @return
-   */
-  ColumnDef [] columns();
+    /**
+     * Get column definitions
+     *
+     * @return
+     */
+    ColumnDef[] columns();
 
-  /**
-   * Get row iterator
-   * @param
-   * @return
-   */
-  Iterator<Row> rows();
+    /**
+     * Get row iterator
+     *
+     * @param
+     * @return
+     */
+    Iterator<Row> rows();
 }

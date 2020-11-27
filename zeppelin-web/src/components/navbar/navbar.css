@@ -36,7 +36,7 @@
   background-color: transparent;
 }
 
-.navbar-inverse .navbar-nav > li > a.navbar-menu-notebook:hover{
+.navbar-inverse .navbar-nav > li > a.navbar-menu-notebook:hover {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -80,8 +80,14 @@
   right: 0;
   transition: all .2s ease-in-out;
 }
-.navbar-fixed-top.headroom--unpinned { top: -100px; }
-.navbar-fixed-top.headroom--pinned { top: 0; /** `navbar` top */ }
+
+.navbar-fixed-top.headroom--unpinned {
+  top: -100px;
+}
+
+.navbar-fixed-top.headroom--pinned {
+  top: 0; /** `navbar` top */
+}
 
 .navbar-inverse {
   background: #3071a9;

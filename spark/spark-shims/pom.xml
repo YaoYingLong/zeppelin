@@ -16,58 +16,58 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <parent>
-    <artifactId>spark-parent</artifactId>
+    <parent>
+        <artifactId>spark-parent</artifactId>
+        <groupId>org.apache.zeppelin</groupId>
+        <version>0.9.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.zeppelin</groupId>
+    <artifactId>spark-shims</artifactId>
     <version>0.9.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
+    <packaging>jar</packaging>
+    <name>Zeppelin: Spark Shims</name>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.zeppelin</groupId>
-  <artifactId>spark-shims</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  <name>Zeppelin: Spark Shims</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.zeppelin</groupId>
+            <artifactId>zeppelin-interpreter-shaded</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-interpreter-shaded</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
+        <!--
+          This is for ZEPPELIN-2221 using VersionInfo for check the version of Yarn.
+          It's checked that VersionInfo is compatible at least 2.2.0 to the latest one.
+        -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop2.6.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
-    <!--
-      This is for ZEPPELIN-2221 using VersionInfo for check the version of Yarn.
-      It's checked that VersionInfo is compatible at least 2.2.0 to the latest one.
-    -->
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>${hadoop2.6.version}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-interpreter-setting</id>
-            <phase>none</phase>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-interpreter-setting</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

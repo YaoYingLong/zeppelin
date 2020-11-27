@@ -17,7 +17,6 @@
 
 package org.apache.zeppelin.rinterpreter;
 
-import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 
@@ -29,105 +28,105 @@ import java.util.Properties;
  * RRepl is a simple wrapper around RReplInterpreter to handle that Zeppelin prefers
  * to load interpreters through classes defined in Java with static methods that run
  * when the class is loaded.
- *
  */
 public class RRepl extends Interpreter implements WrappedInterpreter {
-  RReplInterpreter intp;
+    RReplInterpreter intp;
 
-  public RRepl(Properties properties, Boolean startSpark) {
-    super(properties);
-    intp = new RReplInterpreter(properties, startSpark);
-  }
-  public RRepl(Properties properties) {
-    this(properties, true);
-  }
+    public RRepl(Properties properties, Boolean startSpark) {
+        super(properties);
+        intp = new RReplInterpreter(properties, startSpark);
+    }
 
-  public RRepl() {
-    this(new Properties());
-  }
+    public RRepl(Properties properties) {
+        this(properties, true);
+    }
 
-  @Override
-  public void open() throws InterpreterException {
-    intp.open();
-  }
+    public RRepl() {
+        this(new Properties());
+    }
 
-  @Override
-  public void close() throws InterpreterException {
-    intp.close();
-  }
+    @Override
+    public void open() throws InterpreterException {
+        intp.open();
+    }
 
-  @Override
-  public InterpreterResult interpret(String s, InterpreterContext interpreterContext)
-      throws InterpreterException {
-    return intp.interpret(s, interpreterContext);
-  }
+    @Override
+    public void close() throws InterpreterException {
+        intp.close();
+    }
 
-  @Override
-  public void cancel(InterpreterContext interpreterContext) throws InterpreterException {
-    intp.cancel(interpreterContext);
-  }
+    @Override
+    public InterpreterResult interpret(String s, InterpreterContext interpreterContext)
+            throws InterpreterException {
+        return intp.interpret(s, interpreterContext);
+    }
 
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return intp.getFormType();
-  }
+    @Override
+    public void cancel(InterpreterContext interpreterContext) throws InterpreterException {
+        intp.cancel(interpreterContext);
+    }
 
-  @Override
-  public int getProgress(InterpreterContext interpreterContext) throws InterpreterException {
-    return intp.getProgress(interpreterContext);
-  }
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return intp.getFormType();
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String s, int i,
-      InterpreterContext interpreterContext) throws InterpreterException {
-    List completion = intp.completion(s, i, interpreterContext);
-    return completion;
-  }
+    @Override
+    public int getProgress(InterpreterContext interpreterContext) throws InterpreterException {
+        return intp.getProgress(interpreterContext);
+    }
 
-  @Override
-  public Interpreter getInnerInterpreter() {
-    return intp;
-  }
+    @Override
+    public List<InterpreterCompletion> completion(String s, int i,
+                                                  InterpreterContext interpreterContext) throws InterpreterException {
+        List completion = intp.completion(s, i, interpreterContext);
+        return completion;
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    return intp.getScheduler();
-  }
+    @Override
+    public Interpreter getInnerInterpreter() {
+        return intp;
+    }
 
-  @Override
-  public void setProperties(Properties properties) {
-    super.setProperties(properties);
-    intp.setProperties(properties);
-  }
+    @Override
+    public Scheduler getScheduler() {
+        return intp.getScheduler();
+    }
 
-  @Override
-  public Properties getProperties() {
-    return intp.getProperties();
-  }
+    @Override
+    public Properties getProperties() {
+        return intp.getProperties();
+    }
 
-  @Override
-  public String getProperty(String key) {
-    return intp.getProperty(key);
-  }
+    @Override
+    public void setProperties(Properties properties) {
+        super.setProperties(properties);
+        intp.setProperties(properties);
+    }
 
-  @Override
-  public void setInterpreterGroup(InterpreterGroup interpreterGroup) {
-    super.setInterpreterGroup(interpreterGroup);
-    intp.setInterpreterGroup(interpreterGroup);
-  }
+    @Override
+    public String getProperty(String key) {
+        return intp.getProperty(key);
+    }
 
-  @Override
-  public InterpreterGroup getInterpreterGroup() {
-    return intp.getInterpreterGroup();
-  }
+    @Override
+    public InterpreterGroup getInterpreterGroup() {
+        return intp.getInterpreterGroup();
+    }
 
-  @Override
-  public void setClassloaderUrls(URL[] classloaderUrls) {
-    intp.setClassloaderUrls(classloaderUrls);
-  }
+    @Override
+    public void setInterpreterGroup(InterpreterGroup interpreterGroup) {
+        super.setInterpreterGroup(interpreterGroup);
+        intp.setInterpreterGroup(interpreterGroup);
+    }
 
-  @Override
-  public URL[] getClassloaderUrls() {
-    return intp.getClassloaderUrls();
-  }
+    @Override
+    public URL[] getClassloaderUrls() {
+        return intp.getClassloaderUrls();
+    }
+
+    @Override
+    public void setClassloaderUrls(URL[] classloaderUrls) {
+        intp.setClassloaderUrls(classloaderUrls);
+    }
 }

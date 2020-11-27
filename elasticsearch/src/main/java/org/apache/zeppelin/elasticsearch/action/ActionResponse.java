@@ -25,54 +25,53 @@ import java.util.List;
  */
 public class ActionResponse {
 
-  private boolean succeeded;
-  private long totalHits;
-  private final List<HitWrapper> hits = new LinkedList<>();
-  private final List<AggWrapper> aggregations = new LinkedList<>();
+    private final List<HitWrapper> hits = new LinkedList<>();
+    private final List<AggWrapper> aggregations = new LinkedList<>();
+    private boolean succeeded;
+    private long totalHits;
 
+    public ActionResponse succeeded(boolean succeeded) {
+        this.succeeded = succeeded;
+        return this;
+    }
 
-  public ActionResponse succeeded(boolean succeeded) {
-    this.succeeded = succeeded;
-    return this;
-  }
+    public boolean isSucceeded() {
+        return succeeded;
+    }
 
-  public boolean isSucceeded() {
-    return succeeded;
-  }
+    public ActionResponse totalHits(long totalHits) {
+        this.totalHits = totalHits;
+        return this;
+    }
 
-  public ActionResponse totalHits(long totalHits) {
-    this.totalHits = totalHits;
-    return this;
-  }
+    public long getTotalHits() {
+        return totalHits;
+    }
 
-  public long getTotalHits() {
-    return totalHits;
-  }
+    public List<HitWrapper> getHits() {
+        return hits;
+    }
 
-  public List<HitWrapper> getHits() {
-    return hits;
-  }
+    public ActionResponse addHit(HitWrapper hit) {
+        this.hits.add(hit);
+        return this;
+    }
 
-  public ActionResponse addHit(HitWrapper hit) {
-    this.hits.add(hit);
-    return this;
-  }
+    public List<AggWrapper> getAggregations() {
+        return aggregations;
+    }
 
-  public List<AggWrapper> getAggregations() {
-    return aggregations;
-  }
+    public ActionResponse addAggregation(AggWrapper aggregation) {
+        this.aggregations.add(aggregation);
+        return this;
+    }
 
-  public ActionResponse addAggregation(AggWrapper aggregation) {
-    this.aggregations.add(aggregation);
-    return this;
-  }
+    public ActionResponse hit(HitWrapper hit) {
+        this.addHit(hit);
+        return this;
+    }
 
-  public ActionResponse hit(HitWrapper hit) {
-    this.addHit(hit);
-    return this;
-  }
-
-  public HitWrapper getHit() {
-    return this.hits.get(0);
-  }
+    public HitWrapper getHit() {
+        return this.hits.get(0);
+    }
 }

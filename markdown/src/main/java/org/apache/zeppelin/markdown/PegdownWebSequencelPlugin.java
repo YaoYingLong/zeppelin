@@ -31,51 +31,51 @@ import org.pegdown.plugins.PegDownPlugins;
  */
 public class PegdownWebSequencelPlugin extends Parser implements BlockPluginParser {
 
-  public PegdownWebSequencelPlugin() {
-    super(PegdownParser.OPTIONS,
-        PegdownParser.PARSING_TIMEOUT_AS_MILLIS,
-        DefaultParseRunnerProvider);
-  }
+    public static final String TAG = "%%%";
 
-  public PegdownWebSequencelPlugin(Integer opts, Long millis, ParseRunnerProvider provider,
-                                   PegDownPlugins plugins) {
-    super(opts, millis, provider, plugins);
-  }
+    public PegdownWebSequencelPlugin() {
+        super(PegdownParser.OPTIONS,
+                PegdownParser.PARSING_TIMEOUT_AS_MILLIS,
+                DefaultParseRunnerProvider);
+    }
 
-  public static final String TAG = "%%%";
+    public PegdownWebSequencelPlugin(Integer opts, Long millis, ParseRunnerProvider provider,
+                                     PegDownPlugins plugins) {
+        super(opts, millis, provider, plugins);
+    }
 
-  Rule startMarker() {
-    return Sequence(Spn1(), TAG, Sp(), "sequence", Sp());
-  }
+    Rule startMarker() {
+        return Sequence(Spn1(), TAG, Sp(), "sequence", Sp());
+    }
 
-  String endMarker() {
-    return TAG;
-  }
+    String endMarker() {
+        return TAG;
+    }
 
-  Rule body() {
-    return OneOrMore(TestNot(TAG), BaseParser.ANY);
-  }
+    Rule body() {
+        return OneOrMore(TestNot(TAG), BaseParser.ANY);
+    }
 
-  Rule blockRule() {
-    StringBuilderVar style = new StringBuilderVar();
-    StringBuilderVar body = new StringBuilderVar();
+    Rule blockRule() {
+        StringBuilderVar style = new StringBuilderVar();
+        StringBuilderVar body = new StringBuilderVar();
 
-    return NodeSequence(
-        startMarker(),
-        Optional(
-            String("style="),
-            Sequence(OneOrMore(Letter()), style.append(match()), Spn1())),
-        Sequence(body(), body.append(match())),
-        endMarker(),
-        push(
-            new ExpImageNode("title",
-                MarkdownUtils.createWebsequenceUrl(style.getString(), body.getString()),
-                new TextNode("")))
-    );
-  }
+        return NodeSequence(
+                startMarker(),
+                Optional(
+                        String("style="),
+                        Sequence(OneOrMore(Letter()), style.append(match()), Spn1())),
+                Sequence(body(), body.append(match())),
+                endMarker(),
+                push(
+                        new ExpImageNode("title",
+                                MarkdownUtils.createWebsequenceUrl(style.getString(), body.getString()),
+                                new TextNode("")))
+        );
+    }
 
-  @Override
-  public Rule[] blockPluginRules() {
-    return new Rule[]{blockRule()};
-  }
+    @Override
+    public Rule[] blockPluginRules() {
+        return new Rule[]{blockRule()};
+    }
 }

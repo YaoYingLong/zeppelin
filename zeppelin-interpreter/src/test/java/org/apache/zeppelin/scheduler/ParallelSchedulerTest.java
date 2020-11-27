@@ -17,43 +17,43 @@
 
 package org.apache.zeppelin.scheduler;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class ParallelSchedulerTest {
 
-  private static SchedulerFactory schedulerSvc;
+    private static SchedulerFactory schedulerSvc;
 
-  @BeforeClass
-  public static void setUp() {
-    schedulerSvc = SchedulerFactory.singleton();
-  }
+    @BeforeClass
+    public static void setUp() {
+        schedulerSvc = SchedulerFactory.singleton();
+    }
 
-  @Test
-  public void testRun() throws InterruptedException {
-    Scheduler s = schedulerSvc.createOrGetParallelScheduler("test", 2);
+    @Test
+    public void testRun() throws InterruptedException {
+        Scheduler s = schedulerSvc.createOrGetParallelScheduler("test", 2);
 
-    Job<?> job1 = new SleepingJob("job1", null, 500);
-    Job<?> job2 = new SleepingJob("job2", null, 500);
-    Job<?> job3 = new SleepingJob("job3", null, 500);
+        Job<?> job1 = new SleepingJob("job1", null, 500);
+        Job<?> job2 = new SleepingJob("job2", null, 500);
+        Job<?> job3 = new SleepingJob("job3", null, 500);
 
-    s.submit(job1);
-    s.submit(job2);
-    s.submit(job3);
-    Thread.sleep(200);
+        s.submit(job1);
+        s.submit(job2);
+        s.submit(job3);
+        Thread.sleep(200);
 
-    assertEquals(Status.RUNNING, job1.getStatus());
-    assertEquals(Status.RUNNING, job2.getStatus());
-    assertEquals(Status.PENDING, job3.getStatus());
+        assertEquals(Status.RUNNING, job1.getStatus());
+        assertEquals(Status.RUNNING, job2.getStatus());
+        assertEquals(Status.PENDING, job3.getStatus());
 
-    Thread.sleep(500);
+        Thread.sleep(500);
 
-    assertEquals(Status.FINISHED, job1.getStatus());
-    assertEquals(Status.FINISHED, job2.getStatus());
-    assertEquals(Status.RUNNING, job3.getStatus());
-    schedulerSvc.removeScheduler(s.getName());
-  }
+        assertEquals(Status.FINISHED, job1.getStatus());
+        assertEquals(Status.FINISHED, job2.getStatus());
+        assertEquals(Status.RUNNING, job3.getStatus());
+        schedulerSvc.removeScheduler(s.getName());
+    }
 }

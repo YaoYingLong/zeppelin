@@ -21,31 +21,31 @@ import java.util.Objects;
 
 public class KSQLRequest {
 
-  private static final String EXPLAIN_QUERY = "EXPLAIN %s";
-  private final String ksql;
-  private final Map<String, String> streamsProperties;
+    private static final String EXPLAIN_QUERY = "EXPLAIN %s";
+    private final String ksql;
+    private final Map<String, String> streamsProperties;
 
-  KSQLRequest(final String ksql, final Map<String, String> streamsProperties) {
-    String inputQuery = Objects.requireNonNull(ksql, "ksql")
-        .replaceAll("[\\n\\t\\r]", " ")
-        .trim();
-    this.ksql = inputQuery.endsWith(";") ? inputQuery : inputQuery + ";";
-    this.streamsProperties = streamsProperties;
-  }
+    KSQLRequest(final String ksql, final Map<String, String> streamsProperties) {
+        String inputQuery = Objects.requireNonNull(ksql, "ksql")
+                .replaceAll("[\\n\\t\\r]", " ")
+                .trim();
+        this.ksql = inputQuery.endsWith(";") ? inputQuery : inputQuery + ";";
+        this.streamsProperties = streamsProperties;
+    }
 
-  KSQLRequest(final String ksql) {
-    this(ksql, Collections.emptyMap());
-  }
+    KSQLRequest(final String ksql) {
+        this(ksql, Collections.emptyMap());
+    }
 
-  KSQLRequest toExplainRequest() {
-    return new KSQLRequest(String.format(EXPLAIN_QUERY, this.ksql), this.streamsProperties);
-  }
+    KSQLRequest toExplainRequest() {
+        return new KSQLRequest(String.format(EXPLAIN_QUERY, this.ksql), this.streamsProperties);
+    }
 
-  public String getKsql() {
-    return ksql;
-  }
+    public String getKsql() {
+        return ksql;
+    }
 
-  public Map<String, String> getStreamsProperties() {
-    return streamsProperties;
-  }
+    public Map<String, String> getStreamsProperties() {
+        return streamsProperties;
+    }
 }

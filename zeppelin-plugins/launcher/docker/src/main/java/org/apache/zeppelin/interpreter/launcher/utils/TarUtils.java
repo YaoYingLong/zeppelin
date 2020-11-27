@@ -32,72 +32,72 @@ import java.io.IOException;
 import java.util.List;
 
 public class TarUtils {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TarUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TarUtils.class);
 
-  public static void compress(String name, List<TarFileEntry> files) throws IOException {
-    try (TarArchiveOutputStream out = getTarArchiveOutputStream(name)){
-      for (TarFileEntry tarFileEntry : files){
-        addToArchiveCompression(out, tarFileEntry.getFile(), tarFileEntry.getArchivePath());
-      }
-    }
-  }
-
-  public static void decompress(String in, File out) throws IOException {
-    FileInputStream fileInputStream = new FileInputStream(in);
-    GzipCompressorInputStream gzipInputStream = new GzipCompressorInputStream(fileInputStream);
-
-    try (TarArchiveInputStream fin = new TarArchiveInputStream(gzipInputStream)){
-      TarArchiveEntry entry;
-      while ((entry = fin.getNextTarEntry()) != null) {
-        if (entry.isDirectory()) {
-          continue;
+    public static void compress(String name, List<TarFileEntry> files) throws IOException {
+        try (TarArchiveOutputStream out = getTarArchiveOutputStream(name)) {
+            for (TarFileEntry tarFileEntry : files) {
+                addToArchiveCompression(out, tarFileEntry.getFile(), tarFileEntry.getArchivePath());
+            }
         }
-        File curfile = new File(out, entry.getName());
-        File parent = curfile.getParentFile();
-        if (!parent.exists()) {
-          parent.mkdirs();
-        }
-        IOUtils.copy(fin, new FileOutputStream(curfile));
-      }
     }
-  }
 
-  private static TarArchiveOutputStream getTarArchiveOutputStream(String name)
-      throws IOException {
-    FileOutputStream fileOutputStream = new FileOutputStream(name);
-    GzipCompressorOutputStream gzipOutputStream = new GzipCompressorOutputStream(fileOutputStream);
-    TarArchiveOutputStream taos = new TarArchiveOutputStream(gzipOutputStream);
+    public static void decompress(String in, File out) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(in);
+        GzipCompressorInputStream gzipInputStream = new GzipCompressorInputStream(fileInputStream);
 
-    // TAR has an 8 gig file limit by default, this gets around that
-    taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
-
-    // TAR originally didn't support long file names, so enable the support for it
-    taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-    taos.setAddPaxHeadersForNonAsciiNames(true);
-
-    return taos;
-  }
-
-  private static void addToArchiveCompression(TarArchiveOutputStream out, File file, String dir)
-      throws IOException {
-    if (file.isFile()){
-      String archivePath = "." + dir;
-      LOGGER.info("archivePath = " + archivePath);
-      out.putArchiveEntry(new TarArchiveEntry(file, archivePath));
-      try (FileInputStream in = new FileInputStream(file)) {
-        IOUtils.copy(in, out);
-      }
-      out.closeArchiveEntry();
-    } else if (file.isDirectory()) {
-      File[] children = file.listFiles();
-      if (children != null){
-        for (File child : children){
-          String appendDir = child.getAbsolutePath().replace(file.getAbsolutePath(), "");
-          addToArchiveCompression(out, child, dir + appendDir);
+        try (TarArchiveInputStream fin = new TarArchiveInputStream(gzipInputStream)) {
+            TarArchiveEntry entry;
+            while ((entry = fin.getNextTarEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                File curfile = new File(out, entry.getName());
+                File parent = curfile.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                IOUtils.copy(fin, new FileOutputStream(curfile));
+            }
         }
-      }
-    } else {
-      LOGGER.error(file.getName() + " is not supported");
     }
-  }
+
+    private static TarArchiveOutputStream getTarArchiveOutputStream(String name)
+            throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(name);
+        GzipCompressorOutputStream gzipOutputStream = new GzipCompressorOutputStream(fileOutputStream);
+        TarArchiveOutputStream taos = new TarArchiveOutputStream(gzipOutputStream);
+
+        // TAR has an 8 gig file limit by default, this gets around that
+        taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+
+        // TAR originally didn't support long file names, so enable the support for it
+        taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+        taos.setAddPaxHeadersForNonAsciiNames(true);
+
+        return taos;
+    }
+
+    private static void addToArchiveCompression(TarArchiveOutputStream out, File file, String dir)
+            throws IOException {
+        if (file.isFile()) {
+            String archivePath = "." + dir;
+            LOGGER.info("archivePath = " + archivePath);
+            out.putArchiveEntry(new TarArchiveEntry(file, archivePath));
+            try (FileInputStream in = new FileInputStream(file)) {
+                IOUtils.copy(in, out);
+            }
+            out.closeArchiveEntry();
+        } else if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    String appendDir = child.getAbsolutePath().replace(file.getAbsolutePath(), "");
+                    addToArchiveCompression(out, child, dir + appendDir);
+                }
+            }
+        } else {
+            LOGGER.error(file.getName() + " is not supported");
+        }
+    }
 }

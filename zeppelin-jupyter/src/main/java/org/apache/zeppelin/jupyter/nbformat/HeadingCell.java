@@ -23,10 +23,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class HeadingCell extends Cell {
 
-  @SerializedName("level")
-  private int level;
+    @SerializedName("level")
+    private int level;
 
-  public int getLevel() {
-    return level;
-  }
+    public int getLevel() {
+        return level;
+    }
 }

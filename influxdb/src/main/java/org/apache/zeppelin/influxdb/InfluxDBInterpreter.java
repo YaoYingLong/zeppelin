@@ -14,23 +14,19 @@
  */
 package org.apache.zeppelin.influxdb;
 
-import java.util.Properties;
-import java.util.StringJoiner;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.influxdb.LogLevel;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.QueryApi;
-import org.apache.zeppelin.interpreter.AbstractInterpreter;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
+import org.apache.zeppelin.interpreter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+
+import java.util.Properties;
+import java.util.StringJoiner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <a href="https://v2.docs.influxdata.com/v2.0/">InfluxDB 2.0</a> interpreter for Zeppelin.
@@ -51,157 +47,157 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
  */
 public class InfluxDBInterpreter extends AbstractInterpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InfluxDBInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfluxDBInterpreter.class);
 
-  private static final String INFLUXDB_API_URL_PROPERTY = "influxdb.url";
-  private static final String INFLUXDB_TOKEN_PROPERTY = "influxdb.token";
-  private static final String INFLUXDB_ORG_PROPERTY = "influxdb.org";
-  private static final String INFLUXDB_LOGLEVEL_PROPERTY = "influxdb.logLevel";
+    private static final String INFLUXDB_API_URL_PROPERTY = "influxdb.url";
+    private static final String INFLUXDB_TOKEN_PROPERTY = "influxdb.token";
+    private static final String INFLUXDB_ORG_PROPERTY = "influxdb.org";
+    private static final String INFLUXDB_LOGLEVEL_PROPERTY = "influxdb.logLevel";
 
-  private static final String TABLE_MAGIC_TAG = "%table ";
-  private static final String WHITESPACE = " ";
-  private static final String NEWLINE = "\n";
-  private static final String TAB = "\t";
-  private static final String EMPTY_COLUMN_VALUE = "";
+    private static final String TABLE_MAGIC_TAG = "%table ";
+    private static final String WHITESPACE = " ";
+    private static final String NEWLINE = "\n";
+    private static final String TAB = "\t";
+    private static final String EMPTY_COLUMN_VALUE = "";
 
-  private volatile InfluxDBClient client;
-  private volatile QueryApi queryApi;
+    private volatile InfluxDBClient client;
+    private volatile QueryApi queryApi;
 
-  public InfluxDBInterpreter(Properties properties) {
-    super(properties);
-  }
+    public InfluxDBInterpreter(Properties properties) {
+        super(properties);
+    }
 
-  @Override
-  public ZeppelinContext getZeppelinContext() {
-    return null;
-  }
+    @Override
+    public ZeppelinContext getZeppelinContext() {
+        return null;
+    }
 
-  @Override
-  protected InterpreterResult internalInterpret(String query, InterpreterContext context)
-      throws InterpreterException {
+    @Override
+    protected InterpreterResult internalInterpret(String query, InterpreterContext context)
+            throws InterpreterException {
 
-    LOGGER.debug("Run Flux command '{}'", query);
-    query = query.trim();
+        LOGGER.debug("Run Flux command '{}'", query);
+        query = query.trim();
 
-    QueryApi queryService = getInfluxDBClient(context);
+        QueryApi queryService = getInfluxDBClient(context);
 
-    final int[] actualIndex = {-1};
+        final int[] actualIndex = {-1};
 
-    AtomicReference<InterpreterResult> resultRef = new AtomicReference<>();
-    CountDownLatch countDownLatch = new CountDownLatch(1);
+        AtomicReference<InterpreterResult> resultRef = new AtomicReference<>();
+        CountDownLatch countDownLatch = new CountDownLatch(1);
 
-    StringBuilder result = new StringBuilder();
-    queryService.query(
-        query,
+        StringBuilder result = new StringBuilder();
+        queryService.query(
+                query,
 
-        //process record
-        (cancellable, fluxRecord) -> {
+                //process record
+                (cancellable, fluxRecord) -> {
 
-          Integer tableIndex = fluxRecord.getTable();
-          if (actualIndex[0] != tableIndex) {
-            result.append(NEWLINE);
-            result.append(TABLE_MAGIC_TAG);
-            actualIndex[0] = tableIndex;
+                    Integer tableIndex = fluxRecord.getTable();
+                    if (actualIndex[0] != tableIndex) {
+                        result.append(NEWLINE);
+                        result.append(TABLE_MAGIC_TAG);
+                        actualIndex[0] = tableIndex;
 
-            //add column names to table header
-            StringJoiner joiner = new StringJoiner(TAB);
-            fluxRecord.getValues().keySet().forEach(c -> joiner.add(replaceReservedChars(c)));
-            result.append(joiner.toString());
-            result.append(NEWLINE);
-          }
+                        //add column names to table header
+                        StringJoiner joiner = new StringJoiner(TAB);
+                        fluxRecord.getValues().keySet().forEach(c -> joiner.add(replaceReservedChars(c)));
+                        result.append(joiner.toString());
+                        result.append(NEWLINE);
+                    }
 
-          StringJoiner rowsJoiner = new StringJoiner(TAB);
-          for (Object value : fluxRecord.getValues().values()) {
-            if (value == null) {
-              value = EMPTY_COLUMN_VALUE;
-            }
-            rowsJoiner.add(replaceReservedChars(value.toString()));
-          }
-          result.append(rowsJoiner.toString());
-          result.append(NEWLINE);
-        },
+                    StringJoiner rowsJoiner = new StringJoiner(TAB);
+                    for (Object value : fluxRecord.getValues().values()) {
+                        if (value == null) {
+                            value = EMPTY_COLUMN_VALUE;
+                        }
+                        rowsJoiner.add(replaceReservedChars(value.toString()));
+                    }
+                    result.append(rowsJoiner.toString());
+                    result.append(NEWLINE);
+                },
 
-        throwable -> {
+                throwable -> {
 
-          LOGGER.error(throwable.getMessage(), throwable);
-          resultRef.set(new InterpreterResult(InterpreterResult.Code.ERROR,
-              throwable.getMessage()));
+                    LOGGER.error(throwable.getMessage(), throwable);
+                    resultRef.set(new InterpreterResult(InterpreterResult.Code.ERROR,
+                            throwable.getMessage()));
 
-          countDownLatch.countDown();
+                    countDownLatch.countDown();
 
-        }, () -> {
-          //on complete
-          InterpreterResult intpResult = new InterpreterResult(InterpreterResult.Code.SUCCESS);
-          intpResult.add(result.toString());
-          resultRef.set(intpResult);
-          countDownLatch.countDown();
+                }, () -> {
+                    //on complete
+                    InterpreterResult intpResult = new InterpreterResult(InterpreterResult.Code.SUCCESS);
+                    intpResult.add(result.toString());
+                    resultRef.set(intpResult);
+                    countDownLatch.countDown();
+                }
+        );
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            throw new InterpreterException(e);
         }
-    );
-    try {
-      countDownLatch.await();
-    } catch (InterruptedException e) {
-      throw new InterpreterException(e);
+
+        return resultRef.get();
     }
 
-    return resultRef.get();
-  }
 
-
-  private QueryApi getInfluxDBClient(InterpreterContext context) {
-    if (queryApi == null) {
-      queryApi = this.client.getQueryApi();
+    private QueryApi getInfluxDBClient(InterpreterContext context) {
+        if (queryApi == null) {
+            queryApi = this.client.getQueryApi();
+        }
+        return queryApi;
     }
-    return queryApi;
-  }
 
 
-  @Override
-  public void open() throws InterpreterException {
+    @Override
+    public void open() throws InterpreterException {
 
-    if (this.client == null) {
-      InfluxDBClientOptions opt = InfluxDBClientOptions.builder()
-          .url(getProperty(INFLUXDB_API_URL_PROPERTY))
-          .authenticateToken(getProperty(INFLUXDB_TOKEN_PROPERTY).toCharArray())
-          .logLevel(LogLevel.valueOf(
-              getProperty(INFLUXDB_LOGLEVEL_PROPERTY, LogLevel.NONE.toString())))
-          .org(getProperty(INFLUXDB_ORG_PROPERTY))
-          .build();
+        if (this.client == null) {
+            InfluxDBClientOptions opt = InfluxDBClientOptions.builder()
+                    .url(getProperty(INFLUXDB_API_URL_PROPERTY))
+                    .authenticateToken(getProperty(INFLUXDB_TOKEN_PROPERTY).toCharArray())
+                    .logLevel(LogLevel.valueOf(
+                            getProperty(INFLUXDB_LOGLEVEL_PROPERTY, LogLevel.NONE.toString())))
+                    .org(getProperty(INFLUXDB_ORG_PROPERTY))
+                    .build();
 
-      this.client = InfluxDBClientFactory.create(opt);
+            this.client = InfluxDBClientFactory.create(opt);
+        }
     }
-  }
 
-  @Override
-  public void close() throws InterpreterException {
-    if (this.client != null) {
-      this.client.close();
-      this.client = null;
+    @Override
+    public void close() throws InterpreterException {
+        if (this.client != null) {
+            this.client.close();
+            this.client = null;
+        }
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
+    @Override
+    public void cancel(InterpreterContext context) throws InterpreterException {
 
-  }
-
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return FormType.SIMPLE;
-  }
-
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return 0;
-  }
-
-  /**
-   * For %table response replace Tab and Newline.
-   */
-  private String replaceReservedChars(String str) {
-    if (str == null) {
-      return EMPTY_COLUMN_VALUE;
     }
-    return str.replace(TAB, WHITESPACE).replace(NEWLINE, WHITESPACE);
-  }
+
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return FormType.SIMPLE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return 0;
+    }
+
+    /**
+     * For %table response replace Tab and Newline.
+     */
+    private String replaceReservedChars(String str) {
+        if (str == null) {
+            return EMPTY_COLUMN_VALUE;
+        }
+        return str.replace(TAB, WHITESPACE).replace(NEWLINE, WHITESPACE);
+    }
 
 }

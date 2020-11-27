@@ -19,12 +19,7 @@ package org.apache.zeppelin.interpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,250 +28,249 @@ import java.util.List;
  * InterpreterMessageOutputStream
  */
 public class InterpreterResultMessageOutput extends OutputStream {
-  Logger logger = LoggerFactory.getLogger(InterpreterResultMessageOutput.class);
-  private final int NEW_LINE_CHAR = '\n';
-  private List<String> resourceSearchPaths;
+    private final int NEW_LINE_CHAR = '\n';
+    private final List<Object> outList = new LinkedList<>();
+    private final InterpreterResultMessageOutputListener flushListener;
+    Logger logger = LoggerFactory.getLogger(InterpreterResultMessageOutput.class);
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    private List<String> resourceSearchPaths;
+    private InterpreterOutputChangeWatcher watcher;
+    private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
+    private boolean firstWrite = true;
+    private boolean enableTableAppend = true;
 
-  ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-  private final List<Object> outList = new LinkedList<>();
-  private InterpreterOutputChangeWatcher watcher;
-  private final InterpreterResultMessageOutputListener flushListener;
-  private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
-  private boolean firstWrite = true;
-  private boolean enableTableAppend = true;
-
-  public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
-      InterpreterResultMessageOutputListener listener) {
-    this.type = type;
-    this.flushListener = listener;
-  }
-
-  public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
-      InterpreterResultMessageOutputListener flushListener,
-      InterpreterOutputChangeListener listener) throws IOException {
-    this.type = type;
-    this.flushListener = flushListener;
-    watcher = new InterpreterOutputChangeWatcher(listener);
-    watcher.start();
-  }
-
-  public void setEnableTableAppend(boolean enableTableAppend) {
-    this.enableTableAppend = enableTableAppend;
-  }
-
-  public InterpreterResult.Type getType() {
-    return type;
-  }
-
-  public void setType(InterpreterResult.Type type) {
-    if (this.type != type) {
-      clear();
-      this.type = type;
+    public InterpreterResultMessageOutput(
+            InterpreterResult.Type type,
+            InterpreterResultMessageOutputListener listener) {
+        this.type = type;
+        this.flushListener = listener;
     }
-  }
 
-  public void clear() {
-     clear(true);
-  }
-
-  /**
-   *
-   * @param sendUpdateToFrontend Whether send empty result to frontend to clear the paragraph output
-   */
-  public void clear(boolean sendUpdateToFrontend) {
-    synchronized (outList) {
-      buffer.reset();
-      outList.clear();
-      if (watcher != null) {
-        watcher.clear();
-      }
-
-      if (flushListener != null && sendUpdateToFrontend) {
-        flushListener.onUpdate(this);
-      }
+    public InterpreterResultMessageOutput(
+            InterpreterResult.Type type,
+            InterpreterResultMessageOutputListener flushListener,
+            InterpreterOutputChangeListener listener) throws IOException {
+        this.type = type;
+        this.flushListener = flushListener;
+        watcher = new InterpreterOutputChangeWatcher(listener);
+        watcher.start();
     }
-  }
 
-  @Override
-  public void write(int b) throws IOException {
-    synchronized (outList) {
-      buffer.write(b);
-      if (b == NEW_LINE_CHAR) {
-        // first time use of this outputstream.
-        if (firstWrite) {
-          // clear the output on gui
-          if (flushListener != null) {
-            flushListener.onUpdate(this);
-          }
-          firstWrite = false;
+    public void setEnableTableAppend(boolean enableTableAppend) {
+        this.enableTableAppend = enableTableAppend;
+    }
+
+    public InterpreterResult.Type getType() {
+        return type;
+    }
+
+    public void setType(InterpreterResult.Type type) {
+        if (this.type != type) {
+            clear();
+            this.type = type;
+        }
+    }
+
+    public void clear() {
+        clear(true);
+    }
+
+    /**
+     * @param sendUpdateToFrontend Whether send empty result to frontend to clear the paragraph output
+     */
+    public void clear(boolean sendUpdateToFrontend) {
+        synchronized (outList) {
+            buffer.reset();
+            outList.clear();
+            if (watcher != null) {
+                watcher.clear();
+            }
+
+            if (flushListener != null && sendUpdateToFrontend) {
+                flushListener.onUpdate(this);
+            }
+        }
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        synchronized (outList) {
+            buffer.write(b);
+            if (b == NEW_LINE_CHAR) {
+                // first time use of this outputstream.
+                if (firstWrite) {
+                    // clear the output on gui
+                    if (flushListener != null) {
+                        flushListener.onUpdate(this);
+                    }
+                    firstWrite = false;
+                }
+
+                if (isAppendSupported()) {
+                    flush(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        synchronized (outList) {
+            for (int i = off; i < len; i++) {
+                write(b[i]);
+            }
+        }
+    }
+
+    /**
+     * In dev mode, it monitors file and update ZeppelinServer
+     *
+     * @param file
+     * @throws IOException
+     */
+    public void write(File file) throws IOException {
+        outList.add(file);
+        if (watcher != null) {
+            watcher.watch(file);
+        }
+    }
+
+    public void write(String string) throws IOException {
+        write(string.getBytes());
+    }
+
+    /**
+     * write contents in the resource file in the classpath
+     *
+     * @param url
+     * @throws IOException
+     */
+    public void write(URL url) throws IOException {
+        outList.add(url);
+    }
+
+    public void setResourceSearchPaths(List<String> resourceSearchPaths) {
+        this.resourceSearchPaths = resourceSearchPaths;
+    }
+
+    public void writeResource(String resourceName) throws IOException {
+        // search file under provided paths first, for dev mode
+        for (String path : resourceSearchPaths) {
+            File res = new File(path + "/" + resourceName);
+            if (res.isFile()) {
+                write(res);
+                return;
+            }
         }
 
-        if (isAppendSupported()) {
-          flush(true);
+        // search from classpath
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = this.getClass().getClassLoader();
         }
-      }
-    }
-  }
-
-  @Override
-  public void write(byte [] b) throws IOException {
-    write(b, 0, b.length);
-  }
-
-  @Override
-  public void write(byte [] b, int off, int len) throws IOException {
-    synchronized (outList) {
-      for (int i = off; i < len; i++) {
-        write(b[i]);
-      }
-    }
-  }
-
-  /**
-   * In dev mode, it monitors file and update ZeppelinServer
-   * @param file
-   * @throws IOException
-   */
-  public void write(File file) throws IOException {
-    outList.add(file);
-    if (watcher != null) {
-      watcher.watch(file);
-    }
-  }
-
-  public void write(String string) throws IOException {
-    write(string.getBytes());
-  }
-
-  /**
-   * write contents in the resource file in the classpath
-   * @param url
-   * @throws IOException
-   */
-  public void write(URL url) throws IOException {
-    outList.add(url);
-  }
-
-  public void setResourceSearchPaths(List<String> resourceSearchPaths) {
-    this.resourceSearchPaths = resourceSearchPaths;
-  }
-
-  public void writeResource(String resourceName) throws IOException {
-    // search file under provided paths first, for dev mode
-    for (String path : resourceSearchPaths) {
-      File res = new File(path + "/" + resourceName);
-      if (res.isFile()) {
-        write(res);
-        return;
-      }
-    }
-
-    // search from classpath
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    if (cl == null) {
-      cl = this.getClass().getClassLoader();
-    }
-    if (cl == null) {
-      cl = ClassLoader.getSystemClassLoader();
-    }
-
-    write(cl.getResource(resourceName));
-  }
-
-  public byte[] toByteArray() throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    List<Object> all = new LinkedList<>();
-
-    synchronized (outList) {
-      all.addAll(outList);
-    }
-
-    for (Object o : all) {
-      if (o instanceof File) {
-        File f = (File) o;
-        FileInputStream fin = new FileInputStream(f);
-        copyStream(fin, out);
-        fin.close();
-      } else if (o instanceof byte[]) {
-        out.write((byte[]) o);
-      } else if (o instanceof Integer) {
-        out.write((int) o);
-      } else if (o instanceof URL) {
-        InputStream fin = ((URL) o).openStream();
-        copyStream(fin, out);
-        fin.close();
-      } else {
-        // can not handle the object
-      }
-    }
-    out.close();
-    return out.toByteArray();
-  }
-
-  public InterpreterResultMessage toInterpreterResultMessage() throws IOException {
-    return new InterpreterResultMessage(type, new String(toByteArray()));
-  }
-
-  private void flush(boolean append) throws IOException {
-    synchronized (outList) {
-      buffer.flush();
-      byte[] bytes = buffer.toByteArray();
-      if (bytes != null && bytes.length > 0) {
-        outList.add(bytes);
-        if (append) {
-          if (flushListener != null) {
-            flushListener.onAppend(this, bytes);
-          }
-        } else {
-          if (flushListener != null) {
-            flushListener.onUpdate(this);
-          }
+        if (cl == null) {
+            cl = ClassLoader.getSystemClassLoader();
         }
-      }
-      buffer.reset();
+
+        write(cl.getResource(resourceName));
     }
-  }
 
-  public void flush() throws IOException {
-    flush(isAppendSupported());
-  }
+    public byte[] toByteArray() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        List<Object> all = new LinkedList<>();
 
-  public boolean isAppendSupported() {
-    return type == InterpreterResult.Type.TEXT || (type == InterpreterResult.Type.TABLE && enableTableAppend);
-  }
+        synchronized (outList) {
+            all.addAll(outList);
+        }
 
-  private void copyStream(InputStream in, OutputStream out) throws IOException {
-    int bufferSize = 8192;
-    byte[] buffer = new byte[bufferSize];
-
-    while (true) {
-      int bytesRead = in.read(buffer);
-      if (bytesRead == -1) {
-        break;
-      } else {
-        out.write(buffer, 0, bytesRead);
-      }
+        for (Object o : all) {
+            if (o instanceof File) {
+                File f = (File) o;
+                FileInputStream fin = new FileInputStream(f);
+                copyStream(fin, out);
+                fin.close();
+            } else if (o instanceof byte[]) {
+                out.write((byte[]) o);
+            } else if (o instanceof Integer) {
+                out.write((int) o);
+            } else if (o instanceof URL) {
+                InputStream fin = ((URL) o).openStream();
+                copyStream(fin, out);
+                fin.close();
+            } else {
+                // can not handle the object
+            }
+        }
+        out.close();
+        return out.toByteArray();
     }
-  }
 
-  @Override
-  public void close() throws IOException {
-    flush();
-    if (watcher != null) {
-      watcher.clear();
-      watcher.shutdown();
+    public InterpreterResultMessage toInterpreterResultMessage() throws IOException {
+        return new InterpreterResultMessage(type, new String(toByteArray()));
     }
-  }
 
-  public String toString() {
-    try {
-      return "%" + type.name().toLowerCase() + " " + new String(toByteArray());
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-      return "%" + type.name().toLowerCase() + "\n";
+    private void flush(boolean append) throws IOException {
+        synchronized (outList) {
+            buffer.flush();
+            byte[] bytes = buffer.toByteArray();
+            if (bytes != null && bytes.length > 0) {
+                outList.add(bytes);
+                if (append) {
+                    if (flushListener != null) {
+                        flushListener.onAppend(this, bytes);
+                    }
+                } else {
+                    if (flushListener != null) {
+                        flushListener.onUpdate(this);
+                    }
+                }
+            }
+            buffer.reset();
+        }
     }
-  }
+
+    public void flush() throws IOException {
+        flush(isAppendSupported());
+    }
+
+    public boolean isAppendSupported() {
+        return type == InterpreterResult.Type.TEXT || (type == InterpreterResult.Type.TABLE && enableTableAppend);
+    }
+
+    private void copyStream(InputStream in, OutputStream out) throws IOException {
+        int bufferSize = 8192;
+        byte[] buffer = new byte[bufferSize];
+
+        while (true) {
+            int bytesRead = in.read(buffer);
+            if (bytesRead == -1) {
+                break;
+            } else {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        flush();
+        if (watcher != null) {
+            watcher.clear();
+            watcher.shutdown();
+        }
+    }
+
+    public String toString() {
+        try {
+            return "%" + type.name().toLowerCase() + " " + new String(toByteArray());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            return "%" + type.name().toLowerCase() + "\n";
+        }
+    }
 }

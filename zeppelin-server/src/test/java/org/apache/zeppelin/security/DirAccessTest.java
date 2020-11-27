@@ -16,58 +16,58 @@
  */
 package org.apache.zeppelin.security;
 
-import org.junit.Test;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.Assert.assertEquals;
+
 public class DirAccessTest extends AbstractTestRestApi {
-  @Test
-  public void testDirAccessForbidden() throws Exception {
-    synchronized (this) {
-      try {
-        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SERVER_DEFAULT_DIR_ALLOWED
-                .getVarName(), "false");
-        AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
-        CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
-        LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
-
-        assertEquals(HttpStatus.SC_FORBIDDEN, getMethod.getStatusLine().getStatusCode());
-      } finally {
-        AbstractTestRestApi.shutDown();
-      }
+    protected static String getUrlToTest() {
+        String url = "http://localhost:8080";
+        if (System.getProperty("url") != null) {
+            url = System.getProperty("url");
+        }
+        return url;
     }
-  }
 
-  @Test
-  public void testDirAccessOk() throws Exception {
-    synchronized (this) {
-      try {
-        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SERVER_DEFAULT_DIR_ALLOWED
-                .getVarName(), "true");
-        AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
-        CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
-        LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
-        assertEquals(HttpStatus.SC_OK, getMethod.getStatusLine().getStatusCode());
-      } finally {
-        AbstractTestRestApi.shutDown();
-      }
-    }
-  }
+    @Test
+    public void testDirAccessForbidden() throws Exception {
+        synchronized (this) {
+            try {
+                System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SERVER_DEFAULT_DIR_ALLOWED
+                        .getVarName(), "false");
+                AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
+                CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
+                LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
 
-  protected static String getUrlToTest() {
-    String url = "http://localhost:8080";
-    if (System.getProperty("url") != null) {
-      url = System.getProperty("url");
+                assertEquals(HttpStatus.SC_FORBIDDEN, getMethod.getStatusLine().getStatusCode());
+            } finally {
+                AbstractTestRestApi.shutDown();
+            }
+        }
     }
-    return url;
-  }
+
+    @Test
+    public void testDirAccessOk() throws Exception {
+        synchronized (this) {
+            try {
+                System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SERVER_DEFAULT_DIR_ALLOWED
+                        .getVarName(), "true");
+                AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
+                CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
+                LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
+                assertEquals(HttpStatus.SC_OK, getMethod.getStatusLine().getStatusCode());
+            } finally {
+                AbstractTestRestApi.shutDown();
+            }
+        }
+    }
 }
 

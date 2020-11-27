@@ -67,16 +67,16 @@ export default class AreachartVisualization extends Nvd3ChartVisualization {
     let self = this;
     let configObj = self.config;
 
-    chart.xAxis.tickFormat(function(d) {
+    chart.xAxis.tickFormat(function (d) {
       return self.xAxisTickFormat(d, self.xLabels);
     });
-    chart.yAxis.tickFormat(function(d) {
+    chart.yAxis.tickFormat(function (d) {
       return self.yAxisTickFormat(d);
     });
     chart.yAxis.axisLabelDistance(50);
     chart.useInteractiveGuideline(true); // for better UX and performance issue. (https://github.com/novus/nvd3/issues/691)
 
-    self.config.changeXLabel = function(type) {
+    self.config.changeXLabel = function (type) {
       switch (type) {
         case 'default':
           self.chart._options['showXAxis'] = true;
@@ -100,7 +100,7 @@ export default class AreachartVisualization extends Nvd3ChartVisualization {
       self.emitConfig(configObj);
     };
 
-    self.config.isXLabelStatus = function(type) {
+    self.config.isXLabelStatus = function (type) {
       if (configObj.xLabelStatus === type) {
         return true;
       } else {
@@ -108,13 +108,13 @@ export default class AreachartVisualization extends Nvd3ChartVisualization {
       }
     };
 
-    self.config.setDegree = function(type) {
+    self.config.setDegree = function (type) {
       configObj.rotate.degree = type;
       self.chart.xAxis.rotateLabels(type);
       self.emitConfig(configObj);
     };
 
-    self.config.isDegreeEmpty = function() {
+    self.config.isDegreeEmpty = function () {
       if (configObj.rotate.degree.length > 0) {
         return true;
       } else {
@@ -126,15 +126,16 @@ export default class AreachartVisualization extends Nvd3ChartVisualization {
 
     this.chart.style(this.config.style || 'stack');
 
-    this.chart.dispatch.on('stateChange', function(s) {
+    this.chart.dispatch.on('stateChange', function (s) {
       self.config.style = s.style;
 
       // give some time to animation finish
-      setTimeout(function() {
+      setTimeout(function () {
         self.emitConfig(self.config);
       }, 500);
     });
   }
+
   getSetting(chart) {
     let self = this;
     let configObj = self.config;

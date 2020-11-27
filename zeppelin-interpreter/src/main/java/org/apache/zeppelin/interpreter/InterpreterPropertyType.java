@@ -25,38 +25,38 @@ import java.util.List;
  */
 public enum InterpreterPropertyType {
 
-  TEXTAREA("textarea"),
-  STRING("string"),
-  NUMBER("number"),
-  URL("url"),
-  PASSWORD("password"),
-  CHECKBOX("checkbox");
+    TEXTAREA("textarea"),
+    STRING("string"),
+    NUMBER("number"),
+    URL("url"),
+    PASSWORD("password"),
+    CHECKBOX("checkbox");
 
-  private String value;
+    private String value;
 
-  InterpreterPropertyType(String value) {
-    this.value = value;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public static InterpreterPropertyType byValue(String value) {
-    for (InterpreterPropertyType e : values()) {
-      if (e.getValue().equals(value)) {
-        return e;
-      }
+    InterpreterPropertyType(String value) {
+        this.value = value;
     }
-    return null;
-  }
 
-  public static List<String> getTypes() {
-    List<String> types = new ArrayList<>();
-    InterpreterPropertyType[] values = values();
-    for (InterpreterPropertyType interpreterPropertyType : values) {
-      types.add(interpreterPropertyType.getValue());
+    public static InterpreterPropertyType byValue(String value) {
+        for (InterpreterPropertyType e : values()) {
+            if (e.getValue().equals(value)) {
+                return e;
+            }
+        }
+        return null;
     }
-    return types;
-  }
+
+    public static List<String> getTypes() {
+        List<String> types = new ArrayList<>();
+        InterpreterPropertyType[] values = values();
+        for (InterpreterPropertyType interpreterPropertyType : values) {
+            types.add(interpreterPropertyType.getValue());
+        }
+        return types;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

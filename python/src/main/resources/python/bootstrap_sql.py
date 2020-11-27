@@ -21,9 +21,9 @@
 from __future__ import print_function
 
 try:
-  from pandasql import sqldf
-  pysqldf = lambda q: sqldf(q, globals())
-except ImportError:
-  pysqldf = lambda q: print("Can not run SQL over Pandas DataFrame" +
-                              "Make sure 'pandas' and 'pandasql' libraries are installed")
+    from pandasql import sqldf
 
+    pysqldf = lambda q: sqldf(q, globals())
+except ImportError:
+    pysqldf = lambda q: print("Can not run SQL over Pandas DataFrame" +
+                              "Make sure 'pandas' and 'pandasql' libraries are installed")

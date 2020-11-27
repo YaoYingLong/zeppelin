@@ -1,44 +1,44 @@
-describe('Home e2e Test', function() {
+describe('Home e2e Test', function () {
   /*Common methods for interact with elements*/
-  let clickOn = function(elem) {
+  let clickOn = function (elem) {
     browser.actions().mouseMove(elem).click().perform()
   }
 
-  let sendKeysToInput = function(input, keys) {
+  let sendKeysToInput = function (input, keys) {
     cleanInput(input)
     input.sendKeys(keys)
   }
 
-  let cleanInput = function(inputElem) {
+  let cleanInput = function (inputElem) {
     inputElem.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, "a"))
     inputElem.sendKeys(protractor.Key.BACK_SPACE)
   }
 
-  let scrollToElementAndClick = function(elem) {
+  let scrollToElementAndClick = function (elem) {
     browser.executeScript("arguments[0].scrollIntoView(false);", elem.getWebElement())
     browser.sleep(300)
     clickOn(elem)
   }
 
   //tests
-  it('should have a welcome message', function() {
+  it('should have a welcome message', function () {
     browser.get('http://localhost:8080');
     var welcomeElem = element(by.id('welcome'))
 
     expect(welcomeElem.getText()).toEqual('Welcome to Zeppelin!')
   })
 
-  it('should have the button for importing notebook', function() {
+  it('should have the button for importing notebook', function () {
     var btn = element(by.cssContainingText('a', 'Import note'))
     expect(btn.isPresent()).toBe(true)
   })
 
-  it('should have the button for creating notebook', function() {
+  it('should have the button for creating notebook', function () {
     var btn = element(by.cssContainingText('a', 'Create new note'))
     expect(btn.isPresent()).toBe(true)
   })
 
-  it('correct save permission in interpreter', function() {
+  it('correct save permission in interpreter', function () {
     var ownerName = 'admin'
     var interpreterName = 'interpreter_e2e_test'
     clickOn(element(by.xpath('//span[@class="username ng-binding"]')))

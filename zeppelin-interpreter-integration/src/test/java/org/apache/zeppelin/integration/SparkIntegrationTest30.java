@@ -27,31 +27,31 @@ import java.util.List;
 @RunWith(value = Parameterized.class)
 public class SparkIntegrationTest30 extends SparkIntegrationTest {
 
-  public SparkIntegrationTest30(String sparkVersion, String hadoopVersion) {
-    super(sparkVersion, hadoopVersion);
-  }
-
-  @Parameterized.Parameters
-  public static List<Object[]> data() {
-    return Arrays.asList(new Object[][]{
-            {"3.0.1", "2.7"},
-            {"3.0.1", "3.2"}
-    });
-  }
-
-  @Override
-  protected void setUpSparkInterpreterSetting(InterpreterSetting interpreterSetting) {
-    // spark3 doesn't support yarn-client and yarn-cluster any more, use
-    // spark.master and spark.submit.deployMode instead
-    String sparkMaster = interpreterSetting.getJavaProperties().getProperty("spark.master");
-    if (sparkMaster.equals("yarn-client")) {
-      interpreterSetting.setProperty("spark.master", "yarn");
-      interpreterSetting.setProperty("spark.submit.deployMode", "client");
-    } else if (sparkMaster.equals("yarn-cluster")){
-      interpreterSetting.setProperty("spark.master", "yarn");
-      interpreterSetting.setProperty("spark.submit.deployMode", "cluster");
-    } else if (sparkMaster.startsWith("local")) {
-      interpreterSetting.setProperty("spark.submit.deployMode", "client");
+    public SparkIntegrationTest30(String sparkVersion, String hadoopVersion) {
+        super(sparkVersion, hadoopVersion);
     }
-  }
+
+    @Parameterized.Parameters
+    public static List<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"3.0.1", "2.7"},
+                {"3.0.1", "3.2"}
+        });
+    }
+
+    @Override
+    protected void setUpSparkInterpreterSetting(InterpreterSetting interpreterSetting) {
+        // spark3 doesn't support yarn-client and yarn-cluster any more, use
+        // spark.master and spark.submit.deployMode instead
+        String sparkMaster = interpreterSetting.getJavaProperties().getProperty("spark.master");
+        if (sparkMaster.equals("yarn-client")) {
+            interpreterSetting.setProperty("spark.master", "yarn");
+            interpreterSetting.setProperty("spark.submit.deployMode", "client");
+        } else if (sparkMaster.equals("yarn-cluster")) {
+            interpreterSetting.setProperty("spark.master", "yarn");
+            interpreterSetting.setProperty("spark.submit.deployMode", "cluster");
+        } else if (sparkMaster.startsWith("local")) {
+            interpreterSetting.setProperty("spark.submit.deployMode", "client");
+        }
+    }
 }

@@ -21,8 +21,8 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
   $scope.searchTerm = $routeParams.searchTerm;
   let results = searchService.search({'q': $routeParams.searchTerm}).query();
 
-  results.$promise.then(function(result) {
-    $scope.notes = result.body.map(function(note) {
+  results.$promise.then(function (result) {
+    $scope.notes = result.body.map(function (note) {
       // redirect to notebook when search result is a notebook itself,
       // not a paragraph
       if (!/\/paragraph\//.test(note.id)) {
@@ -40,7 +40,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
       $scope.isResult = true;
     }
 
-    $scope.$on('$routeChangeStart', function(event, next, current) {
+    $scope.$on('$routeChangeStart', function (event, next, current) {
       if (next.originalPath !== '/search/:searchTerm') {
         searchService.searchTerm = '';
       }
@@ -50,8 +50,8 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
   $scope.page = 0;
   $scope.allResults = false;
 
-  $scope.highlightSearchResults = function(note) {
-    return function(_editor) {
+  $scope.highlightSearchResults = function (note) {
+    return function (_editor) {
       function getEditorMode(text) {
         let editorModes = {
           'ace/mode/scala': /^%(\w*\.)?spark/,
@@ -62,7 +62,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
           'ace/mode/sh': /^%sh/,
         };
 
-        return Object.keys(editorModes).reduce(function(res, mode) {
+        return Object.keys(editorModes).reduce(function (res, mode) {
           return editorModes[mode].test(text) ? mode : res;
         }, 'ace/mode/scala');
       }
@@ -77,7 +77,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
       _editor.getSession().setMode(getEditorMode(note.text));
 
       function getIndeces(term) {
-        return function(str) {
+        return function (str) {
           let indeces = [];
           let i = -1;
           while ((i = str.indexOf(term, i + 1)) >= 0) {
@@ -96,7 +96,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
 
       let lines = result
         .split('\n')
-        .map(function(line, row) {
+        .map(function (line, row) {
           let match = line.match(/<B>(.+?)<\/B>/);
 
           // return early if nothing to highlight
@@ -111,7 +111,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
 
           let indeces = getIndeces(term)(__line);
 
-          indeces.forEach(function(start) {
+          indeces.forEach(function (start) {
             let end = start + term.length;
             if (note.header !== '' && row === 0) {
               _editor
@@ -144,7 +144,7 @@ function SearchResultCtrl($scope, $routeParams, searchService) {
       // resize editor based on content length
       _editor.setOption(
         'maxLines',
-        lines.reduce(function(len, line) {
+        lines.reduce(function (len, line) {
           return len + line.length;
         }, 0)
       );

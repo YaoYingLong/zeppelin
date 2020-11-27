@@ -27,56 +27,57 @@ import org.slf4j.LoggerFactory;
  * Zeppelinhub websocket handler.
  */
 public class ZeppelinhubWebsocket implements WebSocketListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinhubWebsocket.class);
-  private Session zeppelinHubSession;
-  private final String token;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinhubWebsocket.class);
+    private final String token;
+    private Session zeppelinHubSession;
 
-  private ZeppelinhubWebsocket(String token) {
-    this.token = token;
-  }
-
-  public static ZeppelinhubWebsocket newInstance(String token) {
-    return new ZeppelinhubWebsocket(token);
-  }
-
-  @Override
-  public void onWebSocketBinary(byte[] payload, int offset, int len) {}
-
-  @Override
-  public void onWebSocketClose(int statusCode, String reason) {
-    LOGGER.info("Closing websocket connection [{}] : {}", statusCode, reason);
-    send(ZeppelinhubUtils.deadMessage(token));
-    this.zeppelinHubSession = null;
-  }
-
-  @Override
-  public void onWebSocketConnect(Session session) {
-    LOGGER.info("Opening a new session to Zeppelinhub {}", session.hashCode());
-    this.zeppelinHubSession = session;
-    send(ZeppelinhubUtils.liveMessage(token));
-  }
-
-  @Override
-  public void onWebSocketError(Throwable cause) {
-    LOGGER.error("Remote websocket error");
-  }
-
-  @Override
-  public void onWebSocketText(String message) {
-    // handle message from ZeppelinHub.
-    ZeppelinhubClient client = ZeppelinhubClient.getInstance();
-    if (client != null) {
-      client.handleMsgFromZeppelinHub(message);
+    private ZeppelinhubWebsocket(String token) {
+        this.token = token;
     }
-  }
 
-  private boolean isSessionOpen() {
-    return ((zeppelinHubSession != null) && (zeppelinHubSession.isOpen())) ? true : false;
-  }
-
-  private void send(String msg) {
-    if (isSessionOpen()) {
-      zeppelinHubSession.getRemote().sendStringByFuture(msg);
+    public static ZeppelinhubWebsocket newInstance(String token) {
+        return new ZeppelinhubWebsocket(token);
     }
-  }
+
+    @Override
+    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+    }
+
+    @Override
+    public void onWebSocketClose(int statusCode, String reason) {
+        LOGGER.info("Closing websocket connection [{}] : {}", statusCode, reason);
+        send(ZeppelinhubUtils.deadMessage(token));
+        this.zeppelinHubSession = null;
+    }
+
+    @Override
+    public void onWebSocketConnect(Session session) {
+        LOGGER.info("Opening a new session to Zeppelinhub {}", session.hashCode());
+        this.zeppelinHubSession = session;
+        send(ZeppelinhubUtils.liveMessage(token));
+    }
+
+    @Override
+    public void onWebSocketError(Throwable cause) {
+        LOGGER.error("Remote websocket error");
+    }
+
+    @Override
+    public void onWebSocketText(String message) {
+        // handle message from ZeppelinHub.
+        ZeppelinhubClient client = ZeppelinhubClient.getInstance();
+        if (client != null) {
+            client.handleMsgFromZeppelinHub(message);
+        }
+    }
+
+    private boolean isSessionOpen() {
+        return ((zeppelinHubSession != null) && (zeppelinHubSession.isOpen())) ? true : false;
+    }
+
+    private void send(String msg) {
+        if (isSessionOpen()) {
+            zeppelinHubSession.getRemote().sendStringByFuture(msg);
+        }
+    }
 }

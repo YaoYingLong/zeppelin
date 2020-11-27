@@ -15,14 +15,28 @@
 import Transformation from './transformation';
 
 import {
-  getCurrentChart, getCurrentChartAxis, getCurrentChartParam,
-  serializeSharedAxes, useSharedAxis,
-  getCurrentChartAxisSpecs, getCurrentChartParamSpecs,
-  initializeConfig, resetAxisConfig, resetParameterConfig,
-  isAggregatorAxis, isGroupAxis, isKeyAxis, isSingleDimensionAxis,
-  removeDuplicatedColumnsInMultiDimensionAxis, applyMaxAxisCount,
-  isInputWidget, isOptionWidget, isCheckboxWidget, isTextareaWidget, parseParameter,
+  applyMaxAxisCount,
+  getCurrentChart,
+  getCurrentChartAxis,
+  getCurrentChartAxisSpecs,
+  getCurrentChartParam,
+  getCurrentChartParamSpecs,
   getTransformer,
+  initializeConfig,
+  isAggregatorAxis,
+  isCheckboxWidget,
+  isGroupAxis,
+  isInputWidget,
+  isKeyAxis,
+  isOptionWidget,
+  isSingleDimensionAxis,
+  isTextareaWidget,
+  parseParameter,
+  removeDuplicatedColumnsInMultiDimensionAxis,
+  resetAxisConfig,
+  resetParameterConfig,
+  serializeSharedAxes,
+  useSharedAxis,
 } from './advanced-transformation-util';
 
 const SETTING_TEMPLATE = 'app/tabledata/advanced-transformation-setting.html';
@@ -31,7 +45,8 @@ export default class AdvancedTransformation extends Transformation {
   constructor(config, spec) {
     super(config);
 
-    this.columns = []; /** [{ name, index, comment }] */
+    this.columns = [];
+    /** [{ name, index, comment }] */
     this.props = {};
     this.spec = spec;
 
@@ -57,7 +72,8 @@ export default class AdvancedTransformation extends Transformation {
   }
 
   getSetting() {
-    const self = this; /** for closure */
+    const self = this;
+    /** for closure */
     const configInstance = self.config; /** for closure */
 
     if (self.spec.initialized) {
@@ -163,7 +179,7 @@ export default class AdvancedTransformation extends Transformation {
           self.emitChartChange(configInstance);
         },
 
-        axisChanged: function(e, ui, axisSpec) {
+        axisChanged: function (e, ui, axisSpec) {
           removeDuplicatedColumnsInMultiDimensionAxis(configInstance, axisSpec);
           applyMaxAxisCount(configInstance, axisSpec);
 
@@ -181,7 +197,7 @@ export default class AdvancedTransformation extends Transformation {
           self.emitChartChange(configInstance);
         },
 
-        removeFromAxis: function(colIndex, axisSpec) {
+        removeFromAxis: function (colIndex, axisSpec) {
           if (isSingleDimensionAxis(axisSpec)) {
             getCurrentChartAxis(configInstance)[axisSpec.name] = null;
           } else {
@@ -191,16 +207,16 @@ export default class AdvancedTransformation extends Transformation {
           self.emitChartChange(configInstance);
         },
 
-        isInputWidget: function(paramSpec) {
+        isInputWidget: function (paramSpec) {
           return isInputWidget(paramSpec);
         },
-        isCheckboxWidget: function(paramSpec) {
+        isCheckboxWidget: function (paramSpec) {
           return isCheckboxWidget(paramSpec);
         },
-        isOptionWidget: function(paramSpec) {
+        isOptionWidget: function (paramSpec) {
           return isOptionWidget(paramSpec);
         },
-        isTextareaWidget: function(paramSpec) {
+        isTextareaWidget: function (paramSpec) {
           return isTextareaWidget(paramSpec);
         },
 
@@ -210,7 +226,7 @@ export default class AdvancedTransformation extends Transformation {
           self.emitParameterChange(configInstance);
         },
 
-        parameterOnKeyDown: function(event, paramSpec) {
+        parameterOnKeyDown: function (event, paramSpec) {
           const code = event.keyCode || event.which;
           if (code === 13 && isInputWidget(paramSpec)) {
             self.emitParameterChange(configInstance);

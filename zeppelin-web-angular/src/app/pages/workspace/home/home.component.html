@@ -18,15 +18,16 @@
     Zeppelin is web-based notebook that enables interactive data analytics.<br/>
     You can make beautiful data-driven, interactive, collaborative document with SQL, code and even more!<br/>
   </div>
-  <div nz-row class="more-info" [nzGutter]="48">
-    <div nz-col [nzSm]="24" [nzLg]="8">
-      <h3>Notebook <a class="refresh-note" nz-tooltip nzTitle="Reload notes from storage" (click)="reloadNoteList()"><i nz-icon nzType="sync" nzTheme="outline" [nzSpin]="loading"></i></a></h3>
+  <div [nzGutter]="48" class="more-info" nz-row>
+    <div [nzLg]="8" [nzSm]="24" nz-col>
+      <h3>Notebook <a (click)="reloadNoteList()" class="refresh-note" nz-tooltip nzTitle="Reload notes from storage"><i
+        [nzSpin]="loading" nz-icon nzTheme="outline" nzType="sync"></i></a></h3>
       <zeppelin-node-list></zeppelin-node-list>
     </div>
-    <div nz-col [nzSm]="24" [nzLg]="12">
+    <div [nzLg]="12" [nzSm]="24" nz-col>
       <h3>Help</h3>
-      Get started with <a style="text-decoration: none;" target="_blank"
-                          href="http://zeppelin.apache.org/docs/{{ticketService.version}}/index.html">Zeppelin
+      Get started with <a href="http://zeppelin.apache.org/docs/{{ticketService.version}}/index.html" style="text-decoration: none;"
+                          target="_blank">Zeppelin
       documentation</a><br/>
 
       <h3>Community</h3>

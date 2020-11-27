@@ -96,7 +96,6 @@
         "description": "Use HiveContext instead of SQLContext if it is true. Enable hive for SparkSession.",
         "type": "checkbox"
       },
-
       "zeppelin.spark.printREPLOutput": {
         "envName": null,
         "propertyName": "zeppelin.spark.printREPLOutput",
@@ -111,7 +110,6 @@
         "description": "Max number of Spark SQL result to display.",
         "type": "number"
       },
-
       "zeppelin.spark.enableSupportedVersionCheck": {
         "envName": null,
         "propertyName": "zeppelin.spark.enableSupportedVersionCheck",

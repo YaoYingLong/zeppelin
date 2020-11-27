@@ -137,12 +137,15 @@ export const AxisType = {
 export function isAggregatorAxis(axisSpec) {
   return axisSpec && axisSpec.axisType === AxisType.AGGREGATOR;
 }
+
 export function isGroupAxis(axisSpec) {
   return axisSpec && axisSpec.axisType === AxisType.GROUP;
 }
+
 export function isKeyAxis(axisSpec) {
   return axisSpec && axisSpec.axisType === AxisType.KEY;
 }
+
 export function isSingleDimensionAxis(axisSpec) {
   return axisSpec && axisSpec.dimension === 'single';
 }
@@ -220,7 +223,8 @@ export function removeDuplicatedColumnsInMultiDimensionAxis(config, axisSpec) {
 }
 
 export function clearAxisConfig(config) {
-  delete config.axis; /** Object: persisted axis for each chart */
+  delete config.axis;
+  /** Object: persisted axis for each chart */
   delete config.sharedAxis;
 }
 
@@ -353,7 +357,8 @@ export function initializeConfig(config, spec) {
     spec.initialized = true;
     updated = true;
 
-    delete config.chart;      /** Object: contains current, available chart */
+    delete config.chart;
+    /** Object: contains current, available chart */
     config.panel = {columnPanelOpened: true, parameterPanelOpened: false};
 
     clearAxisConfig(config);
@@ -505,7 +510,8 @@ const TransformMethod = {
 
 /** return function for lazy computation */
 export function getTransformer(conf, rows, axisSpecs, axis) {
-  let transformer = () => {};
+  let transformer = () => {
+  };
 
   const transformSpec = getCurrentChartTransform(conf);
   if (!transformSpec) {
@@ -586,7 +592,8 @@ export function getTransformer(conf, rows, axisSpecs, axis) {
       i++;
     }
 
-    const {cube, schema,
+    const {
+      cube, schema,
       key1ColumnName, key1Names, key2ColumnName, key2Names,
       groupNameSet, selectorNameWithIndex,
     } = getKKGACube(rows, key1Columns, key2Columns, groupColumns, aggregatorColumns);
@@ -634,27 +641,27 @@ export function getTransformer(conf, rows, axisSpecs, axis) {
 }
 
 const AggregatorFunctions = {
-  sum: function(a, b) {
+  sum: function (a, b) {
     const varA = (a !== undefined) ? (isNaN(a) ? 1 : parseFloat(a)) : 0;
     const varB = (b !== undefined) ? (isNaN(b) ? 1 : parseFloat(b)) : 0;
     return varA + varB;
   },
-  count: function(a, b) {
+  count: function (a, b) {
     const varA = (a !== undefined) ? parseInt(a) : 0;
     const varB = (b !== undefined) ? 1 : 0;
     return varA + varB;
   },
-  min: function(a, b) {
+  min: function (a, b) {
     const varA = (a !== undefined) ? (isNaN(a) ? 1 : parseFloat(a)) : 0;
     const varB = (b !== undefined) ? (isNaN(b) ? 1 : parseFloat(b)) : 0;
     return Math.min(varA, varB);
   },
-  max: function(a, b) {
+  max: function (a, b) {
     const varA = (a !== undefined) ? (isNaN(a) ? 1 : parseFloat(a)) : 0;
     const varB = (b !== undefined) ? (isNaN(b) ? 1 : parseFloat(b)) : 0;
     return Math.max(varA, varB);
   },
-  avg: function(a, b, c) {
+  avg: function (a, b, c) {
     const varA = (a !== undefined) ? (isNaN(a) ? 1 : parseFloat(a)) : 0;
     const varB = (b !== undefined) ? (isNaN(b) ? 1 : parseFloat(b)) : 0;
     return varA + varB;
@@ -683,7 +690,8 @@ export function getKGACube(rows, keyColumns, groupColumns, aggrColumns) {
   const keyColumnName = keyColumns.map((c) => c.name).join('.');
   const groupNameSet = new Set();
   const keyNameSet = new Set();
-  const selectorNameWithIndex = {}; /** { selectorName: index } */
+  const selectorNameWithIndex = {};
+  /** { selectorName: index } */
   let indexCounter = 0;
 
   for (let i = 0; i < rows.length; i++) {
@@ -797,7 +805,8 @@ export function getKAGCube(rows, keyColumns, groupColumns, aggrColumns) {
   const keyColumnName = keyColumns.map((c) => c.name).join('.');
   const groupNameSet = new Set();
   const keyNameSet = new Set();
-  const selectorNameWithIndex = {}; /** { selectorName: index } */
+  const selectorNameWithIndex = {};
+  /** { selectorName: index } */
   let indexCounter = 0;
 
   for (let i = 0; i < rows.length; i++) {
@@ -895,6 +904,7 @@ export function getKAGCube(rows, keyColumns, groupColumns, aggrColumns) {
     selectorNameWithIndex: selectorNameWithIndex,
   };
 }
+
 /** nested cube `(key1) -> (key2) -> (group) -> aggregator` */
 export function getKKGACube(rows, key1Columns, key2Columns, groupColumns, aggrColumns) {
   const schema = {
@@ -912,7 +922,8 @@ export function getKKGACube(rows, key1Columns, key2Columns, groupColumns, aggrCo
   const key2ColumnName = key2Columns.map((c) => c.name).join('.');
   const key2NameSet = {};
   const groupNameSet = new Set();
-  const selectorNameWithIndex = {}; /** { selectorName: index } */
+  const selectorNameWithIndex = {};
+  /** { selectorName: index } */
   let indexCounter = 0;
 
   for (let i = 0; i < rows.length; i++) {
@@ -1015,7 +1026,8 @@ export function getKKGACube(rows, key1Columns, key2Columns, groupColumns, aggrCo
     } /** end loop for aggrColumns */
   }
 
-  let key1Names = sortWithNumberSupport(Object.keys(key1NameSet)); /** keys should be sorted */
+  let key1Names = sortWithNumberSupport(Object.keys(key1NameSet));
+  /** keys should be sorted */
   let key2Names = sortWithNumberSupport(Object.keys(key2NameSet)); /** keys should be sorted */
 
   return {
@@ -1054,7 +1066,8 @@ export function getCubeValue(obj, aggregator, aggrColumnName) {
     if (typeof value === 'undefined') {
       value = null;
     }
-  } catch (error) { /** iognore */ }
+  } catch (error) { /** iognore */
+  }
 
   return value;
 }
@@ -1341,12 +1354,12 @@ export function fillDrillDownRow(schema, obj, rows, key,
 }
 
 export function sortWithNumberSupport(arr) {
-  let isNumeric = function(n) {
+  let isNumeric = function (n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   };
 
   if (arr.every(isNumeric)) {
-    return arr.sort(function(a, b) {
+    return arr.sort(function (a, b) {
       return parseFloat(a) - parseFloat(b);
     });
   } else {

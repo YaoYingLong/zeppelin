@@ -10,23 +10,25 @@
  * limitations under the License.
  */
 
-import { ElementRef, OnDestroy } from '@angular/core';
+import {ElementRef, OnDestroy} from '@angular/core';
 
 import * as G2 from '@antv/g2';
 
-import { GraphConfig } from '@zeppelin/sdk';
-import { Visualization } from './visualization';
+import {GraphConfig} from '@zeppelin/sdk';
+import {Visualization} from './visualization';
 
 export abstract class G2VisualizationComponentBase implements OnDestroy {
   abstract container: ElementRef<HTMLDivElement>;
   chart: G2.Chart;
   config: GraphConfig;
 
-  constructor(public visualization: Visualization) {}
+  constructor(public visualization: Visualization) {
+  }
 
   abstract renderBefore(chart: G2.Chart): void;
 
   abstract refreshSetting(): void;
+
   abstract setScale(): void;
 
   render() {
@@ -39,7 +41,8 @@ export abstract class G2VisualizationComponentBase implements OnDestroy {
     this.renderAfter();
   }
 
-  renderAfter(): void {}
+  renderAfter(): void {
+  }
 
   getKey(): string {
     let key = '';

@@ -21,5 +21,5 @@ package org.apache.zeppelin.markdown;
  * Abstract Markdown Parser.
  */
 public interface MarkdownParser {
-  String render(String markdownText);
+    String render(String markdownText);
 }

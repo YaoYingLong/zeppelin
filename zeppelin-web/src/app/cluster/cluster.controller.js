@@ -51,11 +51,11 @@ function ClusterController($scope, $rootScope, $http, baseUrlSrv, ngToast, webso
 
   /** functions */
 
-  $scope.setNodeDateSorter = function(dateSorter) {
+  $scope.setNodeDateSorter = function (dateSorter) {
     $scope.sorter.currentDateSorter = dateSorter;
   };
 
-  $scope.getNodesInCurrentPage = function(nodes) {
+  $scope.getNodesInCurrentPage = function (nodes) {
     const cp = $scope.pagination.currentPage;
     const itp = $scope.pagination.itemsPerPage;
     return nodes.slice((cp - 1) * itp, (cp * itp));
@@ -65,25 +65,25 @@ function ClusterController($scope, $rootScope, $http, baseUrlSrv, ngToast, webso
 
   $scope.getNodeColorByStatus = getNodeColorByStatus;
 
-  $scope.filterNodes = function(nodes, filterConfig) {
+  $scope.filterNodes = function (nodes, filterConfig) {
     return nodes;
   };
 
   function init() {
     $http.get(baseUrlSrv.getRestApiBase() + '/cluster/nodes')
-      .success(function(data, status, headers, config) {
+      .success(function (data, status, headers, config) {
         $scope.nodes = data.body;
         $scope.filteredNodes = $scope.nodes;
         console.log(JSON.stringify($scope.nodes));
       })
-      .error(function(data, status, headers, config) {
+      .error(function (data, status, headers, config) {
         if (status === 401) {
           ngToast.danger({
             content: 'You don\'t have permission on this page',
             verticalPosition: 'bottom',
             timeout: '3000',
           });
-          setTimeout(function() {
+          setTimeout(function () {
             window.location = baseUrlSrv.getBase();
           }, 3000);
         }

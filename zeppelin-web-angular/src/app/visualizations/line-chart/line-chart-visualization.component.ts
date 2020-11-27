@@ -45,6 +45,10 @@ export class LineChartVisualizationComponent extends G2VisualizationComponentBas
   isDateFormat = false;
   dateFormat = '';
 
+  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {
+    super(visualization);
+  }
+
   settingChange(): void {
     const setting = this.config.setting.lineChart;
     setting.lineWithFocus = this.lineWithFocus;
@@ -52,10 +56,6 @@ export class LineChartVisualizationComponent extends G2VisualizationComponentBas
     setting.isDateFormat = this.isDateFormat;
     setting.dateFormat = this.dateFormat;
     this.visualization.configChange$.next(this.config);
-  }
-
-  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {
-    super(visualization);
   }
 
   ngOnInit() {}

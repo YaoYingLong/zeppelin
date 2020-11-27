@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { ParagraphItem } from './message-paragraph.interface';
+import {ParagraphItem} from './message-paragraph.interface';
 
 interface ID {
   id: string;

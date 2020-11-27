@@ -70,7 +70,7 @@ var isTest = ENV === 'test';
 var isProd = ENV.startsWith('build')
 var isCI = ENV === 'build:ci'
 
-module.exports = function makeWebpackConfig () {
+module.exports = function makeWebpackConfig() {
   /**
    * Config
    * Reference: http://webpack.github.io/docs/configuration.html
@@ -202,7 +202,8 @@ module.exports = function makeWebpackConfig () {
             return webPort;
           }
         }
-      ]})
+        ]
+      })
     }],
   };
 
@@ -212,11 +213,11 @@ module.exports = function makeWebpackConfig () {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
-      // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
-      new MiniCssExtractPlugin({
-        filename: !isProd ? '[name].css' : '[name].[hash].css',
-        chunkFilename: !isProd ? '[id].css' : '[id].[hash].css'
-      })
+    // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
+    new MiniCssExtractPlugin({
+      filename: !isProd ? '[name].css' : '[name].[hash].css',
+      chunkFilename: !isProd ? '[id].css' : '[id].[hash].css'
+    })
   ];
 
   // Skip rendering index.html in test mode
@@ -284,7 +285,7 @@ module.exports = function makeWebpackConfig () {
     hot: true,
     progress: true,
     contentBase: './src',
-    before: function(app) {
+    before: function (app) {
       app.use('**/bower_components/', express.static(path.resolve(__dirname, './bower_components/')));
       app.use('**/app/', express.static(path.resolve(__dirname, './src/app/')));
       app.use('**/assets/', express.static(path.resolve(__dirname, './src/assets/')));

@@ -15,24 +15,24 @@
     [visualization]="visualization">
   </zeppelin-visualization-pivot-setting>
   <div class="line-setting">
-    <label nz-checkbox [(ngModel)]="forceY" (ngModelChange)="settingChange()">Force Y to 0 </label>
-    <br />
-    <label nz-checkbox [(ngModel)]="lineWithFocus" (ngModelChange)="settingChange()">
+    <label (ngModelChange)="settingChange()" [(ngModel)]="forceY" nz-checkbox>Force Y to 0 </label>
+    <br/>
+    <label (ngModelChange)="settingChange()" [(ngModel)]="lineWithFocus" nz-checkbox>
       Zoom
       <small *ngIf="lineWithFocus" class="zoom-tips">Drag mouse to select the range, double-click to reset.</small>
     </label>
-    <br />
-    <label nz-checkbox [(ngModel)]="isDateFormat" (ngModelChange)="settingChange()">
+    <br/>
+    <label (ngModelChange)="settingChange()" [(ngModel)]="isDateFormat" nz-checkbox>
       Date Format
-      <input class="format-input"
-             *ngIf="isDateFormat"
+      <input (blur)="settingChange()"
              (click)="$event.stopPropagation()"
-             (blur)="settingChange()"
              (keydown.enter)="settingChange()"
+             *ngIf="isDateFormat"
+             [(ngModel)]="dateFormat"
+             class="format-input"
              nz-input
              nzSize="small"
-             placeholder="YYYY-MM-DD HH:mm"
-             [(ngModel)]="dateFormat" />
+             placeholder="YYYY-MM-DD HH:mm"/>
     </label>
   </div>
   <zeppelin-visualization-x-axis-setting

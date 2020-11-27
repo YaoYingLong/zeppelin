@@ -23,6 +23,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class RawCellMetadata extends CellMetadata {
 
-  @SerializedName("format")
-  private String format;
+    @SerializedName("format")
+    private String format;
 }

@@ -19,11 +19,7 @@ package org.apache.zeppelin.ksql;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -32,144 +28,141 @@ import java.util.stream.Collectors;
 
 public class BasicKSQLHttpClient implements Closeable {
 
-  public static final String UTF_8 = "utf-8";
-
-  interface BasicHTTPClientResponse {
-    void onMessage(int status, String message);
-
-    void onError(int status, String message);
-  }
-
-  private final String jsonData;
-  private final Map<String, Object> formData;
-  private final String type;
-  private final Map<String, String> headers;
-  private final URL url;
-  private HttpURLConnection connection;
-  private final int timeout;
-  private boolean connected;
-
-
-  public BasicKSQLHttpClient(String url, String jsonData, Map<String, Object> formData,
-                 String type, Map<String, String> headers, int timeout)
-      throws IOException {
-    this.url = new URL(url);
-    this.jsonData = jsonData;
-    this.formData = formData;
-    this.type = type;
-    this.headers = headers;
-    this.timeout = timeout;
-    this.connected = false;
-  }
-
-  @Override
-  public void close() throws IOException {
-    connected = false;
-    if (connection != null) {
-      connection.disconnect();
+    public static final String UTF_8 = "utf-8";
+    private final String jsonData;
+    private final Map<String, Object> formData;
+    private final String type;
+    private final Map<String, String> headers;
+    private final URL url;
+    private final int timeout;
+    private HttpURLConnection connection;
+    private boolean connected;
+    public BasicKSQLHttpClient(String url, String jsonData, Map<String, Object> formData,
+                               String type, Map<String, String> headers, int timeout)
+            throws IOException {
+        this.url = new URL(url);
+        this.jsonData = jsonData;
+        this.formData = formData;
+        this.type = type;
+        this.headers = headers;
+        this.timeout = timeout;
+        this.connected = false;
     }
-  }
 
-  private void writeOutput(String data) throws IOException {
-    try (OutputStream os = connection.getOutputStream()) {
-      byte[] input = data.getBytes(UTF_8);
-      os.write(input);
-    }
-  }
-
-  public String connect() throws IOException {
-    int status = createConnection();
-    boolean isStatusOk = isStatusOk(status);
-    return IOUtils.toString(isStatusOk ?
-        connection.getInputStream() : connection.getErrorStream(), UTF_8);
-  }
-
-  public void connectAsync(BasicHTTPClientResponse onResponse) throws IOException {
-    int status = createConnection();
-    boolean isStatusOk = isStatusOk(status);
-    long start = System.currentTimeMillis();
-
-    try (InputStreamReader in = new InputStreamReader(connection.getInputStream(), UTF_8);
-         BufferedReader br = new BufferedReader(in)) {
-      while (connected && (timeout == -1 || System.currentTimeMillis() - start < timeout)) {
-        if (br.ready()) {
-          String responseLine = br.readLine();
-          if (responseLine == null || responseLine.isEmpty()) {
-            continue;
-          }
-          if (isStatusOk) {
-            onResponse.onMessage(status, responseLine.trim());
-          } else {
-            onResponse.onError(status, responseLine.trim());
-          }
+    @Override
+    public void close() throws IOException {
+        connected = false;
+        if (connection != null) {
+            connection.disconnect();
         }
-      }
-    }
-  }
-
-  private boolean isStatusOk(int status) {
-    return status >= 200 && status < 300;
-  }
-
-  private int createConnection() throws IOException {
-    this.connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod(this.type);
-    this.headers.forEach((k, v) -> connection.setRequestProperty(k, v));
-    connection.setDoOutput(true);
-    if (jsonData != null && !jsonData.isEmpty()) {
-      writeOutput(jsonData);
-    } else if (formData != null && !formData.isEmpty()) {
-      String queryStringParams = formData.entrySet()
-          .stream()
-          .map(e -> e.getKey() + "=" + e.getValue())
-          .collect(Collectors.joining("&"));
-      writeOutput(queryStringParams);
-    }
-    connected = true;
-    return connection.getResponseCode();
-  }
-
-  static class Builder {
-    private String url;
-    private String json;
-    private Map<String, Object> formData = new HashMap<>();
-    private String type;
-    private Map<String, String> headers = new HashMap<>();
-    private int timeout = -1;
-
-    public Builder withTimeout(int timeout) {
-      this.timeout = timeout;
-      return this;
     }
 
-    public Builder withUrl(String url) {
-      this.url = url;
-      return this;
+    private void writeOutput(String data) throws IOException {
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = data.getBytes(UTF_8);
+            os.write(input);
+        }
     }
 
-    public Builder withJson(String json) {
-      this.json = json;
-      return this;
+    public String connect() throws IOException {
+        int status = createConnection();
+        boolean isStatusOk = isStatusOk(status);
+        return IOUtils.toString(isStatusOk ?
+                connection.getInputStream() : connection.getErrorStream(), UTF_8);
     }
 
-    public Builder withType(String type) {
-      this.type = type;
-      return this;
+    public void connectAsync(BasicHTTPClientResponse onResponse) throws IOException {
+        int status = createConnection();
+        boolean isStatusOk = isStatusOk(status);
+        long start = System.currentTimeMillis();
+
+        try (InputStreamReader in = new InputStreamReader(connection.getInputStream(), UTF_8);
+             BufferedReader br = new BufferedReader(in)) {
+            while (connected && (timeout == -1 || System.currentTimeMillis() - start < timeout)) {
+                if (br.ready()) {
+                    String responseLine = br.readLine();
+                    if (responseLine == null || responseLine.isEmpty()) {
+                        continue;
+                    }
+                    if (isStatusOk) {
+                        onResponse.onMessage(status, responseLine.trim());
+                    } else {
+                        onResponse.onError(status, responseLine.trim());
+                    }
+                }
+            }
+        }
     }
 
-    public Builder withHeader(String header, String value) {
-      this.headers.put(header, value);
-      return this;
+    private boolean isStatusOk(int status) {
+        return status >= 200 && status < 300;
     }
 
-    public Builder withFormData(String name, Object value) {
-      this.formData.put(name, value);
-      return this;
+    private int createConnection() throws IOException {
+        this.connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(this.type);
+        this.headers.forEach((k, v) -> connection.setRequestProperty(k, v));
+        connection.setDoOutput(true);
+        if (jsonData != null && !jsonData.isEmpty()) {
+            writeOutput(jsonData);
+        } else if (formData != null && !formData.isEmpty()) {
+            String queryStringParams = formData.entrySet()
+                    .stream()
+                    .map(e -> e.getKey() + "=" + e.getValue())
+                    .collect(Collectors.joining("&"));
+            writeOutput(queryStringParams);
+        }
+        connected = true;
+        return connection.getResponseCode();
     }
 
-    public BasicKSQLHttpClient build() throws IOException {
-      return new BasicKSQLHttpClient(url, json, formData, type, headers, timeout);
+    interface BasicHTTPClientResponse {
+        void onMessage(int status, String message);
+
+        void onError(int status, String message);
     }
 
-  }
+    static class Builder {
+        private String url;
+        private String json;
+        private Map<String, Object> formData = new HashMap<>();
+        private String type;
+        private Map<String, String> headers = new HashMap<>();
+        private int timeout = -1;
+
+        public Builder withTimeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public Builder withUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder withJson(String json) {
+            this.json = json;
+            return this;
+        }
+
+        public Builder withType(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder withHeader(String header, String value) {
+            this.headers.put(header, value);
+            return this;
+        }
+
+        public Builder withFormData(String name, Object value) {
+            this.formData.put(name, value);
+            return this;
+        }
+
+        public BasicKSQLHttpClient build() throws IOException {
+            return new BasicKSQLHttpClient(url, json, formData, type, headers, timeout);
+        }
+
+    }
 }

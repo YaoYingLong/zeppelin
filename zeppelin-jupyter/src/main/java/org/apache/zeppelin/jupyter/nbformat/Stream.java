@@ -29,38 +29,38 @@ import java.util.List;
  */
 public class Stream extends Output {
 
-  @SerializedName("name")
-  private String name;
+    @SerializedName("name")
+    private String name;
 
-  @SerializedName("text")
-  private Object text;
+    @SerializedName("text")
+    private Object text;
 
-  public List<String> getText() {
-    List<String> textList = new ArrayList<>();
-    if (text instanceof String) {
-      textList.add((String) text);
-    } else {
-      textList = (List<String>) text;
+    public List<String> getText() {
+        List<String> textList = new ArrayList<>();
+        if (text instanceof String) {
+            textList.add((String) text);
+        } else {
+            textList = (List<String>) text;
+        }
+        return textList;
     }
-    return textList;
-  }
 
-  public boolean isError() {
-    if (name == null) {
-      return true;
+    public boolean isError() {
+        if (name == null) {
+            return true;
+        }
+        return name.equals("stderr");
     }
-    return name.equals("stderr");
-  }
 
-  @Override
-  public ZeppelinOutputType getTypeOfZeppelin() {
-    return ZeppelinOutputType.TEXT;
-  }
+    @Override
+    public ZeppelinOutputType getTypeOfZeppelin() {
+        return ZeppelinOutputType.TEXT;
+    }
 
-  @Override
-  public TypeData toZeppelinResult() {
-    List<String> text = verifyEndOfLine(getText());
-    String result = StringUtils.join(text, "");
-    return new TypeData(getTypeOfZeppelin().toString(), result);
-  }
+    @Override
+    public TypeData toZeppelinResult() {
+        List<String> text = verifyEndOfLine(getText());
+        String result = StringUtils.join(text, "");
+        return new TypeData(getTypeOfZeppelin().toString(), result);
+    }
 }

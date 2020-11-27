@@ -23,32 +23,32 @@ package org.apache.zeppelin.interpreter.remote;
  */
 public class AppendOutputBuffer {
 
-  private String noteId;
-  private String paragraphId;
-  private int index;
-  private String data;
+    private String noteId;
+    private String paragraphId;
+    private int index;
+    private String data;
 
-  public AppendOutputBuffer(String noteId, String paragraphId, int index, String data) {
-    this.noteId = noteId;
-    this.paragraphId = paragraphId;
-    this.index = index;
-    this.data = data;
-  }
+    public AppendOutputBuffer(String noteId, String paragraphId, int index, String data) {
+        this.noteId = noteId;
+        this.paragraphId = paragraphId;
+        this.index = index;
+        this.data = data;
+    }
 
-  public String getNoteId() {
-    return noteId;
-  }
+    public String getNoteId() {
+        return noteId;
+    }
 
-  public String getParagraphId() {
-    return paragraphId;
-  }
+    public String getParagraphId() {
+        return paragraphId;
+    }
 
-  public int getIndex() {
-    return index;
-  }
+    public int getIndex() {
+        return index;
+    }
 
-  public String getData() {
-    return data;
-  }
+    public String getData() {
+        return data;
+    }
 
 }

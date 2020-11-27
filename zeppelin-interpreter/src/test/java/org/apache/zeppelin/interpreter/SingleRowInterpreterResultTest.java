@@ -26,23 +26,23 @@ import static org.junit.Assert.assertEquals;
 
 public class SingleRowInterpreterResultTest {
 
-  @Test
-  public void testHtml() {
-    List list = Lists.newArrayList("2020-01-01", 10);
-    String template = "Total count:{1} for {0}";
-    InterpreterContext context = InterpreterContext.builder().build();
-    SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
-    String htmlOutput = singleRowInterpreterResult.toHtml();
-    assertEquals("%html Total count:10 for 2020-01-01", htmlOutput);
-  }
+    @Test
+    public void testHtml() {
+        List list = Lists.newArrayList("2020-01-01", 10);
+        String template = "Total count:{1} for {0}";
+        InterpreterContext context = InterpreterContext.builder().build();
+        SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
+        String htmlOutput = singleRowInterpreterResult.toHtml();
+        assertEquals("%html Total count:10 for 2020-01-01", htmlOutput);
+    }
 
-  @Test
-  public void testAngular() {
-    List list = Lists.newArrayList("2020-01-01", 10);
-    String template = "Total count:{1} for {0}";
-    InterpreterContext context = InterpreterContext.builder().build();
-    SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
-    String angularOutput = singleRowInterpreterResult.toAngular();
-    assertEquals("%angular Total count:{{value_1}} for {{value_0}}", angularOutput);
-  }
+    @Test
+    public void testAngular() {
+        List list = Lists.newArrayList("2020-01-01", 10);
+        String template = "Total count:{1} for {0}";
+        InterpreterContext context = InterpreterContext.builder().build();
+        SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
+        String angularOutput = singleRowInterpreterResult.toAngular();
+        assertEquals("%angular Total count:{{value_1}} for {{value_0}}", angularOutput);
+    }
 }

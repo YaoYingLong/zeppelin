@@ -10,7 +10,8 @@
  * limitations under the License.
  */
 
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 
 @NgModule({})
-export class ZeppelinHeliumModule { }
+export class ZeppelinHeliumModule {
+}

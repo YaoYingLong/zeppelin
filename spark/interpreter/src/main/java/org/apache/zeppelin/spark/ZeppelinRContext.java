@@ -19,52 +19,55 @@ package org.apache.zeppelin.spark;
 
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.SQLContext;
 import org.apache.zeppelin.interpreter.ZeppelinContext;
 
 /**
  * Contains the Spark and Zeppelin Contexts made available to SparkR.
  */
 public class ZeppelinRContext {
-  private static SparkContext sparkContext;
-  private static Object sqlContext;
-  private static ZeppelinContext zeppelinContext;
-  private static Object sparkSession;
-  private static JavaSparkContext javaSparkContext;
+    private static SparkContext sparkContext;
+    private static Object sqlContext;
+    private static ZeppelinContext zeppelinContext;
+    private static Object sparkSession;
+    private static JavaSparkContext javaSparkContext;
 
-  public static void setSparkContext(SparkContext sparkContext) {
-    ZeppelinRContext.sparkContext = sparkContext;
-  }
+    public static SparkContext getSparkContext() {
+        return sparkContext;
+    }
 
-  public static void setZeppelinContext(ZeppelinContext zeppelinContext) {
-    ZeppelinRContext.zeppelinContext = zeppelinContext;
-  }
+    public static void setSparkContext(SparkContext sparkContext) {
+        ZeppelinRContext.sparkContext = sparkContext;
+    }
 
-  public static void setSqlContext(Object sqlContext) {
-    ZeppelinRContext.sqlContext = sqlContext;
-  }
+    public static Object getSqlContext() {
+        return sqlContext;
+    }
 
-  public static void setSparkSession(Object sparkSession) {
-    ZeppelinRContext.sparkSession = sparkSession;
-  }
+    public static void setSqlContext(Object sqlContext) {
+        ZeppelinRContext.sqlContext = sqlContext;
+    }
 
-  public static SparkContext getSparkContext() {
-    return sparkContext;
-  }
+    public static ZeppelinContext getZeppelinContext() {
+        return zeppelinContext;
+    }
 
-  public static Object getSqlContext() {
-    return sqlContext;
-  }
+    public static void setZeppelinContext(ZeppelinContext zeppelinContext) {
+        ZeppelinRContext.zeppelinContext = zeppelinContext;
+    }
 
-  public static ZeppelinContext getZeppelinContext() {
-    return zeppelinContext;
-  }
+    public static Object getSparkSession() {
+        return sparkSession;
+    }
 
-  public static Object getSparkSession() {
-    return sparkSession;
-  }
+    public static void setSparkSession(Object sparkSession) {
+        ZeppelinRContext.sparkSession = sparkSession;
+    }
 
-  public static void setJavaSparkContext(JavaSparkContext jsc) { javaSparkContext = jsc; }
+    public static JavaSparkContext getJavaSparkContext() {
+        return javaSparkContext;
+    }
 
-  public static JavaSparkContext getJavaSparkContext() { return javaSparkContext; }
+    public static void setJavaSparkContext(JavaSparkContext jsc) {
+        javaSparkContext = jsc;
+    }
 }

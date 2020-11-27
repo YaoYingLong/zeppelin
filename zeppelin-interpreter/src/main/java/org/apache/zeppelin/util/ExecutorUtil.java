@@ -17,38 +17,38 @@
 
 package org.apache.zeppelin.util;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class ExecutorUtil {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorUtil.class);
 
-  private ExecutorUtil() {
-    // Util class
-  }
-
-  // This softshutdown is based on https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html
-  public static void softShutdown(String name, ExecutorService executor, int stopTimeoutVal, TimeUnit stopTimeoutUnit) {
-    executor.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!executor.awaitTermination(stopTimeoutVal, stopTimeoutUnit)) {
-        LOGGER.warn("{} was not shut down in the given time {} {} - interrupting now", name, stopTimeoutVal, stopTimeoutUnit);
-        executor.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!executor.awaitTermination(stopTimeoutVal, stopTimeoutUnit)) {
-          LOGGER.error("executor {} did not terminate", name);
-        }
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      executor.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
+    private ExecutorUtil() {
+        // Util class
     }
-  }
+
+    // This softshutdown is based on https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html
+    public static void softShutdown(String name, ExecutorService executor, int stopTimeoutVal, TimeUnit stopTimeoutUnit) {
+        executor.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(stopTimeoutVal, stopTimeoutUnit)) {
+                LOGGER.warn("{} was not shut down in the given time {} {} - interrupting now", name, stopTimeoutVal, stopTimeoutUnit);
+                executor.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(stopTimeoutVal, stopTimeoutUnit)) {
+                    LOGGER.error("executor {} did not terminate", name);
+                }
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+    }
 }

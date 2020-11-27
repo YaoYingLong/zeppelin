@@ -17,6 +17,8 @@ import { TRASH_FOLDER_ID_TOKEN } from '@zeppelin/interfaces';
   providedIn: 'root'
 })
 export class ArrayOrderingService {
+  constructor(@Inject(TRASH_FOLDER_ID_TOKEN) private TRASH_FOLDER_ID: string) {}
+
   noteListOrdering(note) {
     if (note.id === this.TRASH_FOLDER_ID) {
       return '\uFFFF';
@@ -57,6 +59,4 @@ export class ArrayOrderingService {
 
     return noteName1.localeCompare(noteName2);
   };
-
-  constructor(@Inject(TRASH_FOLDER_ID_TOKEN) private TRASH_FOLDER_ID: string) {}
 }

@@ -38,104 +38,104 @@ import java.util.Properties;
 
 public class Spark1Shims extends SparkShims {
 
-  private SparkContext sc;
+    private SparkContext sc;
 
-  public Spark1Shims(Properties properties, Object entryPoint) {
-    super(properties);
-    this.sc = (SparkContext) entryPoint;
-  }
+    public Spark1Shims(Properties properties, Object entryPoint) {
+        super(properties);
+        this.sc = (SparkContext) entryPoint;
+    }
 
-  public void setupSparkListener(final String master,
-                                 final String sparkWebUrl,
-                                 final InterpreterContext context) {
-    SparkContext sc = SparkContext.getOrCreate();
-    sc.addSparkListener(new JobProgressListener(sc.getConf()) {
-      @Override
-      public void onJobStart(SparkListenerJobStart jobStart) {
-        if (sc.getConf().getBoolean("spark.ui.enabled", true) &&
-            !Boolean.parseBoolean(properties.getProperty("zeppelin.spark.ui.hidden", "false"))) {
-          buildSparkJobUrl(master, sparkWebUrl, jobStart.jobId(), jobStart.properties(), context);
-        }
-      }
-    });
-  }
+    public void setupSparkListener(final String master,
+                                   final String sparkWebUrl,
+                                   final InterpreterContext context) {
+        SparkContext sc = SparkContext.getOrCreate();
+        sc.addSparkListener(new JobProgressListener(sc.getConf()) {
+            @Override
+            public void onJobStart(SparkListenerJobStart jobStart) {
+                if (sc.getConf().getBoolean("spark.ui.enabled", true) &&
+                        !Boolean.parseBoolean(properties.getProperty("zeppelin.spark.ui.hidden", "false"))) {
+                    buildSparkJobUrl(master, sparkWebUrl, jobStart.jobId(), jobStart.properties(), context);
+                }
+            }
+        });
+    }
 
-  @Override
-  public String showDataFrame(Object obj, int maxResult, InterpreterContext context) {
-    if (obj instanceof DataFrame) {
-      DataFrame df = (DataFrame) obj;
-      String[] columns = df.columns();
-      // DDL will empty DataFrame
-      if (columns.length == 0) {
-        return "";
-      }
+    @Override
+    public String showDataFrame(Object obj, int maxResult, InterpreterContext context) {
+        if (obj instanceof DataFrame) {
+            DataFrame df = (DataFrame) obj;
+            String[] columns = df.columns();
+            // DDL will empty DataFrame
+            if (columns.length == 0) {
+                return "";
+            }
 
-      // fetch maxResult+1 rows so that we can check whether it is larger than zeppelin.spark.maxResult
-      List<Row> rows = df.takeAsList(maxResult + 1);
-      String template = context.getLocalProperties().get("template");
-      if (!StringUtils.isBlank(template)) {
-        if (rows.size() >= 1) {
-          return new SingleRowInterpreterResult(sparkRowToList(rows.get(0)), template, context).toHtml();
+            // fetch maxResult+1 rows so that we can check whether it is larger than zeppelin.spark.maxResult
+            List<Row> rows = df.takeAsList(maxResult + 1);
+            String template = context.getLocalProperties().get("template");
+            if (!StringUtils.isBlank(template)) {
+                if (rows.size() >= 1) {
+                    return new SingleRowInterpreterResult(sparkRowToList(rows.get(0)), template, context).toHtml();
+                } else {
+                    return "";
+                }
+            }
+
+            StringBuilder msg = new StringBuilder();
+            msg.append("\n%table ");
+            msg.append(StringUtils.join(TableDataUtils.normalizeColumns(columns), "\t"));
+            msg.append("\n");
+            boolean isLargerThanMaxResult = rows.size() > maxResult;
+            if (isLargerThanMaxResult) {
+                rows = rows.subList(0, maxResult);
+            }
+            for (Row row : rows) {
+                for (int i = 0; i < row.size(); ++i) {
+                    msg.append(TableDataUtils.normalizeColumn(row.get(i)));
+                    if (i != row.size() - 1) {
+                        msg.append("\t");
+                    }
+                }
+                msg.append("\n");
+            }
+
+            if (isLargerThanMaxResult) {
+                msg.append("\n");
+                msg.append(ResultMessages.getExceedsLimitRowsMessage(maxResult, "zeppelin.spark.maxResult"));
+            }
+            // append %text at the end, otherwise the following output will be put in table as well.
+            msg.append("\n%text ");
+            return msg.toString();
         } else {
-          return "";
+            return obj.toString();
         }
-      }
+    }
 
-      StringBuilder msg = new StringBuilder();
-      msg.append("\n%table ");
-      msg.append(StringUtils.join(TableDataUtils.normalizeColumns(columns), "\t"));
-      msg.append("\n");
-      boolean isLargerThanMaxResult = rows.size() > maxResult;
-      if (isLargerThanMaxResult) {
-        rows = rows.subList(0, maxResult);
-      }
-      for (Row row : rows) {
-        for (int i = 0; i < row.size(); ++i) {
-          msg.append(TableDataUtils.normalizeColumn(row.get(i)));
-          if (i != row.size() - 1) {
-            msg.append("\t");
-          }
+    private List sparkRowToList(Row row) {
+        List list = new ArrayList();
+        for (int i = 0; i < row.size(); i++) {
+            list.add(row.get(i));
         }
-        msg.append("\n");
-      }
-
-      if (isLargerThanMaxResult) {
-        msg.append("\n");
-        msg.append(ResultMessages.getExceedsLimitRowsMessage(maxResult, "zeppelin.spark.maxResult"));
-      }
-      // append %text at the end, otherwise the following output will be put in table as well.
-      msg.append("\n%text ");
-      return msg.toString();
-    } else {
-      return obj.toString();
-    }
-  }
-
-  private List sparkRowToList(Row row) {
-    List list = new ArrayList();
-    for (int i = 0; i< row.size(); i++) {
-      list.add(row.get(i));
-    }
-    return list;
-  }
-
-  @Override
-  public DataFrame getAsDataFrame(String value) {
-    String[] lines = value.split("\\n");
-    String head = lines[0];
-    String[] columns = head.split("\t");
-    StructType schema = new StructType();
-    for (String column : columns) {
-      schema = schema.add(column, "String");
+        return list;
     }
 
-    List<Row> rows = new ArrayList<>();
-    for (int i = 1; i < lines.length; ++i) {
-      String[] tokens = lines[i].split("\t");
-      Row row = new GenericRow(tokens);
-      rows.add(row);
+    @Override
+    public DataFrame getAsDataFrame(String value) {
+        String[] lines = value.split("\\n");
+        String head = lines[0];
+        String[] columns = head.split("\t");
+        StructType schema = new StructType();
+        for (String column : columns) {
+            schema = schema.add(column, "String");
+        }
+
+        List<Row> rows = new ArrayList<>();
+        for (int i = 1; i < lines.length; ++i) {
+            String[] tokens = lines[i].split("\t");
+            Row row = new GenericRow(tokens);
+            rows.add(row);
+        }
+        return SQLContext.getOrCreate(sc)
+                .createDataFrame(rows, schema);
     }
-    return SQLContext.getOrCreate(sc)
-            .createDataFrame(rows, schema);
-  }
 }

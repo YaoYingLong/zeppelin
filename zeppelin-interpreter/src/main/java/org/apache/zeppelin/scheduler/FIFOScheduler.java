@@ -17,39 +17,39 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.util.ExecutorUtil;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.zeppelin.util.ExecutorUtil;
 
 /**
  * FIFOScheduler runs submitted job sequentially
  */
 public class FIFOScheduler extends AbstractScheduler {
 
-  private ExecutorService executor;
+    private ExecutorService executor;
 
-  FIFOScheduler(String name) {
-    super(name);
-    this.executor = Executors.newSingleThreadExecutor(
-        new SchedulerThreadFactory("FIFOScheduler-" + name + "-Worker-"));
-  }
+    FIFOScheduler(String name) {
+        super(name);
+        this.executor = Executors.newSingleThreadExecutor(
+                new SchedulerThreadFactory("FIFOScheduler-" + name + "-Worker-"));
+    }
 
-  @Override
-  public void runJobInScheduler(final Job job) {
-    // run job in the SingleThreadExecutor since this is FIFO.
-    executor.execute(() -> runJob(job));
-  }
+    @Override
+    public void runJobInScheduler(final Job job) {
+        // run job in the SingleThreadExecutor since this is FIFO.
+        executor.execute(() -> runJob(job));
+    }
 
-  @Override
-  public void stop() {
-    stop(2, TimeUnit.MINUTES);
-  }
+    @Override
+    public void stop() {
+        stop(2, TimeUnit.MINUTES);
+    }
 
-  @Override
-  public void stop(int stopTimeoutVal, TimeUnit stopTimeoutUnit) {
-    super.stop();
-    ExecutorUtil.softShutdown(name, executor, stopTimeoutVal, stopTimeoutUnit);
-  }
+    @Override
+    public void stop(int stopTimeoutVal, TimeUnit stopTimeoutUnit) {
+        super.stop();
+        ExecutorUtil.softShutdown(name, executor, stopTimeoutVal, stopTimeoutUnit);
+    }
 }

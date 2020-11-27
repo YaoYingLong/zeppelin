@@ -35,118 +35,117 @@ import java.util.regex.Pattern;
 /**
  * This class include hive specific stuff.
  * e.g. Display hive job execution info.
- *
  */
 public class HiveUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HiveUtils.class);
-  private static final int DEFAULT_QUERY_PROGRESS_INTERVAL = 1000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HiveUtils.class);
+    private static final int DEFAULT_QUERY_PROGRESS_INTERVAL = 1000;
 
-  private static final Pattern JOBURL_PATTERN =
-          Pattern.compile(".*Tracking URL = (\\S*).*", Pattern.DOTALL);
+    private static final Pattern JOBURL_PATTERN =
+            Pattern.compile(".*Tracking URL = (\\S*).*", Pattern.DOTALL);
 
-  /**
-   * Display hive job execution info, and progress info for hive >= 2.3
-   *
-   * @param stmt
-   * @param context
-   * @param displayLog
-   */
-  public static void startHiveMonitorThread(Statement stmt,
-                                            InterpreterContext context,
-                                            boolean displayLog,
-                                            JDBCInterpreter jdbcInterpreter) {
-    HiveStatement hiveStmt = (HiveStatement)
-            ((DelegatingStatement) ((DelegatingStatement) stmt).getDelegate()).getDelegate();
-    String hiveVersion = HiveVersionInfo.getVersion();
-    ProgressBar progressBarTemp = null;
-    if (isProgressBarSupported(hiveVersion)) {
-      LOGGER.debug("ProgressBar is supported for hive version: " + hiveVersion);
-      progressBarTemp = new ProgressBar();
-    } else {
-      LOGGER.debug("ProgressBar is not supported for hive version: " + hiveVersion);
-    }
-    // need to use final variable progressBar in thread, so need progressBarTemp here.
-    final ProgressBar progressBar = progressBarTemp;
-    final long timeoutThreshold = Long.parseLong(
-            jdbcInterpreter.getProperty("zeppelin.jdbc.hive.timeout.threshold", "" + 60 * 1000));
-    Thread thread = new Thread(() -> {
-      boolean jobLaunched = false;
-      long jobLastActiveTime = System.currentTimeMillis();
-      while (hiveStmt.hasMoreLogs() && !Thread.interrupted()) {
-        try {
-          List<String> logs = hiveStmt.getQueryLog();
-          String logsOutput = StringUtils.join(logs, System.lineSeparator());
-          LOGGER.debug("Hive job output: " + logsOutput);
-          boolean displayLogProperty = context.getBooleanLocalProperty("displayLog", displayLog);
-          if (!StringUtils.isBlank(logsOutput) && displayLogProperty) {
-            context.out.write(logsOutput + "\n");
-            context.out.flush();
-          }
-          if (!StringUtils.isBlank(logsOutput) && progressBar != null && displayLogProperty) {
-            progressBar.operationLogShowedToUser();
-          }
-          Optional<String> jobURL = extractMRJobURL(logsOutput);
-          if (jobURL.isPresent()) {
-            Map<String, String> infos = new HashMap<>();
-            infos.put("jobUrl", jobURL.get());
-            infos.put("label", "HIVE JOB");
-            infos.put("tooltip", "View in YARN WEB UI");
-            infos.put("noteId", context.getNoteId());
-            infos.put("paraId", context.getParagraphId());
-            context.getIntpEventClient().onParaInfosReceived(infos);
-          }
-          if (logsOutput.contains("Launching Job")) {
-            jobLaunched = true;
-          }
-
-          if (jobLaunched) {
-            if (StringUtils.isNotBlank(logsOutput)) {
-              jobLastActiveTime = System.currentTimeMillis();
-            } else {
-              if (((System.currentTimeMillis() - jobLastActiveTime) > timeoutThreshold)) {
-                String errorMessage = "Cancel this job as no more log is produced in the " +
-                        "last " + timeoutThreshold / 1000 + " seconds, " +
-                        "maybe it is because no yarn resources";
-                LOGGER.warn(errorMessage);
-                jdbcInterpreter.cancel(context, errorMessage);
-                break;
-              }
-            }
-          }
-          // refresh logs every 1 second.
-          Thread.sleep(DEFAULT_QUERY_PROGRESS_INTERVAL);
-        } catch (Exception e) {
-          LOGGER.warn("Fail to write output", e);
+    /**
+     * Display hive job execution info, and progress info for hive >= 2.3
+     *
+     * @param stmt
+     * @param context
+     * @param displayLog
+     */
+    public static void startHiveMonitorThread(Statement stmt,
+                                              InterpreterContext context,
+                                              boolean displayLog,
+                                              JDBCInterpreter jdbcInterpreter) {
+        HiveStatement hiveStmt = (HiveStatement)
+                ((DelegatingStatement) ((DelegatingStatement) stmt).getDelegate()).getDelegate();
+        String hiveVersion = HiveVersionInfo.getVersion();
+        ProgressBar progressBarTemp = null;
+        if (isProgressBarSupported(hiveVersion)) {
+            LOGGER.debug("ProgressBar is supported for hive version: " + hiveVersion);
+            progressBarTemp = new ProgressBar();
+        } else {
+            LOGGER.debug("ProgressBar is not supported for hive version: " + hiveVersion);
         }
-      }
-      LOGGER.info("HiveMonitor-Thread is finished");
-    });
-    thread.setName("HiveMonitor-Thread");
-    thread.setDaemon(true);
-    thread.start();
-    LOGGER.info("Start HiveMonitor-Thread for sql: " + hiveStmt);
+        // need to use final variable progressBar in thread, so need progressBarTemp here.
+        final ProgressBar progressBar = progressBarTemp;
+        final long timeoutThreshold = Long.parseLong(
+                jdbcInterpreter.getProperty("zeppelin.jdbc.hive.timeout.threshold", "" + 60 * 1000));
+        Thread thread = new Thread(() -> {
+            boolean jobLaunched = false;
+            long jobLastActiveTime = System.currentTimeMillis();
+            while (hiveStmt.hasMoreLogs() && !Thread.interrupted()) {
+                try {
+                    List<String> logs = hiveStmt.getQueryLog();
+                    String logsOutput = StringUtils.join(logs, System.lineSeparator());
+                    LOGGER.debug("Hive job output: " + logsOutput);
+                    boolean displayLogProperty = context.getBooleanLocalProperty("displayLog", displayLog);
+                    if (!StringUtils.isBlank(logsOutput) && displayLogProperty) {
+                        context.out.write(logsOutput + "\n");
+                        context.out.flush();
+                    }
+                    if (!StringUtils.isBlank(logsOutput) && progressBar != null && displayLogProperty) {
+                        progressBar.operationLogShowedToUser();
+                    }
+                    Optional<String> jobURL = extractMRJobURL(logsOutput);
+                    if (jobURL.isPresent()) {
+                        Map<String, String> infos = new HashMap<>();
+                        infos.put("jobUrl", jobURL.get());
+                        infos.put("label", "HIVE JOB");
+                        infos.put("tooltip", "View in YARN WEB UI");
+                        infos.put("noteId", context.getNoteId());
+                        infos.put("paraId", context.getParagraphId());
+                        context.getIntpEventClient().onParaInfosReceived(infos);
+                    }
+                    if (logsOutput.contains("Launching Job")) {
+                        jobLaunched = true;
+                    }
 
-    if (progressBar != null) {
-      hiveStmt.setInPlaceUpdateStream(progressBar.getInPlaceUpdateStream(context.out));
+                    if (jobLaunched) {
+                        if (StringUtils.isNotBlank(logsOutput)) {
+                            jobLastActiveTime = System.currentTimeMillis();
+                        } else {
+                            if (((System.currentTimeMillis() - jobLastActiveTime) > timeoutThreshold)) {
+                                String errorMessage = "Cancel this job as no more log is produced in the " +
+                                        "last " + timeoutThreshold / 1000 + " seconds, " +
+                                        "maybe it is because no yarn resources";
+                                LOGGER.warn(errorMessage);
+                                jdbcInterpreter.cancel(context, errorMessage);
+                                break;
+                            }
+                        }
+                    }
+                    // refresh logs every 1 second.
+                    Thread.sleep(DEFAULT_QUERY_PROGRESS_INTERVAL);
+                } catch (Exception e) {
+                    LOGGER.warn("Fail to write output", e);
+                }
+            }
+            LOGGER.info("HiveMonitor-Thread is finished");
+        });
+        thread.setName("HiveMonitor-Thread");
+        thread.setDaemon(true);
+        thread.start();
+        LOGGER.info("Start HiveMonitor-Thread for sql: " + hiveStmt);
+
+        if (progressBar != null) {
+            hiveStmt.setInPlaceUpdateStream(progressBar.getInPlaceUpdateStream(context.out));
+        }
     }
-  }
 
-  // Hive progress bar is supported from hive 2.3 (HIVE-16045)
-  private static boolean isProgressBarSupported(String hiveVersion) {
-    String[] tokens = hiveVersion.split("\\.");
-    int majorVersion = Integer.parseInt(tokens[0]);
-    int minorVersion = Integer.parseInt(tokens[1]);
-    return majorVersion > 2 || ((majorVersion == 2) && minorVersion >= 3);
-  }
-
-  // extract hive job url from logs, it only works for MR engine.
-  static Optional<String> extractMRJobURL(String log) {
-    Matcher matcher = JOBURL_PATTERN.matcher(log);
-    if (matcher.matches()) {
-      String jobURL = matcher.group(1);
-      return Optional.of(jobURL);
+    // Hive progress bar is supported from hive 2.3 (HIVE-16045)
+    private static boolean isProgressBarSupported(String hiveVersion) {
+        String[] tokens = hiveVersion.split("\\.");
+        int majorVersion = Integer.parseInt(tokens[0]);
+        int minorVersion = Integer.parseInt(tokens[1]);
+        return majorVersion > 2 || ((majorVersion == 2) && minorVersion >= 3);
     }
-    return Optional.empty();
-  }
+
+    // extract hive job url from logs, it only works for MR engine.
+    static Optional<String> extractMRJobURL(String log) {
+        Matcher matcher = JOBURL_PATTERN.matcher(log);
+        if (matcher.matches()) {
+            String jobURL = matcher.group(1);
+            return Optional.of(jobURL);
+        }
+        return Optional.empty();
+    }
 }

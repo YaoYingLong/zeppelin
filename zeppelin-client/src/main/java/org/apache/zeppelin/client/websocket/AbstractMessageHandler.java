@@ -17,9 +17,8 @@
 
 package org.apache.zeppelin.client.websocket;
 
-import org.apache.zeppelin.common.Message;
-
 import com.google.gson.Gson;
+import org.apache.zeppelin.common.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,62 +27,62 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractMessageHandler implements MessageHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageHandler.class);
-  private static final Gson GSON = new Gson();
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageHandler.class);
+    private static final Gson GSON = new Gson();
 
-  @Override
-  public void onMessage(String msg) {
-    try {
-      Message messageReceived = GSON.fromJson(msg, Message.class);
-      if (messageReceived.op != Message.OP.PING) {
-        LOGGER.debug("RECEIVE: " + messageReceived.op +
-                ", RECEIVE PRINCIPAL: " + messageReceived.principal +
-                ", RECEIVE TICKET: " + messageReceived.ticket +
-                ", RECEIVE ROLES: " + messageReceived.roles +
-                ", RECEIVE DATA: " + messageReceived.data);
-      }
+    @Override
+    public void onMessage(String msg) {
+        try {
+            Message messageReceived = GSON.fromJson(msg, Message.class);
+            if (messageReceived.op != Message.OP.PING) {
+                LOGGER.debug("RECEIVE: " + messageReceived.op +
+                        ", RECEIVE PRINCIPAL: " + messageReceived.principal +
+                        ", RECEIVE TICKET: " + messageReceived.ticket +
+                        ", RECEIVE ROLES: " + messageReceived.roles +
+                        ", RECEIVE DATA: " + messageReceived.data);
+            }
 
-      switch (messageReceived.op) {
-        case PARAGRAPH_UPDATE_OUTPUT:
-          String noteId = (String) messageReceived.data.get("noteId");
-          String paragraphId = (String) messageReceived.data.get("paragraphId");
-          int index = (int) Double.parseDouble(messageReceived.data.get("index").toString());
-          String type = (String) messageReceived.data.get("type");
-          String output = (String) messageReceived.data.get("data");
-          onStatementUpdateOutput(paragraphId, index, type, output);
-          break;
-        case PARAGRAPH_APPEND_OUTPUT:
-          noteId = (String) messageReceived.data.get("noteId");
-          paragraphId = (String) messageReceived.data.get("paragraphId");
-          index = (int) Double.parseDouble(messageReceived.data.get("index").toString());
-          output = (String) messageReceived.data.get("data");
-          onStatementAppendOutput(paragraphId, index, output);
-          break;
-        default:
-          break;
-      }
-    } catch (Exception e) {
-      LOGGER.error("Can't handle message: " + msg, e);
+            switch (messageReceived.op) {
+                case PARAGRAPH_UPDATE_OUTPUT:
+                    String noteId = (String) messageReceived.data.get("noteId");
+                    String paragraphId = (String) messageReceived.data.get("paragraphId");
+                    int index = (int) Double.parseDouble(messageReceived.data.get("index").toString());
+                    String type = (String) messageReceived.data.get("type");
+                    String output = (String) messageReceived.data.get("data");
+                    onStatementUpdateOutput(paragraphId, index, type, output);
+                    break;
+                case PARAGRAPH_APPEND_OUTPUT:
+                    noteId = (String) messageReceived.data.get("noteId");
+                    paragraphId = (String) messageReceived.data.get("paragraphId");
+                    index = (int) Double.parseDouble(messageReceived.data.get("index").toString());
+                    output = (String) messageReceived.data.get("data");
+                    onStatementAppendOutput(paragraphId, index, output);
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            LOGGER.error("Can't handle message: " + msg, e);
+        }
     }
-  }
 
-  /**
-   * Invoked when there's new statement output appended.
-   *
-   * @param statementId
-   * @param index
-   * @param output
-   */
-  public abstract void onStatementAppendOutput(String statementId, int index, String output);
+    /**
+     * Invoked when there's new statement output appended.
+     *
+     * @param statementId
+     * @param index
+     * @param output
+     */
+    public abstract void onStatementAppendOutput(String statementId, int index, String output);
 
-  /**
-   * Invoked when statement's output is updated.
-   *
-   * @param statementId
-   * @param index
-   * @param type
-   * @param output
-   */
-  public abstract void onStatementUpdateOutput(String statementId, int index, String type, String output);
+    /**
+     * Invoked when statement's output is updated.
+     *
+     * @param statementId
+     * @param index
+     * @param type
+     * @param output
+     */
+    public abstract void onStatementUpdateOutput(String statementId, int index, String type, String output);
 
 }

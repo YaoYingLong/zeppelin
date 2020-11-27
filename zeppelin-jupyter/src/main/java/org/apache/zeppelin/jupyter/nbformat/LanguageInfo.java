@@ -23,19 +23,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LanguageInfo {
 
-  @SerializedName("name")
-  private String name;
+    @SerializedName("name")
+    private String name;
 
-  @SerializedName("codemirror_mode")
-  private Object codemirrorMode;
+    @SerializedName("codemirror_mode")
+    private Object codemirrorMode;
 
-  @SerializedName("file_extension")
-  private String fileExtension;
+    @SerializedName("file_extension")
+    private String fileExtension;
 
-  @SerializedName("mimetype")
-  private String mimetype;
+    @SerializedName("mimetype")
+    private String mimetype;
 
-  @SerializedName("pygments_lexer")
-  private String pygmentsLexer;
+    @SerializedName("pygments_lexer")
+    private String pygmentsLexer;
 
 }

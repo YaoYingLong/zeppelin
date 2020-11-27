@@ -10,69 +10,69 @@
   ~ limitations under the License.
   -->
 
-<nz-card id="fields-drop-group" nzTitle="Available Fields" nzSize="small" cdkDropListGroup>
-  <div cdkDropList
-       id="columns-list"
+<nz-card cdkDropListGroup id="fields-drop-group" nzSize="small" nzTitle="Available Fields">
+  <div (cdkDropListDropped)="drop($event)"
        [cdkDropListData]="columns"
        [cdkDropListEnterPredicate]="noReturnPredicate"
-       (cdkDropListDropped)="drop($event)">
-    <span class="drag-tag field-item"
-          *ngFor="let item of columns"
+       cdkDropList
+       id="columns-list">
+    <span *ngFor="let item of columns"
           cdkDrag
-          cdkDragBoundary="#fields-drop-group">{{item.name}}</span>
+          cdkDragBoundary="#fields-drop-group"
+          class="drag-tag field-item">{{item.name}}</span>
   </div>
-  <div class="field-setting-wrap" nz-row [nzGutter]="8">
-    <div nz-col [nzSpan]="8">
-      <nz-card nzTitle="Keys"
-               nzSize="small">
-        <div class="drag-wrap"
-             cdkDropList
+  <div [nzGutter]="8" class="field-setting-wrap" nz-row>
+    <div [nzSpan]="8" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="Keys">
+        <div (cdkDropListDropped)="drop($event)"
              [cdkDropListData]="config.keys"
-             (cdkDropListDropped)="drop($event)">
-          <span class="drag-tag field-item"
-                *ngFor="let item of config.keys; index as i"
+             cdkDropList
+             class="drag-wrap">
+          <span *ngFor="let item of config.keys; index as i"
                 cdkDrag
-                cdkDragBoundary="#fields-drop-group">
+                cdkDragBoundary="#fields-drop-group"
+                class="drag-tag field-item">
             {{item.name}}
-            <i nz-icon nzType="close" (click)="removeFieldAt(config.keys, i)"></i>
+            <i (click)="removeFieldAt(config.keys, i)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>
     </div>
-    <div nz-col [nzSpan]="8">
-      <nz-card nzTitle="Groups"
-               nzSize="small">
-        <div class="drag-wrap"
-             cdkDropList
+    <div [nzSpan]="8" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="Groups">
+        <div (cdkDropListDropped)="drop($event)"
              [cdkDropListData]="config.groups"
-             (cdkDropListDropped)="drop($event)">
-          <span class="drag-tag field-item"
-                *ngFor="let item of config.groups; index as i"
+             cdkDropList
+             class="drag-wrap">
+          <span *ngFor="let item of config.groups; index as i"
                 cdkDrag
-                cdkDragBoundary="#fields-drop-group">
+                cdkDragBoundary="#fields-drop-group"
+                class="drag-tag field-item">
             {{item.name}}
-            <i nz-icon nzType="close" (click)="removeFieldAt(config.groups, i)"></i>
+            <i (click)="removeFieldAt(config.groups, i)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>
     </div>
-    <div nz-col [nzSpan]="8">
-      <nz-card nzTitle="Values"
-               nzSize="small">
-        <div class="drag-wrap"
-             cdkDropList
-             id="value-list"
+    <div [nzSpan]="8" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="Values">
+        <div (cdkDropListDropped)="drop($event)"
              [cdkDropListData]="config.values"
-             (cdkDropListDropped)="drop($event)">
-          <span class="drag-tag field-item"
-                *ngFor="let item of config.values; index as i"
+             cdkDropList
+             class="drag-wrap"
+             id="value-list">
+          <span *ngFor="let item of config.values; index as i"
                 cdkDrag
-                cdkDragBoundary="#fields-drop-group">
-            {{item.name}} <strong nz-dropdown [nzDropdownMenu]="menu">{{item.aggr | uppercase}}</strong>&nbsp;
-            <i nz-icon nzType="close" (click)="removeFieldAt(config.values, i)"></i>
+                cdkDragBoundary="#fields-drop-group"
+                class="drag-tag field-item">
+            {{item.name}} <strong [nzDropdownMenu]="menu" nz-dropdown>{{item.aggr | uppercase}}</strong>&nbsp;
+            <i (click)="removeFieldAt(config.values, i)" nz-icon nzType="close"></i>
             <nz-dropdown-menu #menu="nzDropdownMenu">
               <ul nz-menu>
-                <li nz-menu-item *ngFor="let aggregate of aggregates" (click)="changeAggregate(aggregate, i)">
+                <li (click)="changeAggregate(aggregate, i)" *ngFor="let aggregate of aggregates" nz-menu-item>
                   {{aggregate}}
                 </li>
               </ul>

@@ -29,64 +29,64 @@ import java.util.List;
 import java.util.Properties;
 
 public class PySubmarineInterpreter extends PythonInterpreter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PySubmarineInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PySubmarineInterpreter.class);
 
-  private SubmarineInterpreter submarineInterpreter = null;
-  private SubmarineContext submarineContext = null;
+    private SubmarineInterpreter submarineInterpreter = null;
+    private SubmarineContext submarineContext = null;
 
-  public PySubmarineInterpreter(Properties property) {
-    super(property);
-    submarineContext = SubmarineContext.getInstance();
-  }
-
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
-      throws InterpreterException {
-    setParagraphConfig(context);
-
-    // algorithm & checkpoint path support replaces ${username} with real user name
-    String algorithmPath = properties.getProperty(
-        SubmarineConstants.SUBMARINE_ALGORITHM_HDFS_PATH, "");
-    if (algorithmPath.contains(SubmarineConstants.USERNAME_SYMBOL)) {
-      algorithmPath = algorithmPath.replace(SubmarineConstants.USERNAME_SYMBOL, userName);
-      properties.setProperty(SubmarineConstants.SUBMARINE_ALGORITHM_HDFS_PATH, algorithmPath);
-    }
-    String checkpointPath = properties.getProperty(
-        SubmarineConstants.TF_CHECKPOINT_PATH, "");
-    if (checkpointPath.contains(SubmarineConstants.USERNAME_SYMBOL)) {
-      checkpointPath = checkpointPath.replace(SubmarineConstants.USERNAME_SYMBOL, userName);
-      properties.setProperty(SubmarineConstants.TF_CHECKPOINT_PATH, checkpointPath);
+    public PySubmarineInterpreter(Properties property) {
+        super(property);
+        submarineContext = SubmarineContext.getInstance();
     }
 
-    if (null == submarineInterpreter) {
-      submarineInterpreter = getInterpreterInTheSameSessionByClassName(SubmarineInterpreter.class);
-      if (null != submarineInterpreter) {
-        submarineInterpreter.setPythonWorkDir(context.getNoteId(), getPythonWorkDir());
-      }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context)
+            throws InterpreterException {
+        setParagraphConfig(context);
+
+        // algorithm & checkpoint path support replaces ${username} with real user name
+        String algorithmPath = properties.getProperty(
+                SubmarineConstants.SUBMARINE_ALGORITHM_HDFS_PATH, "");
+        if (algorithmPath.contains(SubmarineConstants.USERNAME_SYMBOL)) {
+            algorithmPath = algorithmPath.replace(SubmarineConstants.USERNAME_SYMBOL, userName);
+            properties.setProperty(SubmarineConstants.SUBMARINE_ALGORITHM_HDFS_PATH, algorithmPath);
+        }
+        String checkpointPath = properties.getProperty(
+                SubmarineConstants.TF_CHECKPOINT_PATH, "");
+        if (checkpointPath.contains(SubmarineConstants.USERNAME_SYMBOL)) {
+            checkpointPath = checkpointPath.replace(SubmarineConstants.USERNAME_SYMBOL, userName);
+            properties.setProperty(SubmarineConstants.TF_CHECKPOINT_PATH, checkpointPath);
+        }
+
+        if (null == submarineInterpreter) {
+            submarineInterpreter = getInterpreterInTheSameSessionByClassName(SubmarineInterpreter.class);
+            if (null != submarineInterpreter) {
+                submarineInterpreter.setPythonWorkDir(context.getNoteId(), getPythonWorkDir());
+            }
+        }
+
+        SubmarineJob submarineJob = submarineContext.addOrGetSubmarineJob(this.properties, context);
+        if (null != submarineJob && null != submarineJob.getHdfsClient()) {
+            try {
+                String noteId = context.getNoteId();
+                List<ParagraphInfo> paragraphInfos = context.getIntpEventClient()
+                        .getParagraphList(userName, noteId);
+                submarineJob.getHdfsClient().saveParagraphToFiles(
+                        noteId, paragraphInfos, getPythonWorkDir().getAbsolutePath(), properties);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return super.interpret(st, context);
     }
 
-    SubmarineJob submarineJob = submarineContext.addOrGetSubmarineJob(this.properties, context);
-    if (null != submarineJob && null != submarineJob.getHdfsClient()) {
-      try {
-        String noteId = context.getNoteId();
-        List<ParagraphInfo> paragraphInfos = context.getIntpEventClient()
-            .getParagraphList(userName, noteId);
-        submarineJob.getHdfsClient().saveParagraphToFiles(
-            noteId, paragraphInfos, getPythonWorkDir().getAbsolutePath(), properties);
-      } catch (Exception e) {
-        LOGGER.error(e.getMessage(), e);
-      }
+    private void setParagraphConfig(InterpreterContext context) {
+        context.getConfig().put("editorHide", false);
+        context.getConfig().put("title", true);
     }
-    return super.interpret(st, context);
-  }
 
-  private void setParagraphConfig(InterpreterContext context) {
-    context.getConfig().put("editorHide", false);
-    context.getConfig().put("title", true);
-  }
-
-  @Override
-  protected IPythonInterpreter getIPythonInterpreter() throws InterpreterException {
-    return getInterpreterInTheSameSessionByClassName(IPySubmarineInterpreter.class, false);
-  }
+    @Override
+    protected IPythonInterpreter getIPythonInterpreter() throws InterpreterException {
+        return getInterpreterInTheSameSessionByClassName(IPySubmarineInterpreter.class, false);
+    }
 }

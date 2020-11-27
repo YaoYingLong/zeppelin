@@ -22,15 +22,15 @@ import org.apache.zeppelin.display.Input;
 
 public class Password extends Input<String> {
 
-  public Password() {
+    public Password() {
 
-  }
+    }
 
-  public Password(String name) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = "";
-  }
+    public Password(String name) {
+        this.name = name;
+        this.displayName = name;
+        this.defaultValue = "";
+    }
 
 }
 

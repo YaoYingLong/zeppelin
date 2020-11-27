@@ -27,36 +27,37 @@ import java.util.Map;
  */
 public class DisplayData extends Output {
 
-  @SerializedName("data")
-  private Map<String, Object> data;
+    @SerializedName("data")
+    private Map<String, Object> data;
 
-  public Map<String, Object> getData() {
-    return data;
-  }
-
-  @Override
-  public ZeppelinOutputType getTypeOfZeppelin() {
-    return getType(data).getZeppelinType();
-  }
-
-  @Override
-  public TypeData toZeppelinResult() {
-    return getZeppelinResult(data, getType(data));
-  }
-
-  private static class ZeppelinResultGenerator {
-    public static String toBase64ImageHtmlElement(String image) {
-      return "<div style='width:auto;height:auto'><img src=data:image/png;base64," + image
-              + " style='width=auto;height:auto'/></div>";
+    public Map<String, Object> getData() {
+        return data;
     }
-    public static String toLatex(String latexCode) {
-      String latexContents = latexCode;
-      return "<div>" +
-              "<div class='class=\"alert alert-warning\"'>" +
-              "<strong>Warning!</strong> Currently, Latex is not supported." +
-              "</div>" +
-              "<div>" + latexContents + "</div>" +
-              "</div>";
+
+    @Override
+    public ZeppelinOutputType getTypeOfZeppelin() {
+        return getType(data).getZeppelinType();
     }
-  }
+
+    @Override
+    public TypeData toZeppelinResult() {
+        return getZeppelinResult(data, getType(data));
+    }
+
+    private static class ZeppelinResultGenerator {
+        public static String toBase64ImageHtmlElement(String image) {
+            return "<div style='width:auto;height:auto'><img src=data:image/png;base64," + image
+                    + " style='width=auto;height:auto'/></div>";
+        }
+
+        public static String toLatex(String latexCode) {
+            String latexContents = latexCode;
+            return "<div>" +
+                    "<div class='class=\"alert alert-warning\"'>" +
+                    "<strong>Warning!</strong> Currently, Latex is not supported." +
+                    "</div>" +
+                    "<div>" + latexContents + "</div>" +
+                    "</div>";
+        }
+    }
 }

@@ -25,6 +25,14 @@ import { MessageService, TicketService } from '@zeppelin/services';
 export class HomeComponent extends MessageListenersManager implements OnInit {
   loading = false;
 
+  constructor(
+    public ticketService: TicketService,
+    public messageService: MessageService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super(messageService);
+  }
+
   reloadNoteList() {
     this.messageService.reloadAllNotesFromRepo();
     this.loading = true;
@@ -34,14 +42,6 @@ export class HomeComponent extends MessageListenersManager implements OnInit {
   getNotes() {
     this.loading = false;
     this.cdr.markForCheck();
-  }
-
-  constructor(
-    public ticketService: TicketService,
-    public messageService: MessageService,
-    private cdr: ChangeDetectorRef
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {}

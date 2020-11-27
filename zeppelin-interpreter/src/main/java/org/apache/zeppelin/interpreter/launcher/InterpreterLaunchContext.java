@@ -27,76 +27,76 @@ import java.util.Properties;
  */
 public class InterpreterLaunchContext {
 
-  private Properties properties;
-  private InterpreterOption option;
-  private InterpreterRunner runner;
-  private String userName;
-  private String interpreterGroupId;
-  private String interpreterSettingId;
-  private String interpreterSettingGroup;
-  private String interpreterSettingName;
-  private int intpEventServerPort;
-  private String intpEventServerHost;
+    private Properties properties;
+    private InterpreterOption option;
+    private InterpreterRunner runner;
+    private String userName;
+    private String interpreterGroupId;
+    private String interpreterSettingId;
+    private String interpreterSettingGroup;
+    private String interpreterSettingName;
+    private int intpEventServerPort;
+    private String intpEventServerHost;
 
-  public InterpreterLaunchContext(Properties properties,
-                                  InterpreterOption option,
-                                  InterpreterRunner runner,
-                                  String userName,
-                                  String interpreterGroupId,
-                                  String interpreterSettingId,
-                                  String interpreterSettingGroup,
-                                  String interpreterSettingName,
-                                  int intpEventServerPort,
-                                  String intpEventServerHost) {
-    this.properties = properties;
-    this.option = option;
-    this.runner = runner;
-    this.userName = userName;
-    this.interpreterGroupId = interpreterGroupId;
-    this.interpreterSettingId = interpreterSettingId;
-    this.interpreterSettingGroup = interpreterSettingGroup;
-    this.interpreterSettingName = interpreterSettingName;
-    this.intpEventServerPort = intpEventServerPort;
-    this.intpEventServerHost = intpEventServerHost;
-  }
+    public InterpreterLaunchContext(Properties properties,
+                                    InterpreterOption option,
+                                    InterpreterRunner runner,
+                                    String userName,
+                                    String interpreterGroupId,
+                                    String interpreterSettingId,
+                                    String interpreterSettingGroup,
+                                    String interpreterSettingName,
+                                    int intpEventServerPort,
+                                    String intpEventServerHost) {
+        this.properties = properties;
+        this.option = option;
+        this.runner = runner;
+        this.userName = userName;
+        this.interpreterGroupId = interpreterGroupId;
+        this.interpreterSettingId = interpreterSettingId;
+        this.interpreterSettingGroup = interpreterSettingGroup;
+        this.interpreterSettingName = interpreterSettingName;
+        this.intpEventServerPort = intpEventServerPort;
+        this.intpEventServerHost = intpEventServerHost;
+    }
 
-  public Properties getProperties() {
-    return properties;
-  }
+    public Properties getProperties() {
+        return properties;
+    }
 
-  public InterpreterOption getOption() {
-    return option;
-  }
+    public InterpreterOption getOption() {
+        return option;
+    }
 
-  public InterpreterRunner getRunner() {
-    return runner;
-  }
+    public InterpreterRunner getRunner() {
+        return runner;
+    }
 
-  public String getInterpreterGroupId() {
-    return interpreterGroupId;
-  }
+    public String getInterpreterGroupId() {
+        return interpreterGroupId;
+    }
 
-  public String getInterpreterSettingId() {
-    return interpreterSettingId;
-  }
+    public String getInterpreterSettingId() {
+        return interpreterSettingId;
+    }
 
-  public String getInterpreterSettingGroup() {
-    return interpreterSettingGroup;
-  }
+    public String getInterpreterSettingGroup() {
+        return interpreterSettingGroup;
+    }
 
-  public String getInterpreterSettingName() {
-    return interpreterSettingName;
-  }
+    public String getInterpreterSettingName() {
+        return interpreterSettingName;
+    }
 
-  public String getUserName() {
-    return userName;
-  }
+    public String getUserName() {
+        return userName;
+    }
 
-  public int getIntpEventServerPort() {
-    return intpEventServerPort;
-  }
+    public int getIntpEventServerPort() {
+        return intpEventServerPort;
+    }
 
-  public String getIntpEventServerHost() {
-    return intpEventServerHost;
-  }
+    public String getIntpEventServerHost() {
+        return intpEventServerHost;
+    }
 }

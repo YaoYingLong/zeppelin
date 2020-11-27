@@ -16,17 +16,17 @@ limitations under the License.
   <div class="panel-heading" style="padding: 6px 12px 6px 12px; font-size: 13px;">
     <span style="vertical-align: middle; display: inline-block; margin-top: 3px;">Table Options</span>
     <span style="float: right;">
-       <div class="btn-group" role="group" aria-label="...">
-         <div type="button" ng-click="applyTableOption()"
-                       uib-tooltip="Apply new setting" tooltip-placement="top"
-                       class="btn btn-default" style="font-size: 11px; padding: 2px 5px 2px 5px;">
-           <i class="fa fa-floppy-o" aria-hidden="true"></i>
+       <div aria-label="..." class="btn-group" role="group">
+         <div class="btn btn-default" ng-click="applyTableOption()"
+              style="font-size: 11px; padding: 2px 5px 2px 5px;" tooltip-placement="top"
+              type="button" uib-tooltip="Apply new setting">
+           <i aria-hidden="true" class="fa fa-floppy-o"></i>
          </div>
 
-         <div type="button" ng-click="resetTableOption()"
-              uib-tooltip="Restore the default setting" tooltip-placement="top"
-              class="btn btn-default" style="font-size: 11px; padding: 2px 5px 2px 5px;">
-           <i class="fa fa-undo" aria-hidden="true"></i>
+         <div class="btn btn-default" ng-click="resetTableOption()"
+              style="font-size: 11px; padding: 2px 5px 2px 5px;" tooltip-placement="top"
+              type="button" uib-tooltip="Restore the default setting">
+           <i aria-hidden="true" class="fa fa-undo"></i>
          </div>
        </div>
     </span>
@@ -44,41 +44,42 @@ limitations under the License.
 
       <tr data-ng-repeat="optSpec in tableOptionSpecs">
         <td style="font-weight: 400; vertical-align: middle;">
-          <span uib-tooltip="{{optSpec.description}}" tooltip-placement="right">
+          <span tooltip-placement="right" uib-tooltip="{{optSpec.description}}">
             {{optSpec.name}}
-            <i class="fa fa-info-circle" style="margin-top: 2px; margin-left: 3px; color: #7b7bbd;" aria-hidden="true"></i>
+            <i aria-hidden="true" class="fa fa-info-circle"
+               style="margin-top: 2px; margin-left: 3px; color: #7b7bbd;"></i>
           </span>
         </td>
         <td>
-          <div ng-if="isInputWidget(optSpec)"
-               class="input-group">
-            <input type="text" class="form-control input-sm"
-                   style="font-weight: 400; font-size: 12px; vertical-align:middle; border-radius: 5px;"
+          <div class="input-group"
+               ng-if="isInputWidget(optSpec)">
+            <input class="form-control input-sm" data-ng-model="config.tableOptionValue[optSpec.name]"
                    ng-keydown="tableWidgetOnKeyDown($event, optSpec)"
-                   data-ng-model="config.tableOptionValue[optSpec.name]" />
+                   style="font-weight: 400; font-size: 12px; vertical-align:middle; border-radius: 5px;"
+                   type="text"/>
           </div>
           <div class="btn-group"
                ng-if="isOptionWidget(optSpec)">
             <select class="form-control input-sm"
-                    ng-change="tableOptionValueChanged(optSpec)"
                     data-ng-model="config.tableOptionValue[optSpec.name]"
                     data-ng-options="optionValue for optionValue in optSpec.optionValues"
+                    ng-change="tableOptionValueChanged(optSpec)"
                     style="font-weight: 400; font-size: 12px;">
             </select>
           </div>
 
           <div ng-if="isCheckboxWidget(optSpec)">
-            <input type="checkbox"
-                   ng-keydown="parameterOnKeyDown($event, optSpec)"
-                   ng-click="tableOptionValueChanged(optSpec)"
+            <input data-ng-checked="config.tableOptionValue[optSpec.name]"
                    data-ng-model="config.tableOptionValue[optSpec.name]"
-                   data-ng-checked="config.tableOptionValue[optSpec.name]" />
+                   ng-click="tableOptionValueChanged(optSpec)"
+                   ng-keydown="parameterOnKeyDown($event, optSpec)"
+                   type="checkbox"/>
           </div>
 
           <div ng-if="isTextareaWidget(optSpec)">
-            <textarea class="form-control" rows="3"
+            <textarea class="form-control" data-ng-model="config.tableOptionValue[optSpec.name]"
                       ng-keydown="tableWidgetOnKeyDown($event, optSpec)"
-                      data-ng-model="config.tableOptionValue[optSpec.name]"
+                      rows="3"
                       style="font-weight: 400; font-size: 12px;">
             </textarea>
           </div>

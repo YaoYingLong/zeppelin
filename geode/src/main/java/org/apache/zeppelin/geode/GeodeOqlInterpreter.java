@@ -73,7 +73,7 @@ import java.util.Properties;
  *    create region --name=regionEmployee --type=REPLICATE
  *    exit;
  *  EOF
- *}
+ * }
  * </p>
  * <p>
  * Known issue:http://gemfire.docs.pivotal.io/bugnotes/KnownIssuesGemFire810.html #43673 Using query
@@ -83,219 +83,219 @@ import java.util.Properties;
  */
 public class GeodeOqlInterpreter extends Interpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeodeOqlInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeodeOqlInterpreter.class);
 
-  private static final char NEWLINE = '\n';
-  private static final char TAB = '\t';
-  private static final char WHITESPACE = ' ';
+    private static final char NEWLINE = '\n';
+    private static final char TAB = '\t';
+    private static final char WHITESPACE = ' ';
 
-  private static final String TABLE_MAGIC_TAG = "%table ";
+    private static final String TABLE_MAGIC_TAG = "%table ";
 
-  private ClientCache clientCache = null;
-  private QueryService queryService = null;
-  private Exception exceptionOnConnect;
-  private int maxResult;
+    private ClientCache clientCache = null;
+    private QueryService queryService = null;
+    private Exception exceptionOnConnect;
+    private int maxResult;
 
-  public GeodeOqlInterpreter(Properties property) {
-    super(property);
-  }
-
-  protected ClientCache getClientCache() {
-
-    String locatorHost = getProperty("geode.locator.host");
-    int locatorPort = Integer.valueOf(getProperty("geode.locator.port"));
-
-    ClientCache clientCache =
-        new ClientCacheFactory().addPoolLocator(locatorHost, locatorPort).create();
-
-    return clientCache;
-  }
-
-  @Override
-  public void open() {
-    LOGGER.info("Geode open connection called!");
-
-    // Close the previous open connections.
-    close();
-
-    try {
-      maxResult = Integer.valueOf(getProperty("geode.max.result"));
-
-      clientCache = getClientCache();
-      queryService = clientCache.getQueryService();
-
-      exceptionOnConnect = null;
-      LOGGER.info("Successfully created Geode connection");
-    } catch (Exception e) {
-      LOGGER.error("Cannot open connection", e);
-      exceptionOnConnect = e;
+    public GeodeOqlInterpreter(Properties property) {
+        super(property);
     }
-  }
 
-  @Override
-  public void close() {
-    try {
-      if (clientCache != null) {
-        clientCache.close();
-      }
+    protected ClientCache getClientCache() {
 
-      if (queryService != null) {
-        queryService.closeCqs();
-      }
+        String locatorHost = getProperty("geode.locator.host");
+        int locatorPort = Integer.valueOf(getProperty("geode.locator.port"));
 
-    } catch (Exception e) {
-      LOGGER.error("Cannot close connection", e);
-    } finally {
-      clientCache = null;
-      queryService = null;
-      exceptionOnConnect = null;
+        ClientCache clientCache =
+                new ClientCacheFactory().addPoolLocator(locatorHost, locatorPort).create();
+
+        return clientCache;
     }
-  }
 
-  private InterpreterResult executeOql(String oql) {
-    try {
+    @Override
+    public void open() {
+        LOGGER.info("Geode open connection called!");
 
-      if (getExceptionOnConnect() != null) {
-        return new InterpreterResult(Code.ERROR, getExceptionOnConnect().getMessage());
-      }
+        // Close the previous open connections.
+        close();
 
-      @SuppressWarnings("unchecked")
-      SelectResults<Object> results =
-          (SelectResults<Object>) getQueryService().newQuery(oql).execute();
+        try {
+            maxResult = Integer.valueOf(getProperty("geode.max.result"));
 
-      StringBuilder msg = new StringBuilder(TABLE_MAGIC_TAG);
-      boolean isTableHeaderSet = false;
+            clientCache = getClientCache();
+            queryService = clientCache.getQueryService();
 
-      Iterator<Object> iterator = results.iterator();
-      int rowDisplayCount = 0;
+            exceptionOnConnect = null;
+            LOGGER.info("Successfully created Geode connection");
+        } catch (Exception e) {
+            LOGGER.error("Cannot open connection", e);
+            exceptionOnConnect = e;
+        }
+    }
 
-      while (iterator.hasNext() && (rowDisplayCount < getMaxResult())) {
+    @Override
+    public void close() {
+        try {
+            if (clientCache != null) {
+                clientCache.close();
+            }
 
-        Object entry = iterator.next();
-        rowDisplayCount++;
+            if (queryService != null) {
+                queryService.closeCqs();
+            }
 
-        if (entry instanceof Number) {
-          handleNumberEntry(isTableHeaderSet, entry, msg);
-        } else if (entry instanceof Struct) {
-          handleStructEntry(isTableHeaderSet, entry, msg);
-        } else if (entry instanceof PdxInstance) {
-          handlePdxInstanceEntry(isTableHeaderSet, entry, msg);
-        } else {
-          handleUnsupportedTypeEntry(isTableHeaderSet, entry, msg);
+        } catch (Exception e) {
+            LOGGER.error("Cannot close connection", e);
+        } finally {
+            clientCache = null;
+            queryService = null;
+            exceptionOnConnect = null;
+        }
+    }
+
+    private InterpreterResult executeOql(String oql) {
+        try {
+
+            if (getExceptionOnConnect() != null) {
+                return new InterpreterResult(Code.ERROR, getExceptionOnConnect().getMessage());
+            }
+
+            @SuppressWarnings("unchecked")
+            SelectResults<Object> results =
+                    (SelectResults<Object>) getQueryService().newQuery(oql).execute();
+
+            StringBuilder msg = new StringBuilder(TABLE_MAGIC_TAG);
+            boolean isTableHeaderSet = false;
+
+            Iterator<Object> iterator = results.iterator();
+            int rowDisplayCount = 0;
+
+            while (iterator.hasNext() && (rowDisplayCount < getMaxResult())) {
+
+                Object entry = iterator.next();
+                rowDisplayCount++;
+
+                if (entry instanceof Number) {
+                    handleNumberEntry(isTableHeaderSet, entry, msg);
+                } else if (entry instanceof Struct) {
+                    handleStructEntry(isTableHeaderSet, entry, msg);
+                } else if (entry instanceof PdxInstance) {
+                    handlePdxInstanceEntry(isTableHeaderSet, entry, msg);
+                } else {
+                    handleUnsupportedTypeEntry(isTableHeaderSet, entry, msg);
+                }
+
+                isTableHeaderSet = true;
+                msg.append(NEWLINE);
+            }
+
+            return new InterpreterResult(Code.SUCCESS, msg.toString());
+
+        } catch (Exception ex) {
+            LOGGER.error("Cannot run " + oql, ex);
+            return new InterpreterResult(Code.ERROR, ex.getMessage());
+        }
+    }
+
+    /**
+     * Zeppelin's %TABLE convention uses tab (\t) to delimit fields and new-line (\n) to delimit rows
+     * To complain with this convention we need to replace any occurrences of tab and/or newline
+     * characters in the content.
+     */
+    private String replaceReservedChars(String str) {
+
+        if (StringUtils.isBlank(str)) {
+            return str;
         }
 
-        isTableHeaderSet = true;
-        msg.append(NEWLINE);
-      }
-
-      return new InterpreterResult(Code.SUCCESS, msg.toString());
-
-    } catch (Exception ex) {
-      LOGGER.error("Cannot run " + oql, ex);
-      return new InterpreterResult(Code.ERROR, ex.getMessage());
-    }
-  }
-
-  /**
-   * Zeppelin's %TABLE convention uses tab (\t) to delimit fields and new-line (\n) to delimit rows
-   * To complain with this convention we need to replace any occurrences of tab and/or newline
-   * characters in the content.
-   */
-  private String replaceReservedChars(String str) {
-
-    if (StringUtils.isBlank(str)) {
-      return str;
+        return str.replace(TAB, WHITESPACE).replace(NEWLINE, WHITESPACE);
     }
 
-    return str.replace(TAB, WHITESPACE).replace(NEWLINE, WHITESPACE);
-  }
+    private void handleStructEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
+        Struct struct = (Struct) entry;
+        if (!isHeaderSet) {
+            for (String titleName : struct.getStructType().getFieldNames()) {
+                msg.append(replaceReservedChars(titleName)).append(TAB);
+            }
+            msg.append(NEWLINE);
+        }
 
-  private void handleStructEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
-    Struct struct = (Struct) entry;
-    if (!isHeaderSet) {
-      for (String titleName : struct.getStructType().getFieldNames()) {
-        msg.append(replaceReservedChars(titleName)).append(TAB);
-      }
-      msg.append(NEWLINE);
+        for (String titleName : struct.getStructType().getFieldNames()) {
+            msg.append(replaceReservedChars("" + struct.get(titleName))).append(TAB);
+        }
     }
 
-    for (String titleName : struct.getStructType().getFieldNames()) {
-      msg.append(replaceReservedChars("" + struct.get(titleName))).append(TAB);
+    private void handlePdxInstanceEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
+        PdxInstance pdxEntry = (PdxInstance) entry;
+        if (!isHeaderSet) {
+            for (String titleName : pdxEntry.getFieldNames()) {
+                msg.append(replaceReservedChars(titleName)).append(TAB);
+            }
+            msg.append(NEWLINE);
+        }
+
+        for (String titleName : pdxEntry.getFieldNames()) {
+            msg.append(replaceReservedChars("" + pdxEntry.getField(titleName))).append(TAB);
+        }
     }
-  }
 
-  private void handlePdxInstanceEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
-    PdxInstance pdxEntry = (PdxInstance) entry;
-    if (!isHeaderSet) {
-      for (String titleName : pdxEntry.getFieldNames()) {
-        msg.append(replaceReservedChars(titleName)).append(TAB);
-      }
-      msg.append(NEWLINE);
+    private void handleNumberEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
+        if (!isHeaderSet) {
+            msg.append("Result").append(NEWLINE);
+        }
+        msg.append(entry);
     }
 
-    for (String titleName : pdxEntry.getFieldNames()) {
-      msg.append(replaceReservedChars("" + pdxEntry.getField(titleName))).append(TAB);
+    private void handleUnsupportedTypeEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
+        if (!isHeaderSet) {
+            msg.append("Unsuppoted Type").append(NEWLINE);
+        }
+        msg.append("" + entry);
     }
-  }
 
-  private void handleNumberEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
-    if (!isHeaderSet) {
-      msg.append("Result").append(NEWLINE);
+
+    @Override
+    public InterpreterResult interpret(String cmd, InterpreterContext contextInterpreter) {
+        LOGGER.info("Run OQL command '{}'", cmd);
+        return executeOql(cmd);
     }
-    msg.append(entry);
-  }
 
-  private void handleUnsupportedTypeEntry(boolean isHeaderSet, Object entry, StringBuilder msg) {
-    if (!isHeaderSet) {
-      msg.append("Unsuppoted Type").append(NEWLINE);
+    @Override
+    public void cancel(InterpreterContext context) {
+        // Do nothing
     }
-    msg.append("" + entry);
-  }
 
+    @Override
+    public FormType getFormType() {
+        return FormType.SIMPLE;
+    }
 
-  @Override
-  public InterpreterResult interpret(String cmd, InterpreterContext contextInterpreter) {
-    LOGGER.info("Run OQL command '{}'", cmd);
-    return executeOql(cmd);
-  }
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-    // Do nothing
-  }
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton().createOrGetFIFOScheduler(
+                GeodeOqlInterpreter.class.getName() + this.hashCode());
+    }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.SIMPLE;
-  }
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return null;
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+    public int getMaxResult() {
+        return maxResult;
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton().createOrGetFIFOScheduler(
-        GeodeOqlInterpreter.class.getName() + this.hashCode());
-  }
+    // Test only
+    QueryService getQueryService() {
+        return this.queryService;
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-                                                InterpreterContext interpreterContext) {
-    return null;
-  }
-
-  public int getMaxResult() {
-    return maxResult;
-  }
-
-  // Test only
-  QueryService getQueryService() {
-    return this.queryService;
-  }
-
-  Exception getExceptionOnConnect() {
-    return this.exceptionOnConnect;
-  }
+    Exception getExceptionOnConnect() {
+        return this.exceptionOnConnect;
+    }
 }

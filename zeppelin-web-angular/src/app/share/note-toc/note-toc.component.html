@@ -10,14 +10,14 @@
   ~ limitations under the License.
   -->
 
-<div class="note-toc" [class.simple]="note.config.looknfeel !== 'default'">
+<div [class.simple]="note.config.looknfeel !== 'default'" class="note-toc">
   <div class="toc-heading">Table of Contents</div>
-  <div class="toc-placeholder" *ngIf="rows.length === 0">
-    <i nz-icon nzType="unordered-list" nzTheme="outline"></i>
+  <div *ngIf="rows.length === 0" class="toc-placeholder">
+    <i nz-icon nzTheme="outline" nzType="unordered-list"></i>
     <span class="toc-message">Headings in the output show up here</span>
   </div>
-  <div class="toc-row" *ngFor="let row of rows" (click)="onRowClick(row.paragraphId)">
-    <div *ngFor="let _ of Arr(row.level)" class="toc-indent">&nbsp;</div> 
+  <div (click)="onRowClick(row.paragraphId)" *ngFor="let row of rows" class="toc-row">
+    <div *ngFor="let _ of Arr(row.level)" class="toc-indent">&nbsp;</div>
     <span [class.toc-top-level-heading]="row.level === 1">{{ row.title }}</span>
   </div>
 </div>

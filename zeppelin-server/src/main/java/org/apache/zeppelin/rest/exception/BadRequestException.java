@@ -16,30 +16,30 @@
  */
 package org.apache.zeppelin.rest.exception;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import org.apache.zeppelin.utils.ExceptionUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.zeppelin.utils.ExceptionUtils;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * BadRequestException handler for WebApplicationException.
  */
 public class BadRequestException extends WebApplicationException {
-  public BadRequestException() {
-    super(ExceptionUtils.jsonResponse(BAD_REQUEST));
-  }
+    public BadRequestException() {
+        super(ExceptionUtils.jsonResponse(BAD_REQUEST));
+    }
 
-  private static Response badRequestJson(String message) {
-    return ExceptionUtils.jsonResponseContent(BAD_REQUEST, message);
-  }
+    public BadRequestException(Throwable cause, String message) {
+        super(cause, badRequestJson(message));
+    }
 
-  public BadRequestException(Throwable cause, String message) {
-    super(cause, badRequestJson(message));
-  }
+    public BadRequestException(String message) {
+        super(badRequestJson(message));
+    }
 
-  public BadRequestException(String message) {
-    super(badRequestJson(message));
-  }
+    private static Response badRequestJson(String message) {
+        return ExceptionUtils.jsonResponseContent(BAD_REQUEST, message);
+    }
 }

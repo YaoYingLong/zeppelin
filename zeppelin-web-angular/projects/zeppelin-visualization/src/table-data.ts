@@ -10,17 +10,17 @@
  * limitations under the License.
  */
 
-import { DataSet as AntvDataSet } from '@antv/data-set';
+import {DataSet as AntvDataSet} from '@antv/data-set';
 
-import { DatasetType, ParagraphIResultsMsgItem } from '@zeppelin/sdk';
-import { DataSet } from './data-set';
+import {DatasetType, ParagraphIResultsMsgItem} from '@zeppelin/sdk';
+import {DataSet} from './data-set';
 
 export class TableData extends DataSet {
   columns: string[] = [];
   // tslint:disable-next-line
   rows: any[] = [];
 
-  loadParagraphResult({ data, type }: ParagraphIResultsMsgItem): void {
+  loadParagraphResult({data, type}: ParagraphIResultsMsgItem): void {
     if (type !== DatasetType.TABLE) {
       console.error('Can not load paragraph result');
       return;

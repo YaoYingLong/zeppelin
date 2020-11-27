@@ -10,11 +10,11 @@
   ~ limitations under the License.
   -->
 
-<button class="export-dropdown"
+<button [nzDropdownMenu]="menu"
+        class="export-dropdown"
         nz-button
         nz-dropdown
-        nzSize="small"
-        [nzDropdownMenu]="menu">
+        nzSize="small">
   <span>Export</span>
   <i nz-icon nzType="down"></i>
 </button>
@@ -35,45 +35,45 @@
   </ul>
 </nz-dropdown-menu>
 <nz-table #table
-          nzSize="small"
-          nzShowSizeChanger
           [nzData]="rows"
-          [nzFooter]="aggregatesFooter">
+          [nzFooter]="aggregatesFooter"
+          nzShowSizeChanger
+          nzSize="small">
   <thead>
   <tr>
-    <th *ngFor="let col of columns"
-        nzWidth="800px"
-        nzShowSort
-        nzCustomFilter
+    <th (nzSortChange)="onSortChange($event, col)"
+        *ngFor="let col of columns"
         [nzSortKey]="col"
-        (nzSortChange)="onSortChange($event, col)">
+        nzCustomFilter
+        nzShowSort
+        nzWidth="800px">
       {{col}}
       <i
         #dropdown="nzDropdown"
-        nz-icon
-        nzType="down"
-        nzTrigger="click"
-        nzPlacement="bottomRight"
+        [class.ant-table-filter-open]="dropdown.nzVisible"
         [nzClickHide]="false"
         [nzDropdownMenu]="filterMenu"
-        nzTableFilter
         [nzRotate]="dropdown.nzVisible ? 180 : 0"
         class="ant-table-filter-icon filter-icon"
-        [class.ant-table-filter-open]="dropdown.nzVisible"
         nz-dropdown
+        nz-icon
+        nzPlacement="bottomRight"
+        nzTableFilter
+        nzTrigger="click"
+        nzType="down"
       ></i>
       <nz-dropdown-menu #filterMenu="nzDropdownMenu">
-        <ul nz-menu class="th-dropdown">
-          <li nz-menu-group class="search-bar">
-            <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-              <input type="text" nz-input placeholder="Search..."
-                     (blur)="onSearch()"
-                     (keydown.enter)="onSearch()"
-                     [(ngModel)]="colOptions.get(col).term"/>
+        <ul class="th-dropdown" nz-menu>
+          <li class="search-bar" nz-menu-group>
+            <nz-input-group [nzAddOnAfter]="suffixIconButton" nzSearch>
+              <input (blur)="onSearch()" (keydown.enter)="onSearch()" [(ngModel)]="colOptions.get(col).term"
+                     nz-input
+                     placeholder="Search..."
+                     type="text"/>
             </nz-input-group>
             <ng-template #suffixIconButton>
-              <button nz-button nzSearch nzType="primary" (click)="onSearch()">
-                <i nz-icon nzType="search" nzTheme="outline"></i>
+              <button (click)="onSearch()" nz-button nzSearch nzType="primary">
+                <i nz-icon nzTheme="outline" nzType="search"></i>
               </button>
             </ng-template>
           </li>
@@ -81,10 +81,10 @@
           <li nz-menu-group>
             <span title>Type</span>
             <ul>
-              <li *ngFor="let type of types"
-                  nz-menu-item
+              <li (click)="onChangeType(type, col)"
+                  *ngFor="let type of types"
                   [nzSelected]="colOptions.get(col).type === type"
-                  (click)="onChangeType(type, col)">
+                  nz-menu-item>
                 {{type | titlecase}}
               </li>
             </ul>
@@ -93,10 +93,10 @@
           <li nz-menu-group>
             <span title>Aggregation</span>
             <ul>
-              <li *ngFor="let aggregation of aggregations"
-                  nz-menu-item
+              <li (click)="onChangeAggregation(aggregation, col)"
+                  *ngFor="let aggregation of aggregations"
                   [nzSelected]="colOptions.get(col).aggregation === aggregation"
-                  (click)="onChangeAggregation(aggregation, col)">
+                  nz-menu-item>
                 {{aggregation | titlecase}}
               </li>
             </ul>
@@ -115,7 +115,7 @@
 <ng-template #aggregatesFooter>
   <div class="aggregation-wrap">
     <span *ngFor="let col of columns">
-    <span class="aggregation-item" *ngIf="colOptions.get(col).aggregation as aggregation">
+    <span *ngIf="colOptions.get(col).aggregation as aggregation" class="aggregation-item">
       {{aggregation}}(<strong>{{col}}</strong>): <span>{{colOptions.get(col).aggregationValue}} </span>
     </span>
     </span>

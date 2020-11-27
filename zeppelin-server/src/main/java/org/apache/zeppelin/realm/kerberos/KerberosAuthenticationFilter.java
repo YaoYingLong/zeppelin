@@ -24,7 +24,10 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -33,47 +36,47 @@ import java.util.Collection;
  */
 public class KerberosAuthenticationFilter extends PassThruAuthenticationFilter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(KerberosAuthenticationFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KerberosAuthenticationFilter.class);
 
-  @Override
-  protected void saveRequestAndRedirectToLogin(ServletRequest request, ServletResponse response) {
-    // We don't want to redirect request to loginUrl here
-  }
+    @Override
+    protected void saveRequestAndRedirectToLogin(ServletRequest request, ServletResponse response) {
+        // We don't want to redirect request to loginUrl here
+    }
 
-  /**
-   * If the request has a valid authentication token it allows the request to continue to
-   * the target resource,
-   * otherwise it triggers an authentication sequence using the configured
-   * {@link AuthenticationHandler}.
-   *
-   * @param request     the request object.
-   * @param response    the response object.
-   * @param filterChain the filter chain object.
-   * @throws IOException      thrown if an IO error occurred.
-   * @throws ServletException thrown if a processing error occurred.
-   */
-  @Override
-  public void doFilterInternal(ServletRequest request,
-                               ServletResponse response,
-                               FilterChain filterChain)
-      throws IOException, ServletException {
-    KerberosRealm kerberosRealm = null;
-    DefaultWebSecurityManager defaultWebSecurityManager;
-    String key = ThreadContext.SECURITY_MANAGER_KEY;
-    defaultWebSecurityManager = (DefaultWebSecurityManager) ThreadContext.get(key);
-    Collection<Realm> realms = defaultWebSecurityManager.getRealms();
-    for (Object realm : realms) {
-      if (realm instanceof KerberosRealm) {
-        kerberosRealm = (KerberosRealm) realm;
-        break;
-      }
+    /**
+     * If the request has a valid authentication token it allows the request to continue to
+     * the target resource,
+     * otherwise it triggers an authentication sequence using the configured
+     * {@link AuthenticationHandler}.
+     *
+     * @param request     the request object.
+     * @param response    the response object.
+     * @param filterChain the filter chain object.
+     * @throws IOException      thrown if an IO error occurred.
+     * @throws ServletException thrown if a processing error occurred.
+     */
+    @Override
+    public void doFilterInternal(ServletRequest request,
+                                 ServletResponse response,
+                                 FilterChain filterChain)
+            throws IOException, ServletException {
+        KerberosRealm kerberosRealm = null;
+        DefaultWebSecurityManager defaultWebSecurityManager;
+        String key = ThreadContext.SECURITY_MANAGER_KEY;
+        defaultWebSecurityManager = (DefaultWebSecurityManager) ThreadContext.get(key);
+        Collection<Realm> realms = defaultWebSecurityManager.getRealms();
+        for (Object realm : realms) {
+            if (realm instanceof KerberosRealm) {
+                kerberosRealm = (KerberosRealm) realm;
+                break;
+            }
+        }
+        if (kerberosRealm != null) {
+            kerberosRealm.doKerberosAuth(request, response, filterChain);
+        } else {
+            LOG.error("Looks like this filter is enabled without enabling KerberosRealm, please refer"
+                    + " to https://zeppelin.apache.org/docs/latest/security/shiroauthentication.html"
+                    + "#kerberos-auth");
+        }
     }
-    if (kerberosRealm != null) {
-      kerberosRealm.doKerberosAuth(request, response, filterChain);
-    } else {
-      LOG.error("Looks like this filter is enabled without enabling KerberosRealm, please refer"
-          + " to https://zeppelin.apache.org/docs/latest/security/shiroauthentication.html"
-          + "#kerberos-auth");
-    }
-  }
 }

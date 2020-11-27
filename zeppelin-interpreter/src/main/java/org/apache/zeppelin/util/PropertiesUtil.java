@@ -24,53 +24,56 @@ import java.util.Properties;
  */
 public class PropertiesUtil {
 
-  /**
-   * read the string property
-   * @param properties the properties object
-   * @param key the property key
-   * @param defaultValue the default value
-   * @return the string result
-   */
-  public static String getString(Properties properties, String key, String defaultValue) {
-    return properties.getProperty(key) == null ? defaultValue : properties.getProperty(key);
-  }
+    /**
+     * read the string property
+     *
+     * @param properties   the properties object
+     * @param key          the property key
+     * @param defaultValue the default value
+     * @return the string result
+     */
+    public static String getString(Properties properties, String key, String defaultValue) {
+        return properties.getProperty(key) == null ? defaultValue : properties.getProperty(key);
+    }
 
 
-  /**
-   * read the long property
-   * @param properties the properties object
-   * @param key the property key
-   * @param defaultValue the default value
-   * @return the long result
-   */
-  public static long getLong(Properties properties, String key, long defaultValue) {
-    String valueString = properties.getProperty(key);
-    if (valueString == null){
-      return defaultValue;
+    /**
+     * read the long property
+     *
+     * @param properties   the properties object
+     * @param key          the property key
+     * @param defaultValue the default value
+     * @return the long result
+     */
+    public static long getLong(Properties properties, String key, long defaultValue) {
+        String valueString = properties.getProperty(key);
+        if (valueString == null) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(valueString);
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
-    try {
-      return Long.parseLong(valueString);
-    }catch (Exception e){
-      return defaultValue;
-    }
-  }
 
-  /**
-   * read the long property
-   * @param properties the properties object
-   * @param key the property key
-   * @param defaultValue the default value
-   * @return the int result
-   */
-  public static int getInt(Properties properties, String key, int defaultValue) {
-    String valueString = properties.getProperty(key);
-    if (valueString == null){
-      return defaultValue;
+    /**
+     * read the long property
+     *
+     * @param properties   the properties object
+     * @param key          the property key
+     * @param defaultValue the default value
+     * @return the int result
+     */
+    public static int getInt(Properties properties, String key, int defaultValue) {
+        String valueString = properties.getProperty(key);
+        if (valueString == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(valueString);
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
-    try {
-      return Integer.parseInt(valueString);
-    }catch (Exception e){
-      return defaultValue;
-    }
-  }
 }

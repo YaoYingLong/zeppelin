@@ -27,37 +27,39 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-/** Cron task for the note. */
+/**
+ * Cron task for the note.
+ */
 public class CronJob implements org.quartz.Job {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CronJob.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CronJob.class);
 
-  @Override
-  public void execute(JobExecutionContext context) {
-    JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-    Note note = (Note) jobDataMap.get("note");
-    LOGGER.info("Start cron job of note: {}", note.getId());
-    if (note.haveRunningOrPendingParagraphs()) {
-      LOGGER.warn(
-          "execution of the cron job is skipped because there is a running or pending "
-              + "paragraph (note id: {})",
-          note.getId());
-      return;
-    }
+    @Override
+    public void execute(JobExecutionContext context) {
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        Note note = (Note) jobDataMap.get("note");
+        LOGGER.info("Start cron job of note: {}", note.getId());
+        if (note.haveRunningOrPendingParagraphs()) {
+            LOGGER.warn(
+                    "execution of the cron job is skipped because there is a running or pending "
+                            + "paragraph (note id: {})",
+                    note.getId());
+            return;
+        }
 
-    String cronExecutingUser = (String) note.getConfig().get("cronExecutingUser");
-    String cronExecutingRoles = (String) note.getConfig().get("cronExecutingRoles");
-    if (null == cronExecutingUser) {
-      cronExecutingUser = "anonymous";
+        String cronExecutingUser = (String) note.getConfig().get("cronExecutingUser");
+        String cronExecutingRoles = (String) note.getConfig().get("cronExecutingRoles");
+        if (null == cronExecutingUser) {
+            cronExecutingUser = "anonymous";
+        }
+        AuthenticationInfo authenticationInfo =
+                new AuthenticationInfo(
+                        cronExecutingUser,
+                        StringUtils.isEmpty(cronExecutingRoles) ? null : cronExecutingRoles,
+                        null);
+        try {
+            note.runAll(authenticationInfo, true, true, new HashMap<>());
+        } catch (Exception e) {
+            LOGGER.warn("Fail to run note: {}", note.getName(), e);
+        }
     }
-    AuthenticationInfo authenticationInfo =
-            new AuthenticationInfo(
-                    cronExecutingUser,
-                    StringUtils.isEmpty(cronExecutingRoles) ? null : cronExecutingRoles,
-                    null);
-    try {
-      note.runAll(authenticationInfo, true, true, new HashMap<>());
-    } catch (Exception e) {
-      LOGGER.warn("Fail to run note: {}", note.getName(), e);
-    }
-  }
 }

@@ -25,26 +25,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NoteJobStatus {
-  private static final Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
 
-  private String id;
-  private boolean isRunning;
-  @SerializedName("paragraphs")
-  private List<ParagraphJobStatus> paragraphJobStatusList;
+    private String id;
+    private boolean isRunning;
+    @SerializedName("paragraphs")
+    private List<ParagraphJobStatus> paragraphJobStatusList;
 
-  public NoteJobStatus(Note note) {
-    this.id = note.getId();
-    this.isRunning = note.isRunning();
-    this.paragraphJobStatusList = note.getParagraphs().stream()
-            .map(p -> new ParagraphJobStatus(p))
-            .collect(Collectors.toList());
-  }
+    public NoteJobStatus(Note note) {
+        this.id = note.getId();
+        this.isRunning = note.isRunning();
+        this.paragraphJobStatusList = note.getParagraphs().stream()
+                .map(p -> new ParagraphJobStatus(p))
+                .collect(Collectors.toList());
+    }
 
-  public List<ParagraphJobStatus> getParagraphJobStatusList() {
-    return paragraphJobStatusList;
-  }
+    public static NoteJobStatus fromJson(String json) {
+        return GSON.fromJson(json, NoteJobStatus.class);
+    }
 
-  public static NoteJobStatus fromJson(String json) {
-    return GSON.fromJson(json, NoteJobStatus.class);
-  }
+    public List<ParagraphJobStatus> getParagraphJobStatusList() {
+        return paragraphJobStatusList;
+    }
 }

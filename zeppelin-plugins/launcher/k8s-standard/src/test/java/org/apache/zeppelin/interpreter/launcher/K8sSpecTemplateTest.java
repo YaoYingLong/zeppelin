@@ -25,131 +25,131 @@ import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 
 public class K8sSpecTemplateTest {
-  @Test
-  public void testRender() {
-    // given template variables
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    template.put("name", "world");
+    @Test
+    public void testRender() {
+        // given template variables
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        template.put("name", "world");
 
-    // when
-    String spec = template.render("Hello {{name}}");
+        // when
+        String spec = template.render("Hello {{name}}");
 
-    // then
-    assertEquals("Hello world", spec);
-  }
+        // then
+        assertEquals("Hello world", spec);
+    }
 
-  @Test
-  public void testObject() {
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    template.put("k8s", ImmutableMap.of("key", "world"));
+    @Test
+    public void testObject() {
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        template.put("k8s", ImmutableMap.of("key", "world"));
 
-    // when
-    String spec = template.render("Hello {{k8s.key}}");
+        // when
+        String spec = template.render("Hello {{k8s.key}}");
 
-    // then
-    assertEquals("Hello world", spec);
-  }
+        // then
+        assertEquals("Hello world", spec);
+    }
 
-  @Test
-  public void testRenderWithStrip() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    template.put("test", "test");
-      // when
-    String spec = template.render(
-          "  {% if test == \"test\" %}\n" +
-          "  After commit\n" +
-          "  {% endif %}\n");
+    @Test
+    public void testRenderWithStrip() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        template.put("test", "test");
+        // when
+        String spec = template.render(
+                "  {% if test == \"test\" %}\n" +
+                        "  After commit\n" +
+                        "  {% endif %}\n");
 
-    // then
-    assertEquals("  After commit\n", spec);
-  }
+        // then
+        assertEquals("  After commit\n", spec);
+    }
 
-  @Test
-  public void testIterate() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    template.put("dict", ImmutableMap.of(
-        "k1", "v1",
-        "k2", "v2"
-    ));
+    @Test
+    public void testIterate() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        template.put("dict", ImmutableMap.of(
+                "k1", "v1",
+                "k2", "v2"
+        ));
 
-    // when
-    String spec = template.render(
-        "{% for key, value in dict.items() %}" +
-            "key = {{key}}, value = {{value}}\n" +
-            "{% endfor %}"
+        // when
+        String spec = template.render(
+                "{% for key, value in dict.items() %}" +
+                        "key = {{key}}, value = {{value}}\n" +
+                        "{% endfor %}"
         );
 
-    // then
-    assertEquals(
-        "key = k1, value = v1\n" +
-        "key = k2, value = v2\n", spec);
-  }
+        // then
+        assertEquals(
+                "key = k1, value = v1\n" +
+                        "key = k2, value = v2\n", spec);
+    }
 
-  @Test
-  public void testLoadProperties() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    Properties p = new Properties();
-    p.put("k8s.intp.key1", "v1");
-    p.put("k8s.intp.key2", "v2");
-    p.put("k8s.key3", "v3");
-    p.put("key4", "v4");
+    @Test
+    public void testLoadProperties() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        Properties p = new Properties();
+        p.put("k8s.intp.key1", "v1");
+        p.put("k8s.intp.key2", "v2");
+        p.put("k8s.key3", "v3");
+        p.put("key4", "v4");
 
-    // when
-    template.loadProperties(p);
+        // when
+        template.loadProperties(p);
 
-    // then
-    assertEquals("v4", template.get("key4"));
-    assertEquals("v3", ((Map) template.get("k8s")).get("key3"));
-    assertEquals("v2", ((Map) ((Map) template.get("k8s")).get("intp")).get("key2"));
-    assertEquals("v1", ((Map) ((Map) template.get("k8s")).get("intp")).get("key1"));
-  }
+        // then
+        assertEquals("v4", template.get("key4"));
+        assertEquals("v3", ((Map) template.get("k8s")).get("key3"));
+        assertEquals("v2", ((Map) ((Map) template.get("k8s")).get("intp")).get("key2"));
+        assertEquals("v1", ((Map) ((Map) template.get("k8s")).get("intp")).get("key1"));
+    }
 
-  @Test
-  public void testLoadPropertyOverrideString() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    Properties p = new Properties();
-    p.put("k8s", "v1");
-    p.put("k8s.key1", "v2");
+    @Test
+    public void testLoadPropertyOverrideString() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        Properties p = new Properties();
+        p.put("k8s", "v1");
+        p.put("k8s.key1", "v2");
 
-    // when
-    template.loadProperties(p);
+        // when
+        template.loadProperties(p);
 
-    // then
-    assertEquals("v1", ((Map) template.get("k8s")).get("_"));
-    assertEquals("v2", ((Map) template.get("k8s")).get("key1"));
-  }
+        // then
+        assertEquals("v1", ((Map) template.get("k8s")).get("_"));
+        assertEquals("v2", ((Map) template.get("k8s")).get("key1"));
+    }
 
-  @Test
-  public void testLoadPropertyOverrideDict() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    Properties p = new Properties();
-    p.put("k8s.key1", "v2");
-    p.put("k8s", "v1");
+    @Test
+    public void testLoadPropertyOverrideDict() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        Properties p = new Properties();
+        p.put("k8s.key1", "v2");
+        p.put("k8s", "v1");
 
-    // when
-    template.loadProperties(p);
+        // when
+        template.loadProperties(p);
 
-    // then
-    assertEquals("v1", ((Map) template.get("k8s")).get("_"));
-    assertEquals("v2", ((Map) template.get("k8s")).get("key1"));
-  }
+        // then
+        assertEquals("v1", ((Map) template.get("k8s")).get("_"));
+        assertEquals("v2", ((Map) template.get("k8s")).get("key1"));
+    }
 
-  @Test
-  public void testLoadPropertyWithMap() {
-    // given
-    K8sSpecTemplate template = new K8sSpecTemplate();
-    Properties p = new Properties();
-    p.put("k8s", ImmutableMap.of("k1", "v1"));
+    @Test
+    public void testLoadPropertyWithMap() {
+        // given
+        K8sSpecTemplate template = new K8sSpecTemplate();
+        Properties p = new Properties();
+        p.put("k8s", ImmutableMap.of("k1", "v1"));
 
-    // when
-    template.loadProperties(p);
+        // when
+        template.loadProperties(p);
 
-    // then
-    assertEquals("v1", ((Map) template.get("k8s")).get("k1"));
-  }
+        // then
+        assertEquals("v1", ((Map) template.get("k8s")).get("k1"));
+    }
 }

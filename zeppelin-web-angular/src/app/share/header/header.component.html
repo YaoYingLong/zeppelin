@@ -18,15 +18,16 @@
     </a>
   </div>
   <div class="nav">
-    <ul nz-menu [nzMode]="'horizontal'">
-      <li nz-menu-item [class.ant-menu-item-selected]="noteListVisible">
-        <a nz-dropdown class="node-list-trigger" [nzDropdownMenu]="list" [nzTrigger]="'click'" [(nzVisible)]="noteListVisible">Notebook
+    <ul [nzMode]="'horizontal'" nz-menu>
+      <li [class.ant-menu-item-selected]="noteListVisible" nz-menu-item>
+        <a [(nzVisible)]="noteListVisible" [nzDropdownMenu]="list" [nzTrigger]="'click'" class="node-list-trigger"
+           nz-dropdown>Notebook
           <i class="small-icon" nz-icon nzType="caret-down"></i>
         </a>
         <nz-dropdown-menu #list="nzDropdownMenu">
-          <zeppelin-node-list [headerMode]="true"
-                              class="ant-dropdown-menu padding-sm"
-                              *ngIf="noteListVisible"></zeppelin-node-list>
+          <zeppelin-node-list *ngIf="noteListVisible"
+                              [headerMode]="true"
+                              class="ant-dropdown-menu padding-sm"></zeppelin-node-list>
         </nz-dropdown-menu>
       </li>
       <li nz-menu-item routerLinkActive="ant-menu-item-selected">
@@ -34,21 +35,21 @@
       </li>
     </ul>
   </div>
-  <div class="user" *ngIf="ticketService.ticket.init">
-    <a nz-dropdown class="status" [nzTrigger]="'click'" [nzDropdownMenu]="menu">
+  <div *ngIf="ticketService.ticket.init" class="user">
+    <a [nzDropdownMenu]="menu" [nzTrigger]="'click'" class="status" nz-dropdown>
       <nz-badge [nzStatus]="connectStatus" [nzText]="ticketService.ticket.screenUsername"></nz-badge>
       <i class="small-icon" nz-icon nzType="caret-down"></i>
     </a>
     <nz-dropdown-menu #menu="nzDropdownMenu">
       <ul nz-menu>
-        <li nz-menu-item (click)="about()">About Zeppelin</li>
+        <li (click)="about()" nz-menu-item>About Zeppelin</li>
         <li nz-menu-divider></li>
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
           <a [routerLink]="['/interpreter']">Interpreter</a>
         </li>
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
           <a [routerLink]="['/notebook-repos']">Notebook
-                                               Repos
+            Repos
           </a>
         </li>
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
@@ -56,15 +57,15 @@
             [routerLink]="['/credential']">Credential
           </a>
         </li>
-<!--        <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">-->
-<!--          <a [routerLink]="['/helium']">Helium</a>-->
-<!--        </li>-->
+        <!--        <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">-->
+        <!--          <a [routerLink]="['/helium']">Helium</a>-->
+        <!--        </li>-->
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
           <a [routerLink]="['/configuration']">Configuration</a>
         </li>
         <ng-container *ngIf="ticketService.ticket.principal !== 'anonymous'">
           <li nz-menu-divider></li>
-          <li nz-menu-item (click)="logout()">Logout</li>
+          <li (click)="logout()" nz-menu-item>Logout</li>
         </ng-container>
         <li nz-menu-divider></li>
         <li nz-menu-item><a href="/">Old Version</a></li>
@@ -73,11 +74,11 @@
   </div>
   <div class="search">
     <nz-input-group [nzPrefixIcon]="'search'">
-      <input type="text"
+      <input (keyup.enter)="onSearch()"
+             [(ngModel)]="queryStr"
              nz-input
              placeholder="Search"
-             (keyup.enter)="onSearch()"
-             [(ngModel)]="queryStr"/>
+             type="text"/>
     </nz-input-group>
   </div>
 </div>

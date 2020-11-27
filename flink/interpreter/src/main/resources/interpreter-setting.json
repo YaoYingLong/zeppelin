@@ -209,7 +209,6 @@
       "completionSupport": true
     }
   },
-
   {
     "group": "flink",
     "name": "bsql",
@@ -228,7 +227,6 @@
       "editOnDblClick": false
     }
   },
-
   {
     "group": "flink",
     "name": "ssql",
@@ -247,13 +245,11 @@
       "editOnDblClick": false
     }
   },
-
   {
     "group": "flink",
     "name": "pyflink",
     "className": "org.apache.zeppelin.flink.PyFlinkInterpreter",
     "properties": {
-
     },
     "editor": {
       "language": "python",
@@ -262,13 +258,11 @@
       "completionSupport": true
     }
   },
-
   {
     "group": "flink",
     "name": "ipyflink",
     "className": "org.apache.zeppelin.flink.IPyFlinkInterpreter",
     "properties": {
-
     },
     "editor": {
       "language": "python",

@@ -17,32 +17,32 @@
 
 package org.apache.zeppelin.service;
 
-import static org.junit.Assert.assertTrue;
-
 import org.apache.log4j.Level;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class AdminServiceTest {
 
-  @Test
-  public void testSetLoggerLevel() {
-    AdminService adminService = new AdminService();
-    String testLoggerName = "test";
-    org.apache.log4j.Logger logger = adminService.getLogger(testLoggerName);
-    org.apache.log4j.Level level = logger.getLevel();
-    boolean setInfo = false;
-    if (org.apache.log4j.Level.INFO == level) {
-      // if a current level is INFO, set DEBUG to check if it's changed or not
-      logger.setLevel(org.apache.log4j.Level.DEBUG);
-    } else {
-      logger.setLevel(org.apache.log4j.Level.INFO);
-      setInfo = true;
-    }
+    @Test
+    public void testSetLoggerLevel() {
+        AdminService adminService = new AdminService();
+        String testLoggerName = "test";
+        org.apache.log4j.Logger logger = adminService.getLogger(testLoggerName);
+        org.apache.log4j.Level level = logger.getLevel();
+        boolean setInfo = false;
+        if (org.apache.log4j.Level.INFO == level) {
+            // if a current level is INFO, set DEBUG to check if it's changed or not
+            logger.setLevel(org.apache.log4j.Level.DEBUG);
+        } else {
+            logger.setLevel(org.apache.log4j.Level.INFO);
+            setInfo = true;
+        }
 
-    logger = adminService.getLogger(testLoggerName);
-    assertTrue(
-        "Level of logger should be changed",
-        (setInfo && org.apache.log4j.Level.INFO == logger.getLevel())
-            || (!setInfo && Level.DEBUG == logger.getLevel()));
-  }
+        logger = adminService.getLogger(testLoggerName);
+        assertTrue(
+                "Level of logger should be changed",
+                (setInfo && org.apache.log4j.Level.INFO == logger.getLevel())
+                        || (!setInfo && Level.DEBUG == logger.getLevel()));
+    }
 }

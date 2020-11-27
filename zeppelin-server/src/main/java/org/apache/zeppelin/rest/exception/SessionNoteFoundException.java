@@ -25,7 +25,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 public class SessionNoteFoundException extends WebApplicationException {
 
-  public SessionNoteFoundException(String sessionId) {
-    super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such session: " + sessionId));
-  }
+    public SessionNoteFoundException(String sessionId) {
+        super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such session: " + sessionId));
+    }
 }

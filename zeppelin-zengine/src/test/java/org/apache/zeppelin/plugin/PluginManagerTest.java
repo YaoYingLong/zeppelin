@@ -30,14 +30,14 @@ import static org.junit.Assert.assertTrue;
 
 public class PluginManagerTest {
 
-  @Test
-  public void testLoadGitNotebookRepo() throws IOException {
-    NotebookRepo notebookRepo = PluginManager.get()
-            .loadNotebookRepo("org.apache.zeppelin.notebook.repo.GitNotebookRepo");
-    assertTrue(notebookRepo instanceof GitNotebookRepo);
+    @Test
+    public void testLoadGitNotebookRepo() throws IOException {
+        NotebookRepo notebookRepo = PluginManager.get()
+                .loadNotebookRepo("org.apache.zeppelin.notebook.repo.GitNotebookRepo");
+        assertTrue(notebookRepo instanceof GitNotebookRepo);
 
-    OldNotebookRepo oldNotebookRepo = PluginManager.get()
-            .loadOldNotebookRepo("org.apache.zeppelin.notebook.repo.GitNotebookRepo");
-    assertTrue(oldNotebookRepo instanceof OldGitNotebookRepo);
-  }
+        OldNotebookRepo oldNotebookRepo = PluginManager.get()
+                .loadOldNotebookRepo("org.apache.zeppelin.notebook.repo.GitNotebookRepo");
+        assertTrue(oldNotebookRepo instanceof OldGitNotebookRepo);
+    }
 }

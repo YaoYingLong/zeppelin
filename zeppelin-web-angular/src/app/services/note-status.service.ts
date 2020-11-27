@@ -28,6 +28,8 @@ export const ParagraphStatus = {
   providedIn: 'root'
 })
 export class NoteStatusService {
+  constructor(@Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string) {}
+
   isParagraphRunning(paragraph: ParagraphItem) {
     if (!paragraph) {
       return false;
@@ -60,6 +62,4 @@ export class NoteStatusService {
   isEntireNoteRunning(note: Note['note']): boolean {
     return !!(note.info && note.info.isRunning && note.info.isRunning === true);
   }
-
-  constructor(@Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string) {}
 }

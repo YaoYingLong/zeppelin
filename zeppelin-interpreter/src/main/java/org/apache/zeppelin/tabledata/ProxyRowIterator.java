@@ -25,25 +25,25 @@ import java.util.Iterator;
  */
 public class ProxyRowIterator implements Iterator<Row> {
 
-  private final Resource rows;
+    private final Resource rows;
 
-  public ProxyRowIterator(Resource rows) {
-    this.rows = rows;
-  }
+    public ProxyRowIterator(Resource rows) {
+        this.rows = rows;
+    }
 
-  @Override
-  public boolean hasNext() {
-    rows.invokeMethod("hasNext");
-    return false;
-  }
+    @Override
+    public boolean hasNext() {
+        rows.invokeMethod("hasNext");
+        return false;
+    }
 
-  @Override
-  public Row next() {
-    return (Row) rows.invokeMethod("next");
-  }
+    @Override
+    public Row next() {
+        return (Row) rows.invokeMethod("next");
+    }
 
-  @Override
-  public void remove() {
-    // operation not supported
-  }
+    @Override
+    public void remove() {
+        // operation not supported
+    }
 }

@@ -24,56 +24,55 @@ import java.util.List;
 
 /**
  * Execution result of each statement.
- *
  */
 public class ExecuteResult {
 
-  private String statementId;
-  private Status status;
-  // each statement may return multiple results
-  private List<Result> results;
-  // if there's any job in the statement, then it will also contain job urls.
-  // e.g. spark job url
-  private List<String> jobUrls;
-  // if there's any job in the statement, then it will also contain a progress
-  // range from 0 to 100. e.g. spark job progress.
-  private int progress;
+    private String statementId;
+    private Status status;
+    // each statement may return multiple results
+    private List<Result> results;
+    // if there's any job in the statement, then it will also contain job urls.
+    // e.g. spark job url
+    private List<String> jobUrls;
+    // if there's any job in the statement, then it will also contain a progress
+    // range from 0 to 100. e.g. spark job progress.
+    private int progress;
 
-  public ExecuteResult(ParagraphResult paragraphResult) {
-    this.statementId = paragraphResult.getParagraphId();
-    this.status = paragraphResult.getStatus();
-    this.progress = paragraphResult.getProgress();
-    this.results = paragraphResult.getResults();
-    this.jobUrls = paragraphResult.getJobUrls();
-  }
+    public ExecuteResult(ParagraphResult paragraphResult) {
+        this.statementId = paragraphResult.getParagraphId();
+        this.status = paragraphResult.getStatus();
+        this.progress = paragraphResult.getProgress();
+        this.results = paragraphResult.getResults();
+        this.jobUrls = paragraphResult.getJobUrls();
+    }
 
-  public String getStatementId() {
-    return statementId;
-  }
+    public String getStatementId() {
+        return statementId;
+    }
 
-  public Status getStatus() {
-    return status;
-  }
+    public Status getStatus() {
+        return status;
+    }
 
-  public List<Result> getResults() {
-    return results;
-  }
+    public List<Result> getResults() {
+        return results;
+    }
 
-  public List<String> getJobUrls() {
-    return jobUrls;
-  }
+    public List<String> getJobUrls() {
+        return jobUrls;
+    }
 
-  public int getProgress() {
-    return progress;
-  }
+    public int getProgress() {
+        return progress;
+    }
 
-  @Override
-  public String toString() {
-    return "ExecuteResult{" +
-            "status=" + status +
-            ", progress=" + progress +
-            ", results=" + StringUtils.join(results, ", ") +
-            ", jobUrls=" + jobUrls +
-            '}';
-  }
+    @Override
+    public String toString() {
+        return "ExecuteResult{" +
+                "status=" + status +
+                ", progress=" + progress +
+                ", results=" + StringUtils.join(results, ", ") +
+                ", jobUrls=" + jobUrls +
+                '}';
+    }
 }

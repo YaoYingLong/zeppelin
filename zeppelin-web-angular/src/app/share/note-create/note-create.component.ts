@@ -32,6 +32,15 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
   defaultInterpreter: string;
   listOfInterpreter: InterpreterItem[] = [];
 
+  constructor(
+    public messageService: MessageService,
+    private cdr: ChangeDetectorRef,
+    private noteListService: NoteListService,
+    private nzModalRef: NzModalRef
+  ) {
+    super(messageService);
+  }
+
   @MessageListener(OP.INTERPRETER_SETTINGS)
   getInterpreterSettings(data: MessageReceiveDataTypeMap[OP.INTERPRETER_SETTINGS]) {
     this.listOfInterpreter = data.interpreterSettings;
@@ -87,15 +96,6 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
     this.cloneNote
       ? this.messageService.cloneNote(this.cloneNote.id, this.noteName)
       : this.messageService.newNote(this.noteName, this.defaultInterpreter);
-  }
-
-  constructor(
-    public messageService: MessageService,
-    private cdr: ChangeDetectorRef,
-    private noteListService: NoteListService,
-    private nzModalRef: NzModalRef
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {

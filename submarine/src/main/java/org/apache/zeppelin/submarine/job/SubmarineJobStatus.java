@@ -15,38 +15,38 @@
 package org.apache.zeppelin.submarine.job;
 
 public enum SubmarineJobStatus {
-  UNKNOWN("UNKNOWN"),
-  READY("READY"),
-  EXECUTE_SUBMARINE("EXECUTE SUBMARINE"),
-  EXECUTE_SUBMARINE_ERROR("EXECUTE SUBMARINE ERROR"),
-  EXECUTE_SUBMARINE_FINISHED("EXECUTE SUBMARINE FINISHED"),
-  YARN_NEW("YARN NEW"),
-  YARN_NEW_SAVING("YARN NEW SAVING"),
-  YARN_SUBMITTED("YARN SUBMITTED"),
-  YARN_ACCEPTED("YARN ACCEPTED"),
-  YARN_RUNNING("YARN RUNNING"),
-  YARN_FINISHED("YARN FINISHED"),
-  YARN_FAILED("YARN FAILED"),
-  YARN_STOPPED("YARN STOPPED"),
-  YARN_KILLED("YARN KILLED");
+    UNKNOWN("UNKNOWN"),
+    READY("READY"),
+    EXECUTE_SUBMARINE("EXECUTE SUBMARINE"),
+    EXECUTE_SUBMARINE_ERROR("EXECUTE SUBMARINE ERROR"),
+    EXECUTE_SUBMARINE_FINISHED("EXECUTE SUBMARINE FINISHED"),
+    YARN_NEW("YARN NEW"),
+    YARN_NEW_SAVING("YARN NEW SAVING"),
+    YARN_SUBMITTED("YARN SUBMITTED"),
+    YARN_ACCEPTED("YARN ACCEPTED"),
+    YARN_RUNNING("YARN RUNNING"),
+    YARN_FINISHED("YARN FINISHED"),
+    YARN_FAILED("YARN FAILED"),
+    YARN_STOPPED("YARN STOPPED"),
+    YARN_KILLED("YARN KILLED");
 
-  private String status;
+    private String status;
 
-  SubmarineJobStatus(String status){
-    this.status = status;
-  }
-
-  public String getStatus(){
-    return status;
-  }
-
-  public static SubmarineJobStatus fromState(String status) {
-    for (SubmarineJobStatus noteStatus : SubmarineJobStatus.values()) {
-      if (noteStatus.getStatus().equals(status)) {
-        return noteStatus;
-      }
+    SubmarineJobStatus(String status) {
+        this.status = status;
     }
 
-    return EXECUTE_SUBMARINE_ERROR;
-  }
+    public static SubmarineJobStatus fromState(String status) {
+        for (SubmarineJobStatus noteStatus : SubmarineJobStatus.values()) {
+            if (noteStatus.getStatus().equals(status)) {
+                return noteStatus;
+            }
+        }
+
+        return EXECUTE_SUBMARINE_ERROR;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

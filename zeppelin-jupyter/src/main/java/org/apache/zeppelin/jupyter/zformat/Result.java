@@ -17,31 +17,32 @@
 package org.apache.zeppelin.jupyter.zformat;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
  *
  */
 public class Result {
-  public static final String SUCCESS = "SUCCESS";
-  public static final String ERROR = "ERROR";
+    public static final String SUCCESS = "SUCCESS";
+    public static final String ERROR = "ERROR";
 
-  @SerializedName("code")
-  private String code;
+    @SerializedName("code")
+    private String code;
 
-  @SerializedName("msg")
-  private List<TypeData> msg;
+    @SerializedName("msg")
+    private List<TypeData> msg;
 
-  public Result(String code, List<TypeData> msg) {
-    this.code = code;
-    this.msg = msg;
-  }
+    public Result(String code, List<TypeData> msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 
-  public String getCode() {
-    return code;
-  }
+    public String getCode() {
+        return code;
+    }
 
-  public List<TypeData> getMsg() {
-    return msg;
-  }
+    public List<TypeData> getMsg() {
+        return msg;
+    }
 }

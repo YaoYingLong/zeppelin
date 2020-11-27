@@ -25,14 +25,14 @@ import {
 } from '@angular/core';
 
 import { editor as MonacoEditor, IDisposable } from 'monaco-editor';
-import IStandaloneCodeEditor = MonacoEditor.IStandaloneCodeEditor;
-import IEditor = monaco.editor.IEditor;
 
 import { InterpreterBindingItem } from '@zeppelin/sdk';
 import { CompletionService, MessageService } from '@zeppelin/services';
 
 import { pt2px } from '@zeppelin/utility/css-unit-conversion';
 import { NotebookParagraphControlComponent } from '../control/control.component';
+import IStandaloneCodeEditor = MonacoEditor.IStandaloneCodeEditor;
+import IEditor = monaco.editor.IEditor;
 
 @Component({
   selector: 'zeppelin-notebook-paragraph-code-editor',
@@ -57,10 +57,17 @@ export class NotebookParagraphCodeEditorComponent implements OnChanges, OnDestro
   @Output() readonly textChanged = new EventEmitter<string>();
   @Output() readonly editorBlur = new EventEmitter<void>();
   @Output() readonly editorFocus = new EventEmitter<void>();
-  private editor: IStandaloneCodeEditor;
-  private monacoDisposables: IDisposable[] = [];
   height = 0;
   interpreterName: string;
+  private editor: IStandaloneCodeEditor;
+  private monacoDisposables: IDisposable[] = [];
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
+    private messageService: MessageService,
+    private completionService: CompletionService
+  ) {}
 
   autoAdjustEditorHeight() {
     if (this.editor) {
@@ -195,13 +202,6 @@ export class NotebookParagraphCodeEditorComponent implements OnChanges, OnDestro
       });
     }
   }
-
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone,
-    private messageService: MessageService,
-    private completionService: CompletionService
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const { text, interpreterBindings, language, readOnly, focus, lineNumbers, fontSize } = changes;

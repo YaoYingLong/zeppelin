@@ -34,48 +34,48 @@ import static org.mockito.Mockito.mock;
 
 public abstract class BaseInterpreterTest {
 
-  @Before
-  public abstract void setUp() throws InterpreterException;
+    @Before
+    public abstract void setUp() throws InterpreterException;
 
-  @After
-  public abstract void tearDown() throws InterpreterException;
+    @After
+    public abstract void tearDown() throws InterpreterException;
 
-  protected InterpreterContext getIntpContext() {
-    final AtomicInteger onAdd = new AtomicInteger(0);
-    final AtomicInteger onUpdate = new AtomicInteger(0);
-    final AtomicInteger onRemove = new AtomicInteger(0);
-    AngularObjectRegistry registry = new AngularObjectRegistry("intpId",
-        new AngularObjectRegistryListener() {
+    protected InterpreterContext getIntpContext() {
+        final AtomicInteger onAdd = new AtomicInteger(0);
+        final AtomicInteger onUpdate = new AtomicInteger(0);
+        final AtomicInteger onRemove = new AtomicInteger(0);
+        AngularObjectRegistry registry = new AngularObjectRegistry("intpId",
+                new AngularObjectRegistryListener() {
 
-          @Override
-          public void onAddAngularObject(String interpreterGroupId,
-                                         AngularObject angularObject) {
-            onAdd.incrementAndGet();
-          }
+                    @Override
+                    public void onAddAngularObject(String interpreterGroupId,
+                                                   AngularObject angularObject) {
+                        onAdd.incrementAndGet();
+                    }
 
-          @Override
-          public void onUpdateAngularObject(String interpreterGroupId,
-                                            AngularObject angularObject) {
-            onUpdate.incrementAndGet();
-          }
+                    @Override
+                    public void onUpdateAngularObject(String interpreterGroupId,
+                                                      AngularObject angularObject) {
+                        onUpdate.incrementAndGet();
+                    }
 
-          @Override
-          public void onRemoveAngularObject(String interpreterGroupId,
-                                            AngularObject angularObject) {
-            onRemove.incrementAndGet();
-          }
-        });
+                    @Override
+                    public void onRemoveAngularObject(String interpreterGroupId,
+                                                      AngularObject angularObject) {
+                        onRemove.incrementAndGet();
+                    }
+                });
 
-    AuthenticationInfo authenticationInfo = new AuthenticationInfo("user");
+        AuthenticationInfo authenticationInfo = new AuthenticationInfo("user");
 
-    return InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setNoteName("noteName")
-        .setParagraphId("paragraphId")
-        .setAuthenticationInfo(authenticationInfo)
-        .setAngularObjectRegistry(registry)
-        .setInterpreterOut(new InterpreterOutput(null))
-        .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
-        .build();
-  }
+        return InterpreterContext.builder()
+                .setNoteId("noteId")
+                .setNoteName("noteName")
+                .setParagraphId("paragraphId")
+                .setAuthenticationInfo(authenticationInfo)
+                .setAngularObjectRegistry(registry)
+                .setInterpreterOut(new InterpreterOutput(null))
+                .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
+                .build();
+    }
 }

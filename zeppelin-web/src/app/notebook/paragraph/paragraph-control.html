@@ -12,25 +12,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<div id="{{paragraph.id}}_control" class="control" ng-show="!asIframe">
+<div class="control" id="{{paragraph.id}}_control" ng-show="!asIframe">
   <span>
     <span ng-show="paragraph.runtimeInfos.jobUrl.values.length == 1">
-      <a href="{{paragraph.runtimeInfos.jobUrl.values[0].jobUrl}}" target="_blank" style="text-decoration: none;"
-         tooltip-placement="top" uib-tooltip="{{paragraph.runtimeInfos.jobUrl.tooltip}}" >
+      <a href="{{paragraph.runtimeInfos.jobUrl.values[0].jobUrl}}" style="text-decoration: none;" target="_blank"
+         tooltip-placement="top" uib-tooltip="{{paragraph.runtimeInfos.jobUrl.tooltip}}">
         <span class="fa fa-tasks"></span>
         {{paragraph.runtimeInfos.jobUrl.label}}
       </a>
     </span>
     <span class="dropdown" ng-show="paragraph.runtimeInfos.jobUrl.values.length > 1">
-      <span style="cursor:pointer;color:#3071A9" tooltip-placement="top" uib-tooltip="{{paragraph.runtimeInfos.jobUrl.tooltip}}"
-            data-toggle="dropdown" type="button">
+      <span data-toggle="dropdown" style="cursor:pointer;color:#3071A9"
+            tooltip-placement="top"
+            type="button" uib-tooltip="{{paragraph.runtimeInfos.jobUrl.tooltip}}">
         <span class="fa fa-tasks"></span>
         {{paragraph.runtimeInfos.jobUrl.label}}
       </span>
       <ul class="dropdown-menu" role="menu" style="width:200px;z-index:1002">
-        <li ng-class="{'option-disabled': !noteOperationsAllowed()}" ng-repeat="value in paragraph.runtimeInfos.jobUrl.values">
-          <a ng-if="value.jobLabel === undefined" href="{{value['jobUrl']}}" target="_blank"><span class="fa fa-external-link-square"></span> Jobs #{{$index}}</a>
-          <a ng-if="value.jobLabel !== undefined" href="{{value['jobUrl']}}" target="_blank"><span class="fa fa-external-link-square"></span> {{value['jobLabel']}} </a>
+        <li ng-class="{'option-disabled': !noteOperationsAllowed()}"
+            ng-repeat="value in paragraph.runtimeInfos.jobUrl.values">
+          <a href="{{value['jobUrl']}}" ng-if="value.jobLabel === undefined" target="_blank"><span
+            class="fa fa-external-link-square"></span> Jobs #{{$index}}</a>
+          <a href="{{value['jobUrl']}}" ng-if="value.jobLabel !== undefined" target="_blank"><span
+            class="fa fa-external-link-square"></span> {{value['jobLabel']}} </a>
         </li>
       </ul>
     </span>
@@ -45,95 +49,100 @@ limitations under the License.
 
   <!-- Run / Cancel button -->
   <span ng-if="!revisionView">
-    <span class="icon-control-play" style="cursor:pointer;color:#3071A9"
-          tooltip-placement="top" uib-tooltip="Run this paragraph (Shift+Enter)"
-          ng-click="runParagraphFromButton(getEditorValue())"
-          ng-class="{'item-disable' : isNoteRunning}"
-          ng-show="paragraph.status!='RUNNING' && paragraph.status!='PENDING' && paragraph.config.enabled"></span>
-    <span class="icon-control-pause" style="cursor:pointer;color:#CD5C5C"
-          tooltip-placement="top" uib-tooltip="Cancel (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+C)"
-          ng-click="cancelParagraph(paragraph)"
-          ng-class="{'item-disable' : isNoteRunning}"
-          ng-show="paragraph.status=='RUNNING' || paragraph.status=='PENDING'"></span>
-    <span class="{{paragraph.config.editorHide ? 'icon-size-fullscreen' : 'icon-size-actual'}}" style="cursor:pointer" tooltip-placement="top"
-          uib-tooltip="{{(paragraph.config.editorHide ? 'Show' : 'Hide')}} editor (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+E)"
-          ng-click="toggleEditor(paragraph)"></span>
-    <span class="{{paragraph.config.tableHide ? 'icon-notebook' : 'icon-book-open'}}" style="cursor:pointer" tooltip-placement="top"
-          uib-tooltip="{{(paragraph.config.tableHide ? 'Show' : 'Hide')}} output (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+O)"
-          ng-click="toggleOutput(paragraph)"></span>
+    <span class="icon-control-play" ng-class="{'item-disable' : isNoteRunning}"
+          ng-click="runParagraphFromButton(getEditorValue())" ng-show="paragraph.status!='RUNNING' && paragraph.status!='PENDING' && paragraph.config.enabled"
+          style="cursor:pointer;color:#3071A9"
+          tooltip-placement="top"
+          uib-tooltip="Run this paragraph (Shift+Enter)"></span>
+    <span class="icon-control-pause" ng-class="{'item-disable' : isNoteRunning}"
+          ng-click="cancelParagraph(paragraph)" ng-show="paragraph.status=='RUNNING' || paragraph.status=='PENDING'"
+          style="cursor:pointer;color:#CD5C5C"
+          tooltip-placement="top"
+          uib-tooltip="Cancel (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+C)"></span>
+    <span class="{{paragraph.config.editorHide ? 'icon-size-fullscreen' : 'icon-size-actual'}}" ng-click="toggleEditor(paragraph)"
+          style="cursor:pointer"
+          tooltip-placement="top"
+          uib-tooltip="{{(paragraph.config.editorHide ? 'Show' : 'Hide')}} editor (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+E)"></span>
+    <span class="{{paragraph.config.tableHide ? 'icon-notebook' : 'icon-book-open'}}" ng-click="toggleOutput(paragraph)"
+          style="cursor:pointer"
+          tooltip-placement="top"
+          uib-tooltip="{{(paragraph.config.tableHide ? 'Show' : 'Hide')}} output (Ctrl+{{ (isMac ? 'Option' : 'Alt') }}+O)"></span>
     <span class="dropdown navbar-right">
-      <span class="icon-settings" style="cursor:pointer"
-            data-toggle="dropdown"
+      <span class="icon-settings" data-toggle="dropdown"
+            style="cursor:pointer"
             type="button">
       </span>
 
       <ul class="dropdown-menu dropdown-menu-right" role="menu" style="width:270px;z-index:1002">
-        <li ng-controller="clipboardCtrl" ng-click="$event.stopPropagation()" style="text-align:center;margin-top:4px;">
-          <a  ngclipboard
-              ngclipboard-success="complete($event)"
-              ngclipboard-error="clipError($event)"
-              data-clipboard-text="{{paragraph.id}}"
-              tooltip-placement="top"
-              uib-tooltip="{{tooltip}}">
+        <li ng-click="$event.stopPropagation()" ng-controller="clipboardCtrl" style="text-align:center;margin-top:4px;">
+          <a data-clipboard-text="{{paragraph.id}}"
+             ngclipboard
+             ngclipboard-error="clipError($event)"
+             ngclipboard-success="complete($event)"
+             tooltip-placement="top"
+             uib-tooltip="{{tooltip}}">
             <span>{{paragraph.id}}</span>
           </a>
         </li>
-        <li role="separator" class="divider"></li>
-        <li style="padding-top:8px"
-            ng-if="paragraph.config.runOnSelectionChange == true || paragraph.config.runOnSelectionChange == false">
-          <span ng-if="paragraph.config.runOnSelectionChange == true" class="fa fa-toggle-on shortcut-icon" style="padding:3px 8px 8px 20px"></span>
-          <span ng-if="paragraph.config.runOnSelectionChange == false" class="fa fa-toggle-off shortcut-icon" style="padding:3px 8px 8px 20px"></span>Run on selection change
+        <li class="divider" role="separator"></li>
+        <li ng-if="paragraph.config.runOnSelectionChange == true || paragraph.config.runOnSelectionChange == false"
+            style="padding-top:8px">
+          <span class="fa fa-toggle-on shortcut-icon" ng-if="paragraph.config.runOnSelectionChange == true"
+                style="padding:3px 8px 8px 20px"></span>
+          <span class="fa fa-toggle-off shortcut-icon" ng-if="paragraph.config.runOnSelectionChange == false"
+                style="padding:3px 8px 8px 20px"></span>Run on selection change
           <form style="display:inline; float:right">
-            <input type="checkbox"
+            <input ng-checked="{{paragraph.config.runOnSelectionChange}}"
+                   ng-click="turnOnAutoRun(paragraph)"
                    style="width:16px; margin-right:20px"
-                   tooltip-placement="top" uib-tooltip="Even if you uncheck this, still can run the paragraph by pressing Enter"
-                   ng-checked="{{paragraph.config.runOnSelectionChange}}"
-                   ng-click="turnOnAutoRun(paragraph)"/>
+                   tooltip-placement="top"
+                   type="checkbox"
+                   uib-tooltip="Even if you uncheck this, still can run the paragraph by pressing Enter"/>
           </form>
         </li>
         <li>
-          <a ng-click="$event.stopPropagation()" class="dropdown">
-            <span style="margin-top: 2px;" class="fa fa-arrows-h shortcut-icon"></span>
-            <select style="margin-left:5px;float: right" ng-model="paragraph.config.colWidth"
-                    class="selectpicker"
-                    ng-change="changeColWidth(paragraph, paragraph.config.colWidth)"
-                    ng-options="col for col in colWidthOption"></select>
+          <a class="dropdown" ng-click="$event.stopPropagation()">
+            <span class="fa fa-arrows-h shortcut-icon" style="margin-top: 2px;"></span>
+            <select class="selectpicker" ng-change="changeColWidth(paragraph, paragraph.config.colWidth)"
+                    ng-model="paragraph.config.colWidth"
+                    ng-options="col for col in colWidthOption"
+                    style="margin-left:5px;float: right"></select>
             Width
           </a>
         </li>
         <li>
-          <a ng-click="$event.stopPropagation()" class="dropdown">
+          <a class="dropdown" ng-click="$event.stopPropagation()">
             <span class="fa fa-text-height shortcut-icon"></span>
-            <select style="margin-left:5px;float: right" ng-model="paragraph.config.fontSize"
-                  class="selectpicker"
-                  ng-change="changeFontSize(paragraph, paragraph.config.fontSize)"
-                  ng-options="s for s in fontSizeOption"></select>
+            <select class="selectpicker" ng-change="changeFontSize(paragraph, paragraph.config.fontSize)"
+                    ng-model="paragraph.config.fontSize"
+                    ng-options="s for s in fontSizeOption"
+                    style="margin-left:5px;float: right"></select>
              Font size
           </a>
         </li>
         <li>
-          <a ng-click="moveUp(paragraph)" ng-hide="$first" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="moveUp(paragraph)" ng-hide="$first">
             <span class="icon-arrow-up shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+{{ isMac ? 'Option' : 'Alt'}}+K</span>
             Move up
           </a>
         </li>
         <li>
-          <a ng-click="moveDown(paragraph)" ng-hide="$last" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="moveDown(paragraph)" ng-hide="$last">
             <span class="icon-arrow-down shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+{{ isMac ? 'Option' : 'Alt'}}+J</span>
             Move down
           </a>
         </li>
         <li>
-          <a ng-click="insertNew('below')" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="insertNew('below')">
             <span class="icon-plus shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+{{ isMac ? 'Option' : 'Alt'}}+B</span>
             Insert new
           </a>
         </li>
         <li>
-          <a ng-click="runAllToThis(paragraph)" ng-hide="$first" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="runAllToThis(paragraph)" ng-hide="$first">
             <span class="icon-action-redo shortcut-icon"
                   style="position: relative; transform: rotate(-90deg); left: -4px;">
             </span>
@@ -142,7 +151,7 @@ limitations under the License.
           </a>
         </li>
         <li>
-          <a ng-click="runAllFromThis(paragraph)" ng-hide="$last" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="runAllFromThis(paragraph)" ng-hide="$last">
             <span class="icon-action-undo shortcut-icon"
                   style="position: relative; transform: rotate(-90deg); left: -4px;">
             </span>
@@ -151,7 +160,7 @@ limitations under the License.
           </a>
         </li>
         <li>
-          <a ng-click="copyParagraph(getEditorValue())" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="copyParagraph(getEditorValue())">
             <span class="fa fa-copy shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+Shift+C</span>
             Clone paragraph
@@ -183,7 +192,7 @@ limitations under the License.
           </a>
         </li>
         <li>
-          <a ng-click="toggleEnableDisable(paragraph)" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="toggleEnableDisable(paragraph)">
             <span class="icon-control-play shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+ {{ isMac ? 'Option' : 'Alt'}}+R</span>
             {{paragraph.config.enabled ? "Disable" : "Enable"}} run
@@ -196,7 +205,7 @@ limitations under the License.
           </a>
         </li>
         <li>
-          <a ng-click="clearParagraphOutput(paragraph)" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="clearParagraphOutput(paragraph)">
             <span class="fa fa-eraser shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+{{ isMac ? 'Option' : 'Alt'}}+L</span>
             Clear output
@@ -204,7 +213,8 @@ limitations under the License.
         </li>
         <li>
           <!-- remove paragraph -->
-          <a ng-click="removeParagraph(paragraph)" ng-if="note.paragraphs.length > 1" ng-class="{'item-disable' : isNoteRunning}">
+          <a ng-class="{'item-disable' : isNoteRunning}" ng-click="removeParagraph(paragraph)"
+             ng-if="note.paragraphs.length > 1">
             <span class="fa fa-times shortcut-icon"></span>
             <span class="shortcut-keys">Ctrl+{{ isMac ? 'Option' : 'Alt'}}+D</span>
             Remove

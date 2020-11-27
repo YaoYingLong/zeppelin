@@ -33,12 +33,15 @@
     display: inline-block;
     float: right;
     color: @text-color-secondary;
+
     & > * {
       margin-left: 5px;
     }
+
     .job-control-btn {
       cursor: pointer;
       color: @processing-color;
+
       &.running {
         color: @error-color;
       }
@@ -47,6 +50,7 @@
 
   .interpreter {
     color: @text-color;
+
     &.unset {
       color: @text-color-secondary;
     }
@@ -56,6 +60,7 @@
     ::ng-deep .ant-badge-status-text {
       margin-left: 0;
     }
+
     margin: 0 4px;
   }
 

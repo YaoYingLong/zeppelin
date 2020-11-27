@@ -18,8 +18,8 @@
 package org.apache.zeppelin.dep;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -35,67 +35,67 @@ import java.nio.file.Paths;
  * Manage mvn repository.
  */
 public class Booter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Booter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Booter.class);
 
-  private Booter() {
-    // only a helper
-  }
-
-  public static RepositorySystem newRepositorySystem() {
-    return RepositorySystemFactory.newRepositorySystem();
-  }
-
-  public static RepositorySystemSession newRepositorySystemSession(
-      RepositorySystem system, String localRepoPath) {
-    Validate.notNull(localRepoPath, "localRepoPath should have a value");
-
-    DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-
-    LocalRepository localRepo = new LocalRepository(resolveLocalRepoPath(localRepoPath));
-    session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
-
-    if (LOGGER.isDebugEnabled()) {
-      session.setTransferListener(new TransferListener());
-      session.setRepositoryListener(new RepositoryListener());
-    }
-    // uncomment to generate dirty trees
-    // session.setDependencyGraphTransformer( null );
-
-    return session;
-  }
-
-  static String resolveLocalRepoPath(String localRepoPath) {
-    // todo decouple home folder resolution
-    // find homedir
-    String home = System.getenv("ZEPPELIN_HOME");
-    if (home == null) {
-      home = System.getProperty("zeppelin.home");
-    }
-    if (home == null) {
-      home = "..";
+    private Booter() {
+        // only a helper
     }
 
-    return Paths.get(home).resolve(localRepoPath).toAbsolutePath().toString();
-  }
+    public static RepositorySystem newRepositorySystem() {
+        return RepositorySystemFactory.newRepositorySystem();
+    }
 
-  public static RemoteRepository newCentralRepository(Proxy proxy) {
-    String mvnRepo = System.getenv("ZEPPELIN_INTERPRETER_DEP_MVNREPO");
-    if (mvnRepo == null) {
-      mvnRepo = ZeppelinConfiguration.create().getString(
-              ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_DEP_MVNREPO);
-    }
-    if (mvnRepo == null) {
-      mvnRepo = "https://repo1.maven.org/maven2/";
-    }
-    RemoteRepository.Builder centralBuilder = new RemoteRepository.Builder("central", "default", mvnRepo);
-    if (proxy != null) {
-      centralBuilder.setProxy(proxy);
-    }
-    return centralBuilder.build();
-  }
+    public static RepositorySystemSession newRepositorySystemSession(
+            RepositorySystem system, String localRepoPath) {
+        Validate.notNull(localRepoPath, "localRepoPath should have a value");
 
-  public static RemoteRepository newLocalRepository() {
-    return new RemoteRepository.Builder("local",
-        "default", "file://" + System.getProperty("user.home") + "/.m2/repository").build();
-  }
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+
+        LocalRepository localRepo = new LocalRepository(resolveLocalRepoPath(localRepoPath));
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
+
+        if (LOGGER.isDebugEnabled()) {
+            session.setTransferListener(new TransferListener());
+            session.setRepositoryListener(new RepositoryListener());
+        }
+        // uncomment to generate dirty trees
+        // session.setDependencyGraphTransformer( null );
+
+        return session;
+    }
+
+    static String resolveLocalRepoPath(String localRepoPath) {
+        // todo decouple home folder resolution
+        // find homedir
+        String home = System.getenv("ZEPPELIN_HOME");
+        if (home == null) {
+            home = System.getProperty("zeppelin.home");
+        }
+        if (home == null) {
+            home = "..";
+        }
+
+        return Paths.get(home).resolve(localRepoPath).toAbsolutePath().toString();
+    }
+
+    public static RemoteRepository newCentralRepository(Proxy proxy) {
+        String mvnRepo = System.getenv("ZEPPELIN_INTERPRETER_DEP_MVNREPO");
+        if (mvnRepo == null) {
+            mvnRepo = ZeppelinConfiguration.create().getString(
+                    ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_DEP_MVNREPO);
+        }
+        if (mvnRepo == null) {
+            mvnRepo = "https://repo1.maven.org/maven2/";
+        }
+        RemoteRepository.Builder centralBuilder = new RemoteRepository.Builder("central", "default", mvnRepo);
+        if (proxy != null) {
+            centralBuilder.setProxy(proxy);
+        }
+        return centralBuilder.build();
+    }
+
+    public static RemoteRepository newLocalRepository() {
+        return new RemoteRepository.Builder("local",
+                "default", "file://" + System.getProperty("user.home") + "/.m2/repository").build();
+    }
 }

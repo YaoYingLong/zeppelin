@@ -19,10 +19,10 @@ package org.apache.zeppelin.spark;
 
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.ZeppelinContext;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.r.RInterpreter;
 import org.apache.zeppelin.scheduler.Scheduler;
@@ -39,135 +39,135 @@ import java.util.Properties;
  * R and SparkR interpreter with visualization support.
  */
 public class SparkRInterpreter extends RInterpreter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SparkRInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SparkRInterpreter.class);
 
-  private SparkInterpreter sparkInterpreter;
-  private SparkVersion sparkVersion;
-  private boolean isSpark1;
-  private SparkContext sc;
-  private JavaSparkContext jsc;
+    private SparkInterpreter sparkInterpreter;
+    private SparkVersion sparkVersion;
+    private boolean isSpark1;
+    private SparkContext sc;
+    private JavaSparkContext jsc;
 
-  public SparkRInterpreter(Properties property) {
-    super(property);
-  }
-
-  @Override
-  protected boolean isSparkSupported() {
-    return true;
-  }
-
-  @Override
-  protected boolean isSecretSupported() {
-    return sparkVersion.isSecretSocketSupported();
-  }
-
-  @Override
-  protected int sparkVersion() {
-    return new SparkVersion(sc.version()).toNumber();
-  }
-
-  @Override
-  public void open() throws InterpreterException {
-    this.sparkInterpreter = getInterpreterInTheSameSessionByClassName(SparkInterpreter.class);
-    this.sc = sparkInterpreter.getSparkContext();
-    this.jsc = sparkInterpreter.getJavaSparkContext();
-    this.sparkVersion = new SparkVersion(sc.version());
-    this.isSpark1 = sparkVersion.getMajorVersion() == 1;
-
-    LOGGER.info("SparkRInterpreter: SPARK_HOME={}", sc.getConf().getenv("SPARK_HOME"));
-    Arrays.stream(sc.getConf().getAll())
-            .forEach(x -> LOGGER.info("SparkRInterpreter: conf, {}={}", x._1, x._2));
-    properties.entrySet().stream().forEach(x ->
-            LOGGER.info("SparkRInterpreter: prop, {}={}", x.getKey(), x.getValue()));
-
-    ZeppelinRContext.setSparkContext(sc);
-    ZeppelinRContext.setJavaSparkContext(jsc);
-    if (!isSpark1) {
-      ZeppelinRContext.setSparkSession(sparkInterpreter.getSparkSession());
+    public SparkRInterpreter(Properties property) {
+        super(property);
     }
-    ZeppelinRContext.setSqlContext(sparkInterpreter.getSQLContext());
-    ZeppelinRContext.setZeppelinContext(sparkInterpreter.getZeppelinContext());
-    super.open();
-  }
 
-  @Override
-  public InterpreterResult internalInterpret(String lines, InterpreterContext interpreterContext)
-      throws InterpreterException {
-    Utils.printDeprecateMessage(sparkInterpreter.getSparkVersion(),
-            interpreterContext, properties);
-    String jobGroup = Utils.buildJobGroupId(interpreterContext);
-    String jobDesc = Utils.buildJobDesc(interpreterContext);
-    sparkInterpreter.getSparkContext().setJobGroup(jobGroup, jobDesc, false);
-    String setJobGroup = "";
-    // assign setJobGroup to dummy__, otherwise it would print NULL for this statement
-    if (!isSpark1) {
-      setJobGroup = "dummy__ <- setJobGroup(\"" + jobGroup +
-          "\", \" +" + jobDesc + "\", TRUE)";
-    } else {
-      setJobGroup = "dummy__ <- setJobGroup(sc, \"" + jobGroup +
-          "\", \"" + jobDesc + "\", TRUE)";
+    @Override
+    protected boolean isSparkSupported() {
+        return true;
     }
-    lines = setJobGroup + "\n" + lines;
-    if (sparkInterpreter.getSparkVersion().newerThanEquals(SparkVersion.SPARK_2_3_0)) {
-      // setLocalProperty is only available from spark 2.3.0
-      String setPoolStmt = "setLocalProperty('spark.scheduler.pool', NULL)";
-      if (interpreterContext.getLocalProperties().containsKey("pool")) {
-        setPoolStmt = "setLocalProperty('spark.scheduler.pool', '" +
-            interpreterContext.getLocalProperties().get("pool") + "')";
-      }
-      lines = setPoolStmt + "\n" + lines;
+
+    @Override
+    protected boolean isSecretSupported() {
+        return sparkVersion.isSecretSocketSupported();
     }
-    return super.internalInterpret(lines, interpreterContext);
-  }
 
-  @Override
-  public void close() throws InterpreterException {
-    super.close();
-    if (this.sparkInterpreter != null) {
-      this.sparkInterpreter.close();
-      this.sparkInterpreter = null;
+    @Override
+    protected int sparkVersion() {
+        return new SparkVersion(sc.version()).toNumber();
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-    if (this.sc != null) {
-      sc.cancelJobGroup(Utils.buildJobGroupId(context));
+    @Override
+    public void open() throws InterpreterException {
+        this.sparkInterpreter = getInterpreterInTheSameSessionByClassName(SparkInterpreter.class);
+        this.sc = sparkInterpreter.getSparkContext();
+        this.jsc = sparkInterpreter.getJavaSparkContext();
+        this.sparkVersion = new SparkVersion(sc.version());
+        this.isSpark1 = sparkVersion.getMajorVersion() == 1;
+
+        LOGGER.info("SparkRInterpreter: SPARK_HOME={}", sc.getConf().getenv("SPARK_HOME"));
+        Arrays.stream(sc.getConf().getAll())
+                .forEach(x -> LOGGER.info("SparkRInterpreter: conf, {}={}", x._1, x._2));
+        properties.entrySet().stream().forEach(x ->
+                LOGGER.info("SparkRInterpreter: prop, {}={}", x.getKey(), x.getValue()));
+
+        ZeppelinRContext.setSparkContext(sc);
+        ZeppelinRContext.setJavaSparkContext(jsc);
+        if (!isSpark1) {
+            ZeppelinRContext.setSparkSession(sparkInterpreter.getSparkSession());
+        }
+        ZeppelinRContext.setSqlContext(sparkInterpreter.getSQLContext());
+        ZeppelinRContext.setZeppelinContext(sparkInterpreter.getZeppelinContext());
+        super.open();
     }
-  }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.NATIVE;
-  }
-
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    if (sparkInterpreter != null) {
-      return sparkInterpreter.getProgress(context);
-    } else {
-      return 0;
+    @Override
+    public InterpreterResult internalInterpret(String lines, InterpreterContext interpreterContext)
+            throws InterpreterException {
+        Utils.printDeprecateMessage(sparkInterpreter.getSparkVersion(),
+                interpreterContext, properties);
+        String jobGroup = Utils.buildJobGroupId(interpreterContext);
+        String jobDesc = Utils.buildJobDesc(interpreterContext);
+        sparkInterpreter.getSparkContext().setJobGroup(jobGroup, jobDesc, false);
+        String setJobGroup = "";
+        // assign setJobGroup to dummy__, otherwise it would print NULL for this statement
+        if (!isSpark1) {
+            setJobGroup = "dummy__ <- setJobGroup(\"" + jobGroup +
+                    "\", \" +" + jobDesc + "\", TRUE)";
+        } else {
+            setJobGroup = "dummy__ <- setJobGroup(sc, \"" + jobGroup +
+                    "\", \"" + jobDesc + "\", TRUE)";
+        }
+        lines = setJobGroup + "\n" + lines;
+        if (sparkInterpreter.getSparkVersion().newerThanEquals(SparkVersion.SPARK_2_3_0)) {
+            // setLocalProperty is only available from spark 2.3.0
+            String setPoolStmt = "setLocalProperty('spark.scheduler.pool', NULL)";
+            if (interpreterContext.getLocalProperties().containsKey("pool")) {
+                setPoolStmt = "setLocalProperty('spark.scheduler.pool', '" +
+                        interpreterContext.getLocalProperties().get("pool") + "')";
+            }
+            lines = setPoolStmt + "\n" + lines;
+        }
+        return super.internalInterpret(lines, interpreterContext);
     }
-  }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton().createOrGetFIFOScheduler(
-            SparkRInterpreter.class.getName() + this.hashCode());
-  }
+    @Override
+    public void close() throws InterpreterException {
+        super.close();
+        if (this.sparkInterpreter != null) {
+            this.sparkInterpreter.close();
+            this.sparkInterpreter = null;
+        }
+    }
 
-  @Override
-  public ZeppelinContext getZeppelinContext() {
-    return sparkInterpreter.getZeppelinContext();
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
+        if (this.sc != null) {
+            sc.cancelJobGroup(Utils.buildJobGroupId(context));
+        }
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-                                                InterpreterContext interpreterContext) {
-    return new ArrayList<>();
-  }
+    @Override
+    public FormType getFormType() {
+        return FormType.NATIVE;
+    }
 
-  public boolean isSpark1() {
-    return isSpark1;
-  }
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        if (sparkInterpreter != null) {
+            return sparkInterpreter.getProgress(context);
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton().createOrGetFIFOScheduler(
+                SparkRInterpreter.class.getName() + this.hashCode());
+    }
+
+    @Override
+    public ZeppelinContext getZeppelinContext() {
+        return sparkInterpreter.getZeppelinContext();
+    }
+
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return new ArrayList<>();
+    }
+
+    public boolean isSpark1() {
+        return isSpark1;
+    }
 }

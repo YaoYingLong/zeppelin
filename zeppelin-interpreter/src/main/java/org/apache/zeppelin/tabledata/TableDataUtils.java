@@ -24,36 +24,38 @@ import java.util.stream.Collectors;
 
 public class TableDataUtils {
 
-  /**
-   * Replace '\t','\r\n','\n' which represent field delimiter and row delimiter with while space.
-   * @param column
-   * @column
-   */
-  public static String normalizeColumn(String column) {
-    if (column == null) {
-      return "null";
+    /**
+     * Replace '\t','\r\n','\n' which represent field delimiter and row delimiter with while space.
+     *
+     * @param column
+     * @column
+     */
+    public static String normalizeColumn(String column) {
+        if (column == null) {
+            return "null";
+        }
+        return column.replace("\t", " ").replace("\r\n", " ").replace("\n", " ");
     }
-    return column.replace("\t", " ").replace("\r\n", " ").replace("\n", " ");
-  }
 
-  /**
-   * Convert obj to String first, convert it to empty string it is null.
-   * @param obj
-   * @column
-   */
-  public static String normalizeColumn(Object obj) {
-    return normalizeColumn(obj == null ? "null" : obj.toString());
-  }
+    /**
+     * Convert obj to String first, convert it to empty string it is null.
+     *
+     * @param obj
+     * @column
+     */
+    public static String normalizeColumn(Object obj) {
+        return normalizeColumn(obj == null ? "null" : obj.toString());
+    }
 
-  public static List<String> normalizeColumns(List<Object> columns) {
-    return columns.stream()
-            .map(TableDataUtils::normalizeColumn)
-            .collect(Collectors.toList());
-  }
+    public static List<String> normalizeColumns(List<Object> columns) {
+        return columns.stream()
+                .map(TableDataUtils::normalizeColumn)
+                .collect(Collectors.toList());
+    }
 
-  public static List<String> normalizeColumns(Object[] columns) {
-    return Arrays.stream(columns)
-            .map(TableDataUtils::normalizeColumn)
-            .collect(Collectors.toList());
-  }
+    public static List<String> normalizeColumns(Object[] columns) {
+        return Arrays.stream(columns)
+                .map(TableDataUtils::normalizeColumn)
+                .collect(Collectors.toList());
+    }
 }

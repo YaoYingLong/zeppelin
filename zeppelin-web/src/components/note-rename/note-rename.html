@@ -11,29 +11,29 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div id="noteRenameModal" class="modal fade" role="dialog" tabindex="-1">
+<div class="modal fade" id="noteRenameModal" role="dialog" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <!-- modal-header -->
       <div class="modal-header modal-header-rename">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button class="close" data-dismiss="modal" type="button">&times;</button>
         <h4 class="modal-title">{{title}}</h4>
       </div>
 
       <!-- modal-body -->
       <div class="modal-body modal-body-rename">
         <label ng-if="isValid">Please enter a new name</label>
-        <label ng-if="!isValid" class="text-danger">Please enter a valid name</label>
+        <label class="text-danger" ng-if="!isValid">Please enter a valid name</label>
         <div class="form-group" ng-class="{'has-error': !isValid}">
-          <input type="text" class="form-control"
-                 ng-model="params.newName" ng-change="validate()"
-                 ng-enter="isValid && rename()" />
+          <input class="form-control" ng-change="validate()"
+                 ng-enter="isValid && rename()" ng-model="params.newName"
+                 type="text"/>
         </div>
       </div>
       <div class="modal-footer">
         <div>
-          <button type="button" class="btn btn-default btn-primary"
-                  ng-click="rename()" ng-class="{'disabled': !isValid}">
+          <button class="btn btn-default btn-primary" ng-class="{'disabled': !isValid}"
+                  ng-click="rename()" type="button">
             Rename
           </button>
         </div>

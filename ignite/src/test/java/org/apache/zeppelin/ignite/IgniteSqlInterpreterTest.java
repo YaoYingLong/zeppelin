@@ -41,67 +41,67 @@ import static org.junit.Assert.assertEquals;
  * Tests for Apache Ignite SQL interpreter ({@link IgniteSqlInterpreter}).
  */
 public class IgniteSqlInterpreterTest {
-  private static final String HOST = "127.0.0.1:47500..47509";
+    private static final String HOST = "127.0.0.1:47500..47509";
 
-  private static final InterpreterContext INTP_CONTEXT = InterpreterContext.builder().build();
+    private static final InterpreterContext INTP_CONTEXT = InterpreterContext.builder().build();
 
-  private Ignite ignite;
-  private IgniteSqlInterpreter intp;
+    private Ignite ignite;
+    private IgniteSqlInterpreter intp;
 
-  @Before
-  public void setUp() {
-    TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-    ipFinder.setAddresses(Collections.singletonList(HOST));
+    @Before
+    public void setUp() {
+        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
+        ipFinder.setAddresses(Collections.singletonList(HOST));
 
-    TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
-    discoSpi.setIpFinder(ipFinder);
+        TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
+        discoSpi.setIpFinder(ipFinder);
 
-    IgniteConfiguration cfg = new IgniteConfiguration();
-    cfg.setDiscoverySpi(discoSpi);
-    cfg.setPeerClassLoadingEnabled(true);
+        IgniteConfiguration cfg = new IgniteConfiguration();
+        cfg.setDiscoverySpi(discoSpi);
+        cfg.setPeerClassLoadingEnabled(true);
 
-    cfg.setGridName("test");
+        cfg.setGridName("test");
 
-    ignite = Ignition.start(cfg);
+        ignite = Ignition.start(cfg);
 
-    Properties props = new Properties();
-    props.setProperty(IgniteSqlInterpreter.IGNITE_JDBC_URL,
-            "jdbc:ignite:cfg://cache=person@default-ignite-jdbc.xml");
+        Properties props = new Properties();
+        props.setProperty(IgniteSqlInterpreter.IGNITE_JDBC_URL,
+                "jdbc:ignite:cfg://cache=person@default-ignite-jdbc.xml");
 
-    intp = new IgniteSqlInterpreter(props);
+        intp = new IgniteSqlInterpreter(props);
 
-    CacheConfiguration<Integer, Person> cacheConf = new CacheConfiguration<>();
-    cacheConf.setIndexedTypes(Integer.class, Person.class);
-    cacheConf.setName("person");
+        CacheConfiguration<Integer, Person> cacheConf = new CacheConfiguration<>();
+        cacheConf.setIndexedTypes(Integer.class, Person.class);
+        cacheConf.setName("person");
 
-    IgniteCache<Integer, Person> cache = ignite.createCache(cacheConf);
-    cache.put(1, new Person("sun", 100));
-    cache.put(2, new Person("moon", 50));
-    assertEquals("moon", cache.get(2).getName());
+        IgniteCache<Integer, Person> cache = ignite.createCache(cacheConf);
+        cache.put(1, new Person("sun", 100));
+        cache.put(2, new Person("moon", 50));
+        assertEquals("moon", cache.get(2).getName());
 
-    intp.open();
-  }
+        intp.open();
+    }
 
-  @After
-  public void tearDown() throws InterpreterException {
-    intp.close();
-    ignite.close();
-  }
+    @After
+    public void tearDown() throws InterpreterException {
+        intp.close();
+        ignite.close();
+    }
 
-  @Test
-  public void testSql() {
-    InterpreterResult result = intp.interpret("select name, age from person where age > 10",
-            INTP_CONTEXT);
+    @Test
+    public void testSql() {
+        InterpreterResult result = intp.interpret("select name, age from person where age > 10",
+                INTP_CONTEXT);
 
-    assertEquals(Code.SUCCESS, result.code());
-    assertEquals(Type.TABLE, result.message().get(0).getType());
-    assertEquals("NAME\tAGE\nsun\t100\nmoon\t50\n", result.message().get(0).getData());
-  }
+        assertEquals(Code.SUCCESS, result.code());
+        assertEquals(Type.TABLE, result.message().get(0).getType());
+        assertEquals("NAME\tAGE\nsun\t100\nmoon\t50\n", result.message().get(0).getData());
+    }
 
-  @Test
-  public void testInvalidSql() throws Exception {
-    InterpreterResult result = intp.interpret("select * hrom person", INTP_CONTEXT);
+    @Test
+    public void testInvalidSql() throws Exception {
+        InterpreterResult result = intp.interpret("select * hrom person", INTP_CONTEXT);
 
-    assertEquals(Code.ERROR, result.code());
-  }
+        assertEquals(Code.ERROR, result.code());
+    }
 }

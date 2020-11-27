@@ -18,7 +18,7 @@
           <nz-form-label nzRequired>User Name</nz-form-label>
           <nz-form-control>
             <nz-input-group nzPrefixIcon="user">
-              <input nz-input [(ngModel)]="userName" placeholder="User Name" name="userName" required/>
+              <input [(ngModel)]="userName" name="userName" nz-input placeholder="User Name" required/>
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
@@ -26,13 +26,13 @@
           <nz-form-label nzRequired>Password</nz-form-label>
           <nz-form-control>
             <nz-input-group nzPrefixIcon="lock">
-              <input nz-input [(ngModel)]="password" placeholder="Password" name="password" type="password" required/>
+              <input [(ngModel)]="password" name="password" nz-input placeholder="Password" required type="password"/>
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-control>
-            <button nz-button nzType="primary" (click)="login()" [nzLoading]="loading">Login</button>
+            <button (click)="login()" [nzLoading]="loading" nz-button nzType="primary">Login</button>
           </nz-form-control>
         </nz-form-item>
       </form>

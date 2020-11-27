@@ -30,74 +30,74 @@ import java.util.Map;
  * Basic example of run flink code (scala, sql, python) via session api.
  */
 public class FlinkExample {
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    ZSession session = null;
-    try {
-      ClientConfig clientConfig = new ClientConfig("http://localhost:8080");
-      Map<String, String> intpProperties = new HashMap<>();
-
-      session = ZSession.builder()
-              .setClientConfig(clientConfig)
-              .setInterpreter("flink")
-              .setIntpProperties(intpProperties)
-              .build();
-
-      session.start();
-      System.out.println("Flink Web UI: " + session.getWeburl());
-
-      // scala (single result)
-      ExecuteResult result = session.execute("benv.fromElements(1,2,3).print()");
-      System.out.println("Result: " + result.getResults().get(0).getData());
-
-      // scala (multiple result)
-      result = session.execute("val data = benv.fromElements(1,2,3).map(e=>(e, e * 2))\n" +
-              "data.print()\n" +
-              "z.show(data)");
-
-      // The first result is text output
-      System.out.println("Result 1: type: " + result.getResults().get(0).getType() +
-              ", data: " + result.getResults().get(0).getData() );
-      // The second result is table output
-      System.out.println("Result 2: type: " + result.getResults().get(1).getType() +
-              ", data: " + result.getResults().get(1).getData() );
-      System.out.println("Flink Job Urls:\n" + StringUtils.join(result.getJobUrls(), "\n"));
-
-      // error output
-      result = session.execute("1/0");
-      System.out.println("Result status: " + result.getStatus() +
-              ", data: " + result.getResults().get(0).getData());
-
-      // pyflink
-      result = session.execute("pyflink", "type(b_env)");
-      System.out.println("benv: " + result.getResults().get(0).getData());
-      // matplotlib
-      result = session.execute("ipyflink", "%matplotlib inline\n" +
-              "import matplotlib.pyplot as plt\n" +
-              "plt.plot([1,2,3,4])\n" +
-              "plt.ylabel('some numbers')\n" +
-              "plt.show()");
-      System.out.println("Matplotlib result, type: " + result.getResults().get(0).getType() +
-              ", data: " + result.getResults().get(0).getData());
-
-      // flink sql
-      result = session.execute("ssql", "show tables");
-      System.out.println("Flink tables: " + result.getResults().get(0).getData());
-
-      // flink invalid sql
-      result = session.execute("bsql", "select * from unknown_table");
-      System.out.println("Result status: " + result.getStatus() +
-              ", data: " + result.getResults().get(0).getData());
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      if (session != null) {
+        ZSession session = null;
         try {
-          session.stop();
+            ClientConfig clientConfig = new ClientConfig("http://localhost:8080");
+            Map<String, String> intpProperties = new HashMap<>();
+
+            session = ZSession.builder()
+                    .setClientConfig(clientConfig)
+                    .setInterpreter("flink")
+                    .setIntpProperties(intpProperties)
+                    .build();
+
+            session.start();
+            System.out.println("Flink Web UI: " + session.getWeburl());
+
+            // scala (single result)
+            ExecuteResult result = session.execute("benv.fromElements(1,2,3).print()");
+            System.out.println("Result: " + result.getResults().get(0).getData());
+
+            // scala (multiple result)
+            result = session.execute("val data = benv.fromElements(1,2,3).map(e=>(e, e * 2))\n" +
+                    "data.print()\n" +
+                    "z.show(data)");
+
+            // The first result is text output
+            System.out.println("Result 1: type: " + result.getResults().get(0).getType() +
+                    ", data: " + result.getResults().get(0).getData());
+            // The second result is table output
+            System.out.println("Result 2: type: " + result.getResults().get(1).getType() +
+                    ", data: " + result.getResults().get(1).getData());
+            System.out.println("Flink Job Urls:\n" + StringUtils.join(result.getJobUrls(), "\n"));
+
+            // error output
+            result = session.execute("1/0");
+            System.out.println("Result status: " + result.getStatus() +
+                    ", data: " + result.getResults().get(0).getData());
+
+            // pyflink
+            result = session.execute("pyflink", "type(b_env)");
+            System.out.println("benv: " + result.getResults().get(0).getData());
+            // matplotlib
+            result = session.execute("ipyflink", "%matplotlib inline\n" +
+                    "import matplotlib.pyplot as plt\n" +
+                    "plt.plot([1,2,3,4])\n" +
+                    "plt.ylabel('some numbers')\n" +
+                    "plt.show()");
+            System.out.println("Matplotlib result, type: " + result.getResults().get(0).getType() +
+                    ", data: " + result.getResults().get(0).getData());
+
+            // flink sql
+            result = session.execute("ssql", "show tables");
+            System.out.println("Flink tables: " + result.getResults().get(0).getData());
+
+            // flink invalid sql
+            result = session.execute("bsql", "select * from unknown_table");
+            System.out.println("Result status: " + result.getStatus() +
+                    ", data: " + result.getResults().get(0).getData());
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
+        } finally {
+            if (session != null) {
+                try {
+                    session.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-      }
     }
-  }
 }

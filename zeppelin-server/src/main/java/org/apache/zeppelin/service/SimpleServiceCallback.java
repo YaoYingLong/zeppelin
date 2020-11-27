@@ -24,30 +24,29 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- *
  * @param <T>
  */
 public class SimpleServiceCallback<T> implements ServiceCallback<T> {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(SimpleServiceCallback.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SimpleServiceCallback.class);
 
-  @Override
-  public void onStart(String message, ServiceContext context) throws IOException {
-    LOGGER.debug(message);
-  }
-
-  @Override
-  public void onSuccess(T result, ServiceContext context) throws IOException {
-    LOGGER.debug("OP is succeeded");
-  }
-
-  @Override
-  public void onFailure(Exception ex, ServiceContext context) throws IOException {
-    String message = ex.getMessage();
-    if (ex.getCause() != null) {
-      message += ", cause: " + ex.getCause().getMessage();
+    @Override
+    public void onStart(String message, ServiceContext context) throws IOException {
+        LOGGER.debug(message);
     }
-    LOGGER.warn(message);
-  }
+
+    @Override
+    public void onSuccess(T result, ServiceContext context) throws IOException {
+        LOGGER.debug("OP is succeeded");
+    }
+
+    @Override
+    public void onFailure(Exception ex, ServiceContext context) throws IOException {
+        String message = ex.getMessage();
+        if (ex.getCause() != null) {
+            message += ", cause: " + ex.getCause().getMessage();
+        }
+        LOGGER.warn(message);
+    }
 
 }

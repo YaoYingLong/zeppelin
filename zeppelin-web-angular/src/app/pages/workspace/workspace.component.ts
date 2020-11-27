@@ -27,9 +27,9 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
+  publishMode = false;
   private destroy$ = new Subject();
   private messageId = null;
-  publishMode = false;
 
   constructor(
     public messageService: MessageService,

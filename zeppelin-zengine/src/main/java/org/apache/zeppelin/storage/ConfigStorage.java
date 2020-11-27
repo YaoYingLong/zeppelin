@@ -31,71 +31,69 @@ import java.io.IOException;
 
 /**
  * Interface for storing zeppelin configuration.
- *
+ * <p>
  * 1. interpreter-setting.json
  * 2. helium.json
  * 3. notebook-authorization.json
  * 4. credentials.json
- *
  */
 public abstract class ConfigStorage {
 
-  private static ConfigStorage instance;
+    private static ConfigStorage instance;
 
-  protected ZeppelinConfiguration zConf;
+    protected ZeppelinConfiguration zConf;
 
-  public static synchronized ConfigStorage getInstance(ZeppelinConfiguration zConf)
-      throws IOException {
-    if (instance == null) {
-      instance = createConfigStorage(zConf);
+    public ConfigStorage(ZeppelinConfiguration zConf) {
+        this.zConf = zConf;
     }
-    return instance;
-  }
 
-  private static ConfigStorage createConfigStorage(ZeppelinConfiguration zConf) throws IOException {
-    String configStorageClass =
-        zConf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONFIG_STORAGE_CLASS);
-    return ReflectionUtils.createClazzInstance(configStorageClass,
-        new Class[] {ZeppelinConfiguration.class}, new Object[] {zConf});
-  }
-
-
-  public ConfigStorage(ZeppelinConfiguration zConf) {
-    this.zConf = zConf;
-  }
-
-  public abstract void save(InterpreterInfoSaving settingInfos) throws IOException;
-
-  public abstract InterpreterInfoSaving loadInterpreterSettings() throws IOException;
-
-  public abstract void save(NotebookAuthorizationInfoSaving authorizationInfoSaving)
-      throws IOException;
-
-  public abstract NotebookAuthorizationInfoSaving loadNotebookAuthorization() throws IOException;
-
-  public abstract String loadCredentials() throws IOException;
-
-  public abstract void saveCredentials(String credentials) throws IOException;
-
-  protected InterpreterInfoSaving buildInterpreterInfoSaving(String json) {
-    //TODO(zjffdu) This kind of post processing is ugly.
-    JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-    InterpreterInfoSaving infoSaving = InterpreterInfoSaving.fromJson(json);
-    for (InterpreterSetting interpreterSetting : infoSaving.interpreterSettings.values()) {
-      // Always use separate interpreter process
-      // While we decided to turn this feature on always (without providing
-      // enable/disable option on GUI).
-      // previously created setting should turn this feature on here.
-      interpreterSetting.getOption();
-      interpreterSetting.convertPermissionsFromUsersToOwners(
-          jsonObject.getAsJsonObject("interpreterSettings")
-              .getAsJsonObject(interpreterSetting.getId()));
+    public static synchronized ConfigStorage getInstance(ZeppelinConfiguration zConf)
+            throws IOException {
+        if (instance == null) {
+            instance = createConfigStorage(zConf);
+        }
+        return instance;
     }
-    return infoSaving;
-  }
 
-  @VisibleForTesting
-  public static void reset() {
-    instance = null;
-  }
+    private static ConfigStorage createConfigStorage(ZeppelinConfiguration zConf) throws IOException {
+        String configStorageClass =
+                zConf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONFIG_STORAGE_CLASS);
+        return ReflectionUtils.createClazzInstance(configStorageClass,
+                new Class[]{ZeppelinConfiguration.class}, new Object[]{zConf});
+    }
+
+    @VisibleForTesting
+    public static void reset() {
+        instance = null;
+    }
+
+    public abstract void save(InterpreterInfoSaving settingInfos) throws IOException;
+
+    public abstract InterpreterInfoSaving loadInterpreterSettings() throws IOException;
+
+    public abstract void save(NotebookAuthorizationInfoSaving authorizationInfoSaving)
+            throws IOException;
+
+    public abstract NotebookAuthorizationInfoSaving loadNotebookAuthorization() throws IOException;
+
+    public abstract String loadCredentials() throws IOException;
+
+    public abstract void saveCredentials(String credentials) throws IOException;
+
+    protected InterpreterInfoSaving buildInterpreterInfoSaving(String json) {
+        //TODO(zjffdu) This kind of post processing is ugly.
+        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+        InterpreterInfoSaving infoSaving = InterpreterInfoSaving.fromJson(json);
+        for (InterpreterSetting interpreterSetting : infoSaving.interpreterSettings.values()) {
+            // Always use separate interpreter process
+            // While we decided to turn this feature on always (without providing
+            // enable/disable option on GUI).
+            // previously created setting should turn this feature on here.
+            interpreterSetting.getOption();
+            interpreterSetting.convertPermissionsFromUsersToOwners(
+                    jsonObject.getAsJsonObject("interpreterSettings")
+                            .getAsJsonObject(interpreterSetting.getId()));
+        }
+        return infoSaving;
+    }
 }

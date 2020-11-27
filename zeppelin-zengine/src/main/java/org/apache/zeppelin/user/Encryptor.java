@@ -31,47 +31,47 @@ import java.io.IOException;
  * Encrypt/decrypt arrays of bytes!
  */
 public class Encryptor {
-  private final BufferedBlockCipher encryptCipher;
-  private final BufferedBlockCipher decryptCipher;
+    private final BufferedBlockCipher encryptCipher;
+    private final BufferedBlockCipher decryptCipher;
 
-  public Encryptor(String encryptKey) {
-    encryptCipher = new PaddedBufferedBlockCipher(new AESEngine(), new ZeroBytePadding());
-    encryptCipher.init(true, new KeyParameter(encryptKey.getBytes()));
+    public Encryptor(String encryptKey) {
+        encryptCipher = new PaddedBufferedBlockCipher(new AESEngine(), new ZeroBytePadding());
+        encryptCipher.init(true, new KeyParameter(encryptKey.getBytes()));
 
-    decryptCipher = new PaddedBufferedBlockCipher(new AESEngine(), new ZeroBytePadding());
-    decryptCipher.init(false, new KeyParameter(encryptKey.getBytes()));
-  }
-
-
-  public String encrypt(String inputString) throws IOException {
-    byte[] input = inputString.getBytes();
-    byte[] result = new byte[encryptCipher.getOutputSize(input.length)];
-    int size = encryptCipher.processBytes(input, 0, input.length, result, 0);
-
-    try {
-      size += encryptCipher.doFinal(result, size);
-
-      byte[] out = new byte[size];
-      System.arraycopy(result, 0, out, 0, size);
-      return new String(Base64.encode(out));
-    } catch (InvalidCipherTextException e) {
-      throw new IOException("Cannot encrypt: " + e.getMessage(), e);
+        decryptCipher = new PaddedBufferedBlockCipher(new AESEngine(), new ZeroBytePadding());
+        decryptCipher.init(false, new KeyParameter(encryptKey.getBytes()));
     }
-  }
 
-  public String decrypt(String base64Input) throws IOException {
-    byte[] input = Base64.decode(base64Input);
-    byte[] result = new byte[decryptCipher.getOutputSize(input.length)];
-    int size = decryptCipher.processBytes(input, 0, input.length, result, 0);
 
-    try {
-      size += decryptCipher.doFinal(result, size);
+    public String encrypt(String inputString) throws IOException {
+        byte[] input = inputString.getBytes();
+        byte[] result = new byte[encryptCipher.getOutputSize(input.length)];
+        int size = encryptCipher.processBytes(input, 0, input.length, result, 0);
 
-      byte[] out = new byte[size];
-      System.arraycopy(result, 0, out, 0, size);
-      return new String(out);
-    } catch (InvalidCipherTextException e) {
-      throw new IOException("Cannot decrypt: " + e.getMessage(), e);
+        try {
+            size += encryptCipher.doFinal(result, size);
+
+            byte[] out = new byte[size];
+            System.arraycopy(result, 0, out, 0, size);
+            return new String(Base64.encode(out));
+        } catch (InvalidCipherTextException e) {
+            throw new IOException("Cannot encrypt: " + e.getMessage(), e);
+        }
     }
-  }
+
+    public String decrypt(String base64Input) throws IOException {
+        byte[] input = Base64.decode(base64Input);
+        byte[] result = new byte[decryptCipher.getOutputSize(input.length)];
+        int size = decryptCipher.processBytes(input, 0, input.length, result, 0);
+
+        try {
+            size += decryptCipher.doFinal(result, size);
+
+            byte[] out = new byte[size];
+            System.arraycopy(result, 0, out, 0, size);
+            return new String(out);
+        } catch (InvalidCipherTextException e) {
+            throw new IOException("Cannot decrypt: " + e.getMessage(), e);
+        }
+    }
 }

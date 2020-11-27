@@ -21,7 +21,6 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,127 +34,125 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ClusterMultiNodeTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterMultiNodeTest.class);
+    static final String metaKey = "ClusterMultiNodeTestKey";
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterMultiNodeTest.class);
+    private static List<ClusterManagerServer> clusterServers = new ArrayList<>();
+    private static ClusterManagerClient clusterClient = null;
+    private static ZeppelinConfiguration zconf;
 
-  private static List<ClusterManagerServer> clusterServers = new ArrayList<>();
-  private static ClusterManagerClient clusterClient = null;
-  private static ZeppelinConfiguration zconf;
+    @BeforeClass
+    public static void startCluster() throws IOException, InterruptedException {
+        LOGGER.info("startCluster >>>");
 
-  static final String metaKey = "ClusterMultiNodeTestKey";
+        String clusterAddrList = "";
+        String zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
+        for (int i = 0; i < 3; i++) {
+            // Set the cluster IP and port
+            int zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
+            clusterAddrList += zServerHost + ":" + zServerPort;
+            if (i != 2) {
+                clusterAddrList += ",";
+            }
+        }
+        zconf = ZeppelinConfiguration.create();
+        zconf.setClusterAddress(clusterAddrList);
 
-  @BeforeClass
-  public static void startCluster() throws IOException, InterruptedException {
-    LOGGER.info("startCluster >>>");
+        // mock cluster manager server
+        String cluster[] = clusterAddrList.split(",");
+        try {
+            for (int i = 0; i < 3; i++) {
+                String[] parts = cluster[i].split(":");
+                String clusterHost = parts[0];
+                int clusterPort = Integer.valueOf(parts[1]);
 
-    String clusterAddrList = "";
-    String zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
-    for (int i = 0; i < 3; i ++) {
-      // Set the cluster IP and port
-      int zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
-      clusterAddrList += zServerHost + ":" + zServerPort;
-      if (i != 2) {
-        clusterAddrList += ",";
-      }
-    }
-    zconf = ZeppelinConfiguration.create();
-    zconf.setClusterAddress(clusterAddrList);
+                Class clazz = ClusterManagerServer.class;
+                Constructor constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                ClusterManagerServer clusterServer = (ClusterManagerServer) constructor.newInstance();
+                clusterServer.initTestCluster(clusterAddrList, clusterHost, clusterPort);
 
-    // mock cluster manager server
-    String cluster[] = clusterAddrList.split(",");
-    try {
-      for (int i = 0; i < 3; i ++) {
-        String[] parts = cluster[i].split(":");
-        String clusterHost = parts[0];
-        int clusterPort = Integer.valueOf(parts[1]);
+                clusterServers.add(clusterServer);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
 
-        Class clazz = ClusterManagerServer.class;
-        Constructor constructor = clazz.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        ClusterManagerServer clusterServer = (ClusterManagerServer) constructor.newInstance();
-        clusterServer.initTestCluster(clusterAddrList, clusterHost, clusterPort);
+        for (ClusterManagerServer clusterServer : clusterServers) {
+            clusterServer.start();
+        }
 
-        clusterServers.add(clusterServer);
-      }
-    } catch (Exception e) {
-      LOGGER.error(e.getMessage(), e);
-    }
+        // mock cluster manager client
+        clusterClient = ClusterManagerClient.getInstance(zconf);
+        clusterClient.start(metaKey);
 
-    for (ClusterManagerServer clusterServer : clusterServers) {
-      clusterServer.start();
-    }
+        // Waiting for cluster startup
+        int wait = 0;
+        while (wait++ < 100) {
+            if (clusterIsStartup() && clusterClient.raftInitialized()) {
+                LOGGER.info("wait {}(ms) found cluster leader", wait * 3000);
+                break;
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
 
-    // mock cluster manager client
-    clusterClient = ClusterManagerClient.getInstance(zconf);
-    clusterClient.start(metaKey);
+        Thread.sleep(3000);
+        assertEquals(true, clusterIsStartup());
+        LOGGER.info("startCluster <<<");
 
-    // Waiting for cluster startup
-    int wait = 0;
-    while(wait++ < 100) {
-      if (clusterIsStartup() && clusterClient.raftInitialized()) {
-        LOGGER.info("wait {}(ms) found cluster leader", wait*3000);
-        break;
-      }
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        LOGGER.error(e.getMessage(), e);
-      }
-    }
-
-    Thread.sleep(3000);
-    assertEquals(true, clusterIsStartup());
-    LOGGER.info("startCluster <<<");
-
-    getClusterServerMeta();
-  }
-
-  @AfterClass
-  public static void stopCluster() {
-    LOGGER.info("stopCluster >>>");
-    if (null != clusterClient) {
-      clusterClient.shutdown();
-    }
-    for (ClusterManagerServer clusterServer : clusterServers) {
-      clusterServer.shutdown();
-    }
-    ZeppelinConfiguration.reset();
-    LOGGER.info("stopCluster <<<");
-  }
-
-  static boolean clusterIsStartup() {
-    boolean foundLeader = false;
-    for (ClusterManagerServer clusterServer : clusterServers) {
-      if (!clusterServer.raftInitialized()) {
-        LOGGER.warn("clusterServer not Initialized!");
-        return false;
-      }
-      if (clusterServer.isClusterLeader()) {
-        foundLeader = true;
-      }
+        getClusterServerMeta();
     }
 
-    if (!foundLeader) {
-      LOGGER.warn("Can not found leader!");
-      return false;
+    @AfterClass
+    public static void stopCluster() {
+        LOGGER.info("stopCluster >>>");
+        if (null != clusterClient) {
+            clusterClient.shutdown();
+        }
+        for (ClusterManagerServer clusterServer : clusterServers) {
+            clusterServer.shutdown();
+        }
+        ZeppelinConfiguration.reset();
+        LOGGER.info("stopCluster <<<");
     }
 
-    return true;
-  }
+    static boolean clusterIsStartup() {
+        boolean foundLeader = false;
+        for (ClusterManagerServer clusterServer : clusterServers) {
+            if (!clusterServer.raftInitialized()) {
+                LOGGER.warn("clusterServer not Initialized!");
+                return false;
+            }
+            if (clusterServer.isClusterLeader()) {
+                foundLeader = true;
+            }
+        }
 
-  public static void getClusterServerMeta() {
-    LOGGER.info("getClusterServerMeta >>>");
-    // Get metadata for all services
-    Object srvMeta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
-    LOGGER.info(srvMeta.toString());
+        if (!foundLeader) {
+            LOGGER.warn("Can not found leader!");
+            return false;
+        }
 
-    Object intpMeta = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, "");
-    LOGGER.info(intpMeta.toString());
+        return true;
+    }
 
-    assertNotNull(srvMeta);
-    assertEquals(true, (srvMeta instanceof HashMap));
-    HashMap hashMap = (HashMap) srvMeta;
+    public static void getClusterServerMeta() {
+        LOGGER.info("getClusterServerMeta >>>");
+        // Get metadata for all services
+        Object srvMeta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
+        LOGGER.info(srvMeta.toString());
 
-    assertEquals(hashMap.size(), 3);
-    LOGGER.info("getClusterServerMeta <<<");
-  }
+        Object intpMeta = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, "");
+        LOGGER.info(intpMeta.toString());
+
+        assertNotNull(srvMeta);
+        assertEquals(true, (srvMeta instanceof HashMap));
+        HashMap hashMap = (HashMap) srvMeta;
+
+        assertEquals(hashMap.size(), 3);
+        LOGGER.info("getClusterServerMeta <<<");
+    }
 }

@@ -38,92 +38,92 @@ import static org.junit.Assert.assertEquals;
 
 public class VFSNotebookRepoTest {
 
-  private ZeppelinConfiguration zConf;
-  private VFSNotebookRepo notebookRepo;
-  private File notebookDir = Files.createTempDir();
+    private ZeppelinConfiguration zConf;
+    private VFSNotebookRepo notebookRepo;
+    private File notebookDir = Files.createTempDir();
 
-  @Before
-  public void setUp() throws IOException {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
-        notebookDir.getAbsolutePath());
-    notebookRepo = new VFSNotebookRepo();
-    zConf = ZeppelinConfiguration.create();
-    notebookRepo.init(zConf);
-  }
+    @Before
+    public void setUp() throws IOException {
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
+                notebookDir.getAbsolutePath());
+        notebookRepo = new VFSNotebookRepo();
+        zConf = ZeppelinConfiguration.create();
+        notebookRepo.init(zConf);
+    }
 
-  @After
-  public void tearDown() throws IOException {
-    FileUtils.deleteDirectory(notebookDir);
-  }
+    @After
+    public void tearDown() throws IOException {
+        FileUtils.deleteDirectory(notebookDir);
+    }
 
-  @Test
-  public void testBasics() throws IOException {
-    assertEquals(0, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
+    @Test
+    public void testBasics() throws IOException {
+        assertEquals(0, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
 
-    // create note1
-    Note note1 = new Note();
-    note1.setPath("/my_project/my_note1");
-    Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
-    p1.setText("%md hello world");
-    p1.setTitle("my title");
-    notebookRepo.save(note1, AuthenticationInfo.ANONYMOUS);
+        // create note1
+        Note note1 = new Note();
+        note1.setPath("/my_project/my_note1");
+        Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+        p1.setText("%md hello world");
+        p1.setTitle("my title");
+        notebookRepo.save(note1, AuthenticationInfo.ANONYMOUS);
 
-    Map<String, NoteInfo> noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
-    assertEquals(1, noteInfos.size());
-    assertEquals(note1.getId(), noteInfos.get(note1.getId()).getId());
-    assertEquals(note1.getName(), noteInfos.get(note1.getId()).getNoteName());
+        Map<String, NoteInfo> noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
+        assertEquals(1, noteInfos.size());
+        assertEquals(note1.getId(), noteInfos.get(note1.getId()).getId());
+        assertEquals(note1.getName(), noteInfos.get(note1.getId()).getNoteName());
 
-    // create note2
-    Note note2 = new Note();
-    note2.setPath("/my_note2");
-    Paragraph p2 = note2.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
-    p2.setText("%md hello world2");
-    p2.setTitle("my title2");
-    notebookRepo.save(note2, AuthenticationInfo.ANONYMOUS);
+        // create note2
+        Note note2 = new Note();
+        note2.setPath("/my_note2");
+        Paragraph p2 = note2.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+        p2.setText("%md hello world2");
+        p2.setTitle("my title2");
+        notebookRepo.save(note2, AuthenticationInfo.ANONYMOUS);
 
-    noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
-    assertEquals(2, noteInfos.size());
+        noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
+        assertEquals(2, noteInfos.size());
 
-    // move note2
-    String newPath = "/my_project2/my_note2";
-    notebookRepo.move(note2.getId(), note2.getPath(), "/my_project2/my_note2", AuthenticationInfo.ANONYMOUS);
+        // move note2
+        String newPath = "/my_project2/my_note2";
+        notebookRepo.move(note2.getId(), note2.getPath(), "/my_project2/my_note2", AuthenticationInfo.ANONYMOUS);
 
-    Note note3 = notebookRepo.get(note2.getId(), newPath, AuthenticationInfo.ANONYMOUS);
-    assertEquals(note2, note3);
+        Note note3 = notebookRepo.get(note2.getId(), newPath, AuthenticationInfo.ANONYMOUS);
+        assertEquals(note2, note3);
 
-    // move folder
-    notebookRepo.move("/my_project2", "/my_project3/my_project2", AuthenticationInfo.ANONYMOUS);
-    noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
-    assertEquals(2, noteInfos.size());
+        // move folder
+        notebookRepo.move("/my_project2", "/my_project3/my_project2", AuthenticationInfo.ANONYMOUS);
+        noteInfos = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
+        assertEquals(2, noteInfos.size());
 
-    Note note4 = notebookRepo.get(note3.getId(), "/my_project3/my_project2/my_note2", AuthenticationInfo.ANONYMOUS);
-    assertEquals(note3, note4);
+        Note note4 = notebookRepo.get(note3.getId(), "/my_project3/my_project2/my_note2", AuthenticationInfo.ANONYMOUS);
+        assertEquals(note3, note4);
 
-    // remote note1
-    notebookRepo.remove(note1.getId(), note1.getPath(), AuthenticationInfo.ANONYMOUS);
-    assertEquals(1, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
-  }
+        // remote note1
+        notebookRepo.remove(note1.getId(), note1.getPath(), AuthenticationInfo.ANONYMOUS);
+        assertEquals(1, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
+    }
 
-  @Test
-  public void testUpdateSettings() throws IOException {
-    List<NotebookRepoSettingsInfo> repoSettings = notebookRepo.getSettings(AuthenticationInfo.ANONYMOUS);
-    assertEquals(1, repoSettings.size());
-    NotebookRepoSettingsInfo settingInfo = repoSettings.get(0);
-    assertEquals("Notebook Path", settingInfo.name);
-    assertEquals(notebookDir.getAbsolutePath(), settingInfo.selected);
+    @Test
+    public void testUpdateSettings() throws IOException {
+        List<NotebookRepoSettingsInfo> repoSettings = notebookRepo.getSettings(AuthenticationInfo.ANONYMOUS);
+        assertEquals(1, repoSettings.size());
+        NotebookRepoSettingsInfo settingInfo = repoSettings.get(0);
+        assertEquals("Notebook Path", settingInfo.name);
+        assertEquals(notebookDir.getAbsolutePath(), settingInfo.selected);
 
-    createNewNote("{}", "id2", "my_project/name2");
-    assertEquals(1, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
+        createNewNote("{}", "id2", "my_project/name2");
+        assertEquals(1, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
 
-    String newNotebookDir = "/tmp/zeppelin/vfs_notebookrepo2";
-    FileUtils.forceMkdir(new File(newNotebookDir));
-    Map<String, String> newSettings = ImmutableMap.of("Notebook Path", newNotebookDir);
-    notebookRepo.updateSettings(newSettings, AuthenticationInfo.ANONYMOUS);
-    assertEquals(0, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
-  }
+        String newNotebookDir = "/tmp/zeppelin/vfs_notebookrepo2";
+        FileUtils.forceMkdir(new File(newNotebookDir));
+        Map<String, String> newSettings = ImmutableMap.of("Notebook Path", newNotebookDir);
+        notebookRepo.updateSettings(newSettings, AuthenticationInfo.ANONYMOUS);
+        assertEquals(0, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
+    }
 
-  private void createNewNote(String content, String noteId, String noteName) throws IOException {
-    FileUtils.writeStringToFile(
-        new File(notebookDir + "/" + noteName + "_" + noteId + ".zpln"), content);
-  }
+    private void createNewNote(String content, String noteId, String noteName) throws IOException {
+        FileUtils.writeStringToFile(
+                new File(notebookDir + "/" + noteName + "_" + noteId + ".zpln"), content);
+    }
 }

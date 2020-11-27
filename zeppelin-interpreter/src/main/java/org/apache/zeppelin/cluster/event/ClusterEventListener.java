@@ -21,8 +21,8 @@ package org.apache.zeppelin.cluster.event;
  * of the notebook in the NotebookServer#onMessage() function.
  */
 public interface ClusterEventListener {
-  public static final String CLUSTER_EVENT = "CLUSTER_EVENT";
-  public static final String CLUSTER_EVENT_MSG = "CLUSTER_EVENT_MSG";
-  
-  void onClusterEvent(String msg);
+    public static final String CLUSTER_EVENT = "CLUSTER_EVENT";
+    public static final String CLUSTER_EVENT_MSG = "CLUSTER_EVENT_MSG";
+
+    void onClusterEvent(String msg);
 }

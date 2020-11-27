@@ -28,201 +28,200 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class NoteEventAsyncListener implements NoteEventListener {
 
-  private BlockingQueue<NoteEvent> eventsQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<NoteEvent> eventsQueue = new LinkedBlockingQueue<>();
 
-  private Thread eventHandlerThread;
+    private Thread eventHandlerThread;
 
-  public NoteEventAsyncListener(String name) {
-    this.eventHandlerThread = new EventHandlingThread();
-    this.eventHandlerThread.setName(name);
-    this.eventHandlerThread.start();
-  }
+    public NoteEventAsyncListener(String name) {
+        this.eventHandlerThread = new EventHandlingThread();
+        this.eventHandlerThread.setName(name);
+        this.eventHandlerThread.start();
+    }
 
-  public abstract void handleNoteCreateEvent(NoteCreateEvent noteCreateEvent);
+    public abstract void handleNoteCreateEvent(NoteCreateEvent noteCreateEvent);
 
-  public abstract void handleNoteRemoveEvent(NoteRemoveEvent noteRemoveEvent);
+    public abstract void handleNoteRemoveEvent(NoteRemoveEvent noteRemoveEvent);
 
-  public abstract void handleNoteUpdateEvent(NoteUpdateEvent noteUpdateEvent);
+    public abstract void handleNoteUpdateEvent(NoteUpdateEvent noteUpdateEvent);
 
-  public abstract void handleParagraphCreateEvent(ParagraphCreateEvent paragraphCreateEvent);
+    public abstract void handleParagraphCreateEvent(ParagraphCreateEvent paragraphCreateEvent);
 
-  public abstract void handleParagraphRemoveEvent(ParagraphRemoveEvent paragraphRemoveEvent);
+    public abstract void handleParagraphRemoveEvent(ParagraphRemoveEvent paragraphRemoveEvent);
 
-  public abstract void handleParagraphUpdateEvent(ParagraphUpdateEvent paragraphUpdateEvent);
+    public abstract void handleParagraphUpdateEvent(ParagraphUpdateEvent paragraphUpdateEvent);
 
 
-  public void close() {
-    this.eventHandlerThread.interrupt();
-  }
-
-  @Override
-  public void onNoteCreate(Note note, AuthenticationInfo subject) {
-    eventsQueue.add(new NoteCreateEvent(note, subject));
-  }
-
-  @Override
-  public void onNoteRemove(Note note, AuthenticationInfo subject) {
-    eventsQueue.add(new NoteRemoveEvent(note, subject));
-  }
-
-  @Override
-  public void onNoteUpdate(Note note, AuthenticationInfo subject) {
-    eventsQueue.add(new NoteUpdateEvent(note, subject));
-  }
-
-  @Override
-  public void onParagraphCreate(Paragraph p) {
-    eventsQueue.add(new ParagraphCreateEvent(p));
-  }
-
-  @Override
-  public void onParagraphRemove(Paragraph p) {
-    eventsQueue.add(new ParagraphRemoveEvent(p));
-  }
-
-  @Override
-  public void onParagraphUpdate(Paragraph p) {
-    eventsQueue.add(new ParagraphUpdateEvent(p));
-  }
-
-  @Override
-  public void onParagraphStatusChange(Paragraph p, Job.Status status) {
-    eventsQueue.add(new ParagraphStatusChangeEvent(p));
-  }
-
-  class EventHandlingThread extends Thread {
+    public void close() {
+        this.eventHandlerThread.interrupt();
+    }
 
     @Override
-    public void run() {
-      while(!Thread.interrupted()) {
-        try {
-          NoteEvent event = eventsQueue.take();
-          if (event instanceof NoteCreateEvent) {
-            handleNoteCreateEvent((NoteCreateEvent) event);
-          } else if (event instanceof NoteRemoveEvent) {
-            handleNoteRemoveEvent((NoteRemoveEvent) event);
-          } else if (event instanceof NoteUpdateEvent) {
-            handleNoteUpdateEvent((NoteUpdateEvent) event);
-          } else if (event instanceof ParagraphCreateEvent) {
-            handleParagraphCreateEvent((ParagraphCreateEvent) event);
-          } else if (event instanceof ParagraphRemoveEvent) {
-            handleParagraphRemoveEvent((ParagraphRemoveEvent) event);
-          } else if (event instanceof ParagraphUpdateEvent) {
-            handleParagraphUpdateEvent((ParagraphUpdateEvent) event);
-          } else {
-            throw new RuntimeException("Unknown event: " + event.getClass().getSimpleName());
-          }
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+    public void onNoteCreate(Note note, AuthenticationInfo subject) {
+        eventsQueue.add(new NoteCreateEvent(note, subject));
+    }
+
+    @Override
+    public void onNoteRemove(Note note, AuthenticationInfo subject) {
+        eventsQueue.add(new NoteRemoveEvent(note, subject));
+    }
+
+    @Override
+    public void onNoteUpdate(Note note, AuthenticationInfo subject) {
+        eventsQueue.add(new NoteUpdateEvent(note, subject));
+    }
+
+    @Override
+    public void onParagraphCreate(Paragraph p) {
+        eventsQueue.add(new ParagraphCreateEvent(p));
+    }
+
+    @Override
+    public void onParagraphRemove(Paragraph p) {
+        eventsQueue.add(new ParagraphRemoveEvent(p));
+    }
+
+    @Override
+    public void onParagraphUpdate(Paragraph p) {
+        eventsQueue.add(new ParagraphUpdateEvent(p));
+    }
+
+    @Override
+    public void onParagraphStatusChange(Paragraph p, Job.Status status) {
+        eventsQueue.add(new ParagraphStatusChangeEvent(p));
+    }
+
+    /**
+     * Used for testing
+     *
+     * @throws InterruptedException
+     */
+    public void drainEvents() throws InterruptedException {
+        while (!eventsQueue.isEmpty()) {
+            Thread.sleep(1000);
         }
-      }
-    }
-  }
-
-  /**
-   * Used for testing
-   *
-   * @throws InterruptedException
-   */
-  public void drainEvents() throws InterruptedException {
-    while(!eventsQueue.isEmpty()) {
-      Thread.sleep(1000);
-    }
-    Thread.sleep(5000);
-  }
-
-  interface NoteEvent {
-
-  }
-
-  public static class NoteCreateEvent implements NoteEvent {
-    private Note note;
-    private AuthenticationInfo subject;
-
-    public NoteCreateEvent(Note note, AuthenticationInfo subject) {
-      this.note = note;
-      this.subject = subject;
+        Thread.sleep(5000);
     }
 
-    public Note getNote() {
-      return note;
-    }
-  }
+    interface NoteEvent {
 
-  public static class NoteUpdateEvent implements NoteEvent {
-    private Note note;
-    private AuthenticationInfo subject;
-
-    public NoteUpdateEvent(Note note, AuthenticationInfo subject) {
-      this.note = note;
-      this.subject = subject;
     }
 
-    public Note getNote() {
-      return note;
-    }
-  }
+    public static class NoteCreateEvent implements NoteEvent {
+        private Note note;
+        private AuthenticationInfo subject;
 
+        public NoteCreateEvent(Note note, AuthenticationInfo subject) {
+            this.note = note;
+            this.subject = subject;
+        }
 
-  public static class NoteRemoveEvent implements NoteEvent {
-    private Note note;
-    private AuthenticationInfo subject;
-
-    public NoteRemoveEvent(Note note, AuthenticationInfo subject) {
-      this.note = note;
-      this.subject = subject;
-    }
-
-    public Note getNote() {
-      return note;
-    }
-  }
-
-  public static class ParagraphCreateEvent implements NoteEvent {
-    private Paragraph p;
-
-    public ParagraphCreateEvent(Paragraph p) {
-      this.p = p;
+        public Note getNote() {
+            return note;
+        }
     }
 
-    public Paragraph getParagraph() {
-      return p;
-    }
-  }
+    public static class NoteUpdateEvent implements NoteEvent {
+        private Note note;
+        private AuthenticationInfo subject;
 
-  public static class ParagraphUpdateEvent implements NoteEvent {
-    private Paragraph p;
+        public NoteUpdateEvent(Note note, AuthenticationInfo subject) {
+            this.note = note;
+            this.subject = subject;
+        }
 
-    public ParagraphUpdateEvent(Paragraph p) {
-      this.p = p;
-    }
-
-    public Paragraph getParagraph() {
-      return p;
-    }
-  }
-
-  public static class ParagraphRemoveEvent implements NoteEvent {
-    private Paragraph p;
-
-    public ParagraphRemoveEvent(Paragraph p) {
-      this.p = p;
+        public Note getNote() {
+            return note;
+        }
     }
 
-    public Paragraph getParagraph() {
-      return p;
-    }
-  }
+    public static class NoteRemoveEvent implements NoteEvent {
+        private Note note;
+        private AuthenticationInfo subject;
 
-  public static class ParagraphStatusChangeEvent implements NoteEvent {
-    private Paragraph p;
+        public NoteRemoveEvent(Note note, AuthenticationInfo subject) {
+            this.note = note;
+            this.subject = subject;
+        }
 
-    public ParagraphStatusChangeEvent(Paragraph p) {
-      this.p = p;
+        public Note getNote() {
+            return note;
+        }
     }
 
-    public Paragraph getParagraph() {
-      return p;
+    public static class ParagraphCreateEvent implements NoteEvent {
+        private Paragraph p;
+
+        public ParagraphCreateEvent(Paragraph p) {
+            this.p = p;
+        }
+
+        public Paragraph getParagraph() {
+            return p;
+        }
     }
-  }
+
+    public static class ParagraphUpdateEvent implements NoteEvent {
+        private Paragraph p;
+
+        public ParagraphUpdateEvent(Paragraph p) {
+            this.p = p;
+        }
+
+        public Paragraph getParagraph() {
+            return p;
+        }
+    }
+
+    public static class ParagraphRemoveEvent implements NoteEvent {
+        private Paragraph p;
+
+        public ParagraphRemoveEvent(Paragraph p) {
+            this.p = p;
+        }
+
+        public Paragraph getParagraph() {
+            return p;
+        }
+    }
+
+    public static class ParagraphStatusChangeEvent implements NoteEvent {
+        private Paragraph p;
+
+        public ParagraphStatusChangeEvent(Paragraph p) {
+            this.p = p;
+        }
+
+        public Paragraph getParagraph() {
+            return p;
+        }
+    }
+
+    class EventHandlingThread extends Thread {
+
+        @Override
+        public void run() {
+            while (!Thread.interrupted()) {
+                try {
+                    NoteEvent event = eventsQueue.take();
+                    if (event instanceof NoteCreateEvent) {
+                        handleNoteCreateEvent((NoteCreateEvent) event);
+                    } else if (event instanceof NoteRemoveEvent) {
+                        handleNoteRemoveEvent((NoteRemoveEvent) event);
+                    } else if (event instanceof NoteUpdateEvent) {
+                        handleNoteUpdateEvent((NoteUpdateEvent) event);
+                    } else if (event instanceof ParagraphCreateEvent) {
+                        handleParagraphCreateEvent((ParagraphCreateEvent) event);
+                    } else if (event instanceof ParagraphRemoveEvent) {
+                        handleParagraphRemoveEvent((ParagraphRemoveEvent) event);
+                    } else if (event instanceof ParagraphUpdateEvent) {
+                        handleParagraphUpdateEvent((ParagraphUpdateEvent) event);
+                    } else {
+                        throw new RuntimeException("Unknown event: " + event.getClass().getSimpleName());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

@@ -10,39 +10,39 @@
   ~ limitations under the License.
   -->
 
-<nz-card class="repo-item"
-         [class.edit]="editMode"
+<nz-card [class.edit]="editMode"
+         [nzExtra]="extraTemplate"
          [nzTitle]="repo.name"
-         [nzExtra]="extraTemplate">
+         class="repo-item">
   <ng-template #extraTemplate>
-    <div class="extra-wrap" *ngIf="!editMode">
-      <button nz-button
-              nzSize="small"
-              (click)="triggerEditMode()">
+    <div *ngIf="!editMode" class="extra-wrap">
+      <button (click)="triggerEditMode()"
+              nz-button
+              nzSize="small">
         <i nz-icon nzType="edit"></i>
         Edit
       </button>
     </div>
-    <div class="extra-wrap" *ngIf="editMode">
-      <button nz-button
-              nzType="primary"
-              nzSize="small"
+    <div *ngIf="editMode" class="extra-wrap">
+      <button (click)="save()"
               [disabled]="!settingFormArray.valid"
-              (click)="save()">
-        <i nz-icon nzType="save" nzTheme="outline"></i>
+              nz-button
+              nzSize="small"
+              nzType="primary">
+        <i nz-icon nzTheme="outline" nzType="save"></i>
         Save
       </button>
-      <button nz-button
-              nzSize="small"
-              (click)="cancel()">
-        <i nz-icon nzType="close" nzTheme="outline"></i>
+      <button (click)="cancel()"
+              nz-button
+              nzSize="small">
+        <i nz-icon nzTheme="outline" nzType="close"></i>
         Cancel
       </button>
     </div>
   </ng-template>
   <h3>Setting</h3>
   <form nz-form>
-    <nz-table nzTemplateMode nzSize="small">
+    <nz-table nzSize="small" nzTemplateMode>
       <thead>
       <tr>
         <th>Name</th>
@@ -58,9 +58,9 @@
         <ng-container *ngIf="editMode">
           <td>
             <input *ngIf="setting.type === 'INPUT'"
-                   nzSize="small"
+                   [formControl]="settingFormArray.controls[i]"
                    nz-input
-                   [formControl]="settingFormArray.controls[i]">
+                   nzSize="small">
 
             <nz-select *ngIf="setting.type === 'DROPDOWN'" [formControl]="settingFormArray.controls[i]">
               <nz-option

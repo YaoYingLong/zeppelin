@@ -17,92 +17,95 @@
 package org.apache.zeppelin.resource;
 
 import com.google.gson.Gson;
-import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
+
+import java.io.Serializable;
 
 /**
  * Resource that can retrieve data from remote
  */
 public class RemoteResource extends Resource implements JsonSerializable, Serializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  transient ResourcePoolConnector resourcePoolConnector;
+    transient ResourcePoolConnector resourcePoolConnector;
 
-  RemoteResource(ResourceId resourceId, Object r) {
-    super(null, resourceId, r);
-  }
-
-  RemoteResource(ResourceId resourceId, boolean serializable, String className) {
-    super(null, resourceId, serializable, className);
-  }
-
-  @Override
-  public Object get() {
-    if (isSerializable()) {
-      Object o = resourcePoolConnector.readResource(getResourceId());
-      return o;
-    } else {
-      return null;
+    RemoteResource(ResourceId resourceId, Object r) {
+        super(null, resourceId, r);
     }
-  }
 
-  @Override
-  public boolean isLocal() {
-    return false;
-  }
+    RemoteResource(ResourceId resourceId, boolean serializable, String className) {
+        super(null, resourceId, serializable, className);
+    }
 
-  public ResourcePoolConnector getResourcePoolConnector() {
-    return resourcePoolConnector;
-  }
+    public static RemoteResource fromJson(String json) {
+        return gson.fromJson(json, RemoteResource.class);
+    }
 
-  public void setResourcePoolConnector(ResourcePoolConnector resourcePoolConnector) {
-    this.resourcePoolConnector = resourcePoolConnector;
-  }
+    @Override
+    public Object get() {
+        if (isSerializable()) {
+            Object o = resourcePoolConnector.readResource(getResourceId());
+            return o;
+        } else {
+            return null;
+        }
+    }
 
-  /**
-   * Call a method of the object that this remote resource holds
-   * @param methodName name of method to call
-   * @param paramTypes method parameter types
-   * @param params method parameter values
-   * @return return value of the method. Null if return value is not serializable
-   */
-  @Override
-  public Object invokeMethod(
-      String methodName, Class [] paramTypes, Object [] params) {
-    ResourceId resourceId = getResourceId();
-    return resourcePoolConnector.invokeMethod(
-        resourceId,
-        methodName,
-        paramTypes,
-        params);
-  }
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
 
-  /**
-   * Call a method of the object that this remote resource holds and save return value as a resource
-   * @param methodName name of method to call
-   * @param paramTypes method parameter types
-   * @param params method parameter values
-   * @param returnResourceName name of resource that return value will be saved
-   * @return Resource that holds return value.
-   */
-  @Override
-  public Resource invokeMethod(
-      String methodName, Class [] paramTypes, Object [] params, String returnResourceName) {
-    ResourceId resourceId = getResourceId();
-    Resource resource = resourcePoolConnector.invokeMethod(
-        resourceId,
-        methodName,
-        paramTypes,
-        params,
-        returnResourceName);
-    return resource;
-  }
+    public ResourcePoolConnector getResourcePoolConnector() {
+        return resourcePoolConnector;
+    }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public void setResourcePoolConnector(ResourcePoolConnector resourcePoolConnector) {
+        this.resourcePoolConnector = resourcePoolConnector;
+    }
 
-  public static RemoteResource fromJson(String json) {
-    return gson.fromJson(json, RemoteResource.class);
-  }
+    /**
+     * Call a method of the object that this remote resource holds
+     *
+     * @param methodName name of method to call
+     * @param paramTypes method parameter types
+     * @param params     method parameter values
+     * @return return value of the method. Null if return value is not serializable
+     */
+    @Override
+    public Object invokeMethod(
+            String methodName, Class[] paramTypes, Object[] params) {
+        ResourceId resourceId = getResourceId();
+        return resourcePoolConnector.invokeMethod(
+                resourceId,
+                methodName,
+                paramTypes,
+                params);
+    }
+
+    /**
+     * Call a method of the object that this remote resource holds and save return value as a resource
+     *
+     * @param methodName         name of method to call
+     * @param paramTypes         method parameter types
+     * @param params             method parameter values
+     * @param returnResourceName name of resource that return value will be saved
+     * @return Resource that holds return value.
+     */
+    @Override
+    public Resource invokeMethod(
+            String methodName, Class[] paramTypes, Object[] params, String returnResourceName) {
+        ResourceId resourceId = getResourceId();
+        Resource resource = resourcePoolConnector.invokeMethod(
+                resourceId,
+                methodName,
+                paramTypes,
+                params,
+                returnResourceName);
+        return resource;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

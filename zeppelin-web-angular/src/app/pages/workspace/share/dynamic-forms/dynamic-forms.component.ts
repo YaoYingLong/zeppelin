@@ -36,8 +36,6 @@ import { DynamicForms, DynamicFormsItem, DynamicFormsType, DynamicFormParams } f
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotebookParagraphDynamicFormsComponent implements OnInit, OnChanges, OnDestroy {
-  private destroy$ = new Subject();
-
   @Input() formDefs: DynamicForms;
   @Input() paramDefs: DynamicFormParams;
   @Input() runOnChange = false;
@@ -45,13 +43,15 @@ export class NotebookParagraphDynamicFormsComponent implements OnInit, OnChanges
   @Input() removable = false;
   @Output() readonly formChange = new EventEmitter<void>();
   @Output() readonly formRemove = new EventEmitter<DynamicFormsItem>();
-
   formChange$ = new Subject<void>();
   forms: DynamicFormsItem[] = [];
   formType = DynamicFormsType;
   checkboxGroups: {
     [key: string]: NzCheckBoxOptionInterface[];
   } = {};
+  private destroy$ = new Subject();
+
+  constructor() {}
 
   @HostListener('keydown.enter')
   onEnter() {
@@ -102,8 +102,6 @@ export class NotebookParagraphDynamicFormsComponent implements OnInit, OnChanges
   remove(item: DynamicFormsItem) {
     this.formRemove.emit(item);
   }
-
-  constructor() {}
 
   ngOnInit() {
     this.setForms();

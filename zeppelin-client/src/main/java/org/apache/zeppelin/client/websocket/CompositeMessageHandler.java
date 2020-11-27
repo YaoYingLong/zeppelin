@@ -28,32 +28,32 @@ import java.util.Map;
  */
 public class CompositeMessageHandler extends AbstractMessageHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CompositeMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompositeMessageHandler.class);
 
-  private Map<String, StatementMessageHandler> messageHandlers = new HashMap();
+    private Map<String, StatementMessageHandler> messageHandlers = new HashMap();
 
-  public void addStatementMessageHandler(String statementId,
-                                         StatementMessageHandler messageHandler) {
-    messageHandlers.put(statementId, messageHandler);
-  }
-
-  @Override
-  public void onStatementAppendOutput(String statementId, int index, String output) {
-    StatementMessageHandler messageHandler = messageHandlers.get(statementId);
-    if (messageHandler == null) {
-      LOGGER.warn("No messagehandler for statement: " + statementId);
-      return;
+    public void addStatementMessageHandler(String statementId,
+                                           StatementMessageHandler messageHandler) {
+        messageHandlers.put(statementId, messageHandler);
     }
-    messageHandler.onStatementAppendOutput(statementId, index, output);
-  }
 
-  @Override
-  public void onStatementUpdateOutput(String statementId, int index, String type, String output) {
-    StatementMessageHandler messageHandler = messageHandlers.get(statementId);
-    if (messageHandler == null) {
-      LOGGER.warn("No messagehandler for statement: " + statementId);
-      return;
+    @Override
+    public void onStatementAppendOutput(String statementId, int index, String output) {
+        StatementMessageHandler messageHandler = messageHandlers.get(statementId);
+        if (messageHandler == null) {
+            LOGGER.warn("No messagehandler for statement: " + statementId);
+            return;
+        }
+        messageHandler.onStatementAppendOutput(statementId, index, output);
     }
-    messageHandler.onStatementUpdateOutput(statementId, index, type, output);
-  }
+
+    @Override
+    public void onStatementUpdateOutput(String statementId, int index, String type, String output) {
+        StatementMessageHandler messageHandler = messageHandlers.get(statementId);
+        if (messageHandler == null) {
+            LOGGER.warn("No messagehandler for statement: " + statementId);
+            return;
+        }
+        messageHandler.onStatementUpdateOutput(statementId, index, type, output);
+    }
 }

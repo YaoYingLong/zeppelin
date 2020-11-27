@@ -27,4 +27,4 @@ Please go to [install](https://zeppelin.apache.org/docs/latest/quickstart/instal
 Please check [Build from source](https://zeppelin.apache.org/docs/latest/setup/basics/how_to_build.html) to build Zeppelin from source.
 
 ### Maven Package
-mvn clean package -Pbuild-distr -Dcheckstyle.skip=true -DskipTests
+mvn clean package -Pbuild-distr -Dcheckstyle.skip=true -DskipTests``

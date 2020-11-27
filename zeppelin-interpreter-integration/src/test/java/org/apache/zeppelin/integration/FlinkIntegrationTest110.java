@@ -26,14 +26,14 @@ import java.util.List;
 @RunWith(value = Parameterized.class)
 public class FlinkIntegrationTest110 extends FlinkIntegrationTest {
 
-  @Parameterized.Parameters
-  public static List<Object[]> data() {
-    return Arrays.asList(new Object[][]{
-            {"1.10.2"}
-    });
-  }
+    public FlinkIntegrationTest110(String flinkVersion) {
+        super(flinkVersion);
+    }
 
-  public FlinkIntegrationTest110(String flinkVersion) {
-    super(flinkVersion);
-  }
+    @Parameterized.Parameters
+    public static List<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"1.10.2"}
+        });
+    }
 }

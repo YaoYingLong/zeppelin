@@ -21,61 +21,61 @@ package org.apache.zeppelin.interpreter;
  * Property for instance of interpreter
  */
 public class InterpreterProperty {
-  private String name;
-  private Object value;
-  private String type;
-  private String description;
+    private String name;
+    private Object value;
+    private String type;
+    private String description;
 
-  public InterpreterProperty(String name, Object value, String type, String description) {
-    this.name = name;
-    this.value = value;
-    this.type = type;
-    this.description = description;
-  }
+    public InterpreterProperty(String name, Object value, String type, String description) {
+        this.name = name;
+        this.value = value;
+        this.type = type;
+        this.description = description;
+    }
 
-  public InterpreterProperty(String name, Object value, String type) {
-    this.name = name;
-    this.value = value;
-    this.type = type;
-  }
+    public InterpreterProperty(String name, Object value, String type) {
+        this.name = name;
+        this.value = value;
+        this.type = type;
+    }
 
-  public InterpreterProperty(String name, Object value) {
-    this.name = name;
-    this.value = value;
-    this.type = InterpreterPropertyType.TEXTAREA.getValue();
-  }
+    public InterpreterProperty(String name, Object value) {
+        this.name = name;
+        this.value = value;
+        this.type = InterpreterPropertyType.TEXTAREA.getValue();
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public Object getValue() {
-    return value;
-  }
+    public Object getValue() {
+        return value;
+    }
 
-  public void setValue(Object value) {
-    this.value = value;
-  }
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("{name=%s, value=%s, type=%s, description=%s}",
-            name, value, type, description);
-  }
+    @Override
+    public String toString() {
+        return String.format("{name=%s, value=%s, type=%s, description=%s}",
+                name, value, type, description);
+    }
 }

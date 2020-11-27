@@ -1,6 +1,6 @@
 import template from './configuration.html';
 
-describe('Controller: Configuration', function() {
+describe('Controller: Configuration', function () {
   beforeEach(angular.mock.module('zeppelinWebApp'));
 
   let baseUrlSrvMock = {getRestApiBase: () => ''};
@@ -20,7 +20,7 @@ describe('Controller: Configuration', function() {
     ngToast = _ngToast_;
   }));
 
-  afterEach(function() {
+  afterEach(function () {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });

@@ -27,119 +27,121 @@ import java.util.Map;
  */
 @Experimental
 public class HeliumPackage implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  private HeliumType type;
-  private String name;           // user friendly name of this application
-  private String description;    // description
-  private String artifact;       // artifact name e.g) groupId:artifactId:versionId
-  private String className;      // entry point
-  // resource classnames that requires [[ .. and .. and .. ] or [ .. and .. and ..] ..]
-  private String [][] resources;
+    private HeliumType type;
+    private String name;           // user friendly name of this application
+    private String description;    // description
+    private String artifact;       // artifact name e.g) groupId:artifactId:versionId
+    private String className;      // entry point
+    // resource classnames that requires [[ .. and .. and .. ] or [ .. and .. and ..] ..]
+    private String[][] resources;
 
-  private String license;
-  private String icon;
-  private String published;
+    private String license;
+    private String icon;
+    private String published;
 
-  private String groupId;        // get groupId of INTERPRETER type package
-  private String artifactId;     // get artifactId of INTERPRETER type package
+    private String groupId;        // get groupId of INTERPRETER type package
+    private String artifactId;     // get artifactId of INTERPRETER type package
 
-  private SpellPackageInfo spell;
-  private Map<String, Object> config;
+    private SpellPackageInfo spell;
+    private Map<String, Object> config;
 
-  public HeliumPackage(HeliumType type,
-                       String name,
-                       String description,
-                       String artifact,
-                       String className,
-                       String[][] resources,
-                       String license,
-                       String icon) {
-    this.type = type;
-    this.name = name;
-    this.description = description;
-    this.artifact = artifact;
-    this.className = className;
-    this.resources = resources;
-    this.license = license;
-    this.icon = icon;
-  }
-
-  @Override
-  public int hashCode() {
-    return (type.toString() + artifact + className).hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof HeliumPackage)) {
-      return false;
+    public HeliumPackage(HeliumType type,
+                         String name,
+                         String description,
+                         String artifact,
+                         String className,
+                         String[][] resources,
+                         String license,
+                         String icon) {
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.artifact = artifact;
+        this.className = className;
+        this.resources = resources;
+        this.license = license;
+        this.icon = icon;
     }
 
-    HeliumPackage info = (HeliumPackage) o;
-    return type == info.type && artifact.equals(info.artifact) && className.equals(info.className);
-  }
+    public static boolean isBundleType(HeliumType type) {
+        return (type == HeliumType.VISUALIZATION ||
+                type == HeliumType.SPELL);
+    }
 
-  public HeliumType getType() {
-    return type;
-  }
+    public static HeliumPackage fromJson(String json) {
+        return gson.fromJson(json, HeliumPackage.class);
+    }
 
-  public static boolean isBundleType(HeliumType type) {
-    return (type == HeliumType.VISUALIZATION ||
-        type == HeliumType.SPELL);
-  }
+    @Override
+    public int hashCode() {
+        return (type.toString() + artifact + className).hashCode();
+    }
 
-  public String getName() {
-    return name;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof HeliumPackage)) {
+            return false;
+        }
 
-  public String getDescription() {
-    return description;
-  }
+        HeliumPackage info = (HeliumPackage) o;
+        return type == info.type && artifact.equals(info.artifact) && className.equals(info.className);
+    }
 
-  public String getArtifact() {
-    return artifact;
-  }
+    public HeliumType getType() {
+        return type;
+    }
 
-  public String getClassName() {
-    return className;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String[][] getResources() {
-    return resources;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public String getLicense() {
-    return license;
-  }
+    public String getArtifact() {
+        return artifact;
+    }
 
-  public String getIcon() {
-    return icon;
-  }
+    public String getClassName() {
+        return className;
+    }
 
-  public String getPublishedDate() {
-    return published;
-  }
+    public String[][] getResources() {
+        return resources;
+    }
 
-  public String getGroupId() {
-    return groupId;
-  }
+    public String getLicense() {
+        return license;
+    }
 
-  public String getArtifactId() {
-    return artifactId;
-  }
+    public String getIcon() {
+        return icon;
+    }
 
-  public SpellPackageInfo getSpellInfo() {
-    return spell;
-  }
+    public String getPublishedDate() {
+        return published;
+    }
 
-  public Map<String, Object> getConfig() { return config; }
+    public String getGroupId() {
+        return groupId;
+    }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public String getArtifactId() {
+        return artifactId;
+    }
 
-  public static HeliumPackage fromJson(String json) {
-    return gson.fromJson(json, HeliumPackage.class);
-  }
+    public SpellPackageInfo getSpellInfo() {
+        return spell;
+    }
+
+    public Map<String, Object> getConfig() {
+        return config;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

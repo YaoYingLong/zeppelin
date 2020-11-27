@@ -22,30 +22,30 @@ import org.apache.zeppelin.resource.ResourceSet;
  * Mock application
  */
 public class MockApplication1 extends Application {
-  boolean unloaded;
-  int run;
+    boolean unloaded;
+    int run;
 
-  public MockApplication1(ApplicationContext context) {
-    super(context);
-    unloaded = false;
-    run = 0;
-  }
+    public MockApplication1(ApplicationContext context) {
+        super(context);
+        unloaded = false;
+        run = 0;
+    }
 
-  @Override
-  public void run(ResourceSet args) {
-    run++;
-  }
+    @Override
+    public void run(ResourceSet args) {
+        run++;
+    }
 
-  @Override
-  public void unload() {
-    unloaded = true;
-  }
+    @Override
+    public void unload() {
+        unloaded = true;
+    }
 
-  public boolean isUnloaded() {
-    return unloaded;
-  }
+    public boolean isUnloaded() {
+        return unloaded;
+    }
 
-  public int getNumRun() {
-    return run;
-  }
+    public int getNumRun() {
+        return run;
+    }
 }

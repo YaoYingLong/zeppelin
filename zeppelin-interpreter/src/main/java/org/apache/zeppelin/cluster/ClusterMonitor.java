@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.zeppelin.cluster.meta.ClusterMetaType.INTP_PROCESS_META;
@@ -35,222 +38,220 @@ import static org.apache.zeppelin.cluster.meta.ClusterMetaType.SERVER_META;
 /**
  * cluster monitoring
  * 1. cluster monitoring is also used for zeppelin-Server and zeppelin Interperter,
- *    distinguish by member variable ClusterMetaType
+ * distinguish by member variable ClusterMetaType
  * 2. Report the average of the server resource CPU and MEMORY usage in the
- *    last few minutes to smooth the server's instantaneous peak
+ * last few minutes to smooth the server's instantaneous peak
  * 3. checks the heartbeat timeout of the zeppelin-server and interperter processes
  */
 public class ClusterMonitor {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterMonitor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterMonitor.class);
 
-  // Whether the thread has started
-  private static AtomicBoolean running = new AtomicBoolean(true);
+    // Whether the thread has started
+    private static AtomicBoolean running = new AtomicBoolean(true);
+    private final int USAGE_QUEUE_LIMIT = 100; // queue length
+    private ClusterManager clusterManager = null;
+    // Save the CPU resource and MEmory usage of the server resources
+    // in the last few minutes through the queue, and then average them through the queue.
+    private Queue<UsageUtil> monitorUsageQueues = new LinkedList<>();
+    private int heartbeatInterval = 3000; // Heartbeat reporting interval（milliseconds）
 
-  private ClusterManager clusterManager = null;
+    // The zeppelin-server leader checks the heartbeat timeout of
+    // the zeppelin-server and zeppelin-interperter processes in the cluster metadata.
+    // If this time is exceeded, the zeppelin-server and interperter processes
+    // can have an exception and no heartbeat is reported.
+    private int heartbeatTimeout = 9000;
 
-  // Save the CPU resource and MEmory usage of the server resources
-  // in the last few minutes through the queue, and then average them through the queue.
-  private Queue<UsageUtil> monitorUsageQueues = new LinkedList<>();
-  private final int USAGE_QUEUE_LIMIT = 100; // queue length
-  private int heartbeatInterval = 3000; // Heartbeat reporting interval（milliseconds）
+    // Type of cluster monitoring object
+    private ClusterMetaType clusterMetaType;
 
-  // The zeppelin-server leader checks the heartbeat timeout of
-  // the zeppelin-server and zeppelin-interperter processes in the cluster metadata.
-  // If this time is exceeded, the zeppelin-server and interperter processes
-  // can have an exception and no heartbeat is reported.
-  private int heartbeatTimeout = 9000;
+    // The key of the cluster monitoring object,
+    // the name of the cluster when monitoring the zeppelin-server,
+    // and the interperterGroupID when monitoring the interperter processes
+    private String metaKey;
 
-  // Type of cluster monitoring object
-  private ClusterMetaType clusterMetaType;
+    public ClusterMonitor(ClusterManager clusterManagerServer) {
+        this.clusterManager = clusterManagerServer;
 
-  // The key of the cluster monitoring object,
-  // the name of the cluster when monitoring the zeppelin-server,
-  // and the interperterGroupID when monitoring the interperter processes
-  private String metaKey;
+        ZeppelinConfiguration zconf = ZeppelinConfiguration.create();
+        heartbeatInterval = zconf.getClusterHeartbeatInterval();
+        heartbeatTimeout = zconf.getClusterHeartbeatTimeout();
 
-  public ClusterMonitor(ClusterManager clusterManagerServer) {
-    this.clusterManager = clusterManagerServer;
-
-    ZeppelinConfiguration zconf = ZeppelinConfiguration.create();
-    heartbeatInterval = zconf.getClusterHeartbeatInterval();
-    heartbeatTimeout = zconf.getClusterHeartbeatTimeout();
-
-    if (heartbeatTimeout < heartbeatInterval) {
-      LOGGER.error("Heartbeat timeout must be greater than heartbeat period.");
-      heartbeatTimeout = heartbeatInterval * 3;
-      LOGGER.info("Heartbeat timeout is modified to 3 times the heartbeat period.");
-    }
-
-    if (heartbeatTimeout < heartbeatInterval * 3) {
-      LOGGER.warn("Heartbeat timeout recommended than 3 times the heartbeat period.");
-    }
-  }
-
-  //
-  public void start(ClusterMetaType clusterMetaType, String metaKey) {
-    this.clusterMetaType = clusterMetaType;
-    this.metaKey = metaKey;
-
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        while (running.get()) {
-          switch (clusterMetaType) {
-            case SERVER_META:
-              sendMachineUsage();
-              checkHealthy();
-              break;
-            case INTP_PROCESS_META:
-              sendHeartbeat();
-              break;
-            default:
-              LOGGER.error("unknown cluster meta type:{}", clusterMetaType);
-              break;
-          }
-
-          try {
-            Thread.sleep(heartbeatInterval);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
-  }
-
-  public void shutdown() {
-    running.set(false);
-  }
-
-  // Check the healthy of each service and interperter instance
-  private void checkHealthy() {
-    // only leader check cluster healthy
-    if (!clusterManager.isClusterLeader()) {
-      return;
-    }
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("checkHealthy()");
-    }
-
-    LocalDateTime now = LocalDateTime.now();
-    // check machine mate
-    for (ClusterMetaType metaType : ClusterMetaType.values()) {
-      Map<String, HashMap<String, Object>> clusterMeta
-          = clusterManager.getClusterMeta(metaType, "");
-
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("clusterMeta : {}", clusterMeta);
-      }
-
-      for (Map.Entry<String, HashMap<String, Object>> entry : clusterMeta.entrySet()) {
-        String key = entry.getKey();
-        Map<String, Object> meta = entry.getValue();
-
-        // Metadata that has been offline is not processed
-        String status = (String) meta.get(ClusterMeta.STATUS);
-        if (status.equals(ClusterMeta.OFFLINE_STATUS)) {
-          continue;
+        if (heartbeatTimeout < heartbeatInterval) {
+            LOGGER.error("Heartbeat timeout must be greater than heartbeat period.");
+            heartbeatTimeout = heartbeatInterval * 3;
+            LOGGER.info("Heartbeat timeout is modified to 3 times the heartbeat period.");
         }
 
-        Object heartbeat = meta.get(ClusterMeta.LATEST_HEARTBEAT);
-        if (heartbeat instanceof LocalDateTime) {
-          LocalDateTime dHeartbeat = (LocalDateTime) heartbeat;
-          Duration duration = Duration.between(dHeartbeat, now);
-          long timeInterval = duration.getSeconds() * 1000; // Convert to milliseconds
-          if (timeInterval > heartbeatTimeout) {
-            // Set the metadata for the heartbeat timeout to offline
-            // Cannot delete metadata
-            HashMap<String, Object> mapValues = new HashMap<>();
-            mapValues.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);
-            clusterManager.putClusterMeta(metaType, key, mapValues);
-            LOGGER.warn("offline heartbeat timeout[{}] meta[{}]", dHeartbeat, key);
-          }
-        } else {
-          LOGGER.error("wrong data type");
+        if (heartbeatTimeout < heartbeatInterval * 3) {
+            LOGGER.warn("Heartbeat timeout recommended than 3 times the heartbeat period.");
         }
-      }
-    }
-  }
-
-  // The interpreter process sends a heartbeat to the cluster,
-  // indicating that the process is still active.
-  private void sendHeartbeat() {
-    HashMap<String, Object> mapMonitorUtil = new HashMap<>();
-    mapMonitorUtil.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
-    mapMonitorUtil.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);
-
-    clusterManager.putClusterMeta(INTP_PROCESS_META, metaKey, mapMonitorUtil);
-  }
-
-  // send the usage of each service
-  private void sendMachineUsage() {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("sendMachineUsage >>>");
     }
 
-    // Limit queue size
-    while (monitorUsageQueues.size() > USAGE_QUEUE_LIMIT) {
-      monitorUsageQueues.poll();
+    //
+    public void start(ClusterMetaType clusterMetaType, String metaKey) {
+        this.clusterMetaType = clusterMetaType;
+        this.metaKey = metaKey;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (running.get()) {
+                    switch (clusterMetaType) {
+                        case SERVER_META:
+                            sendMachineUsage();
+                            checkHealthy();
+                            break;
+                        case INTP_PROCESS_META:
+                            sendHeartbeat();
+                            break;
+                        default:
+                            LOGGER.error("unknown cluster meta type:{}", clusterMetaType);
+                            break;
+                    }
+
+                    try {
+                        Thread.sleep(heartbeatInterval);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
-    UsageUtil monitorUtil = getMachineUsage();
-    monitorUsageQueues.add(monitorUtil);
 
-    UsageUtil avgMonitorUtil = new UsageUtil();
-    for (UsageUtil monitor : monitorUsageQueues){
-      avgMonitorUtil.memoryUsed += monitor.memoryUsed;
-      avgMonitorUtil.memoryCapacity += monitor.memoryCapacity;
-      avgMonitorUtil.cpuUsed += monitor.cpuUsed;
-      avgMonitorUtil.cpuCapacity += monitor.cpuCapacity;
+    public void shutdown() {
+        running.set(false);
     }
 
-    // Resource consumption average
-    int queueSize = monitorUsageQueues.size();
-    avgMonitorUtil.memoryUsed = avgMonitorUtil.memoryUsed / queueSize;
-    avgMonitorUtil.memoryCapacity = avgMonitorUtil.memoryCapacity / queueSize;
-    avgMonitorUtil.cpuUsed = avgMonitorUtil.cpuUsed / queueSize;
-    avgMonitorUtil.cpuCapacity = avgMonitorUtil.cpuCapacity / queueSize;
+    // Check the healthy of each service and interperter instance
+    private void checkHealthy() {
+        // only leader check cluster healthy
+        if (!clusterManager.isClusterLeader()) {
+            return;
+        }
 
-    HashMap<String, Object> mapMonitorUtil = new HashMap<>();
-    mapMonitorUtil.put(ClusterMeta.MEMORY_USED, avgMonitorUtil.memoryUsed);
-    mapMonitorUtil.put(ClusterMeta.MEMORY_CAPACITY, avgMonitorUtil.memoryCapacity);
-    mapMonitorUtil.put(ClusterMeta.CPU_USED, avgMonitorUtil.cpuUsed);
-    mapMonitorUtil.put(ClusterMeta.CPU_CAPACITY, avgMonitorUtil.cpuCapacity);
-    mapMonitorUtil.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
-    mapMonitorUtil.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("checkHealthy()");
+        }
 
-    String clusterName = clusterManager.getClusterNodeName();
-    clusterManager.putClusterMeta(SERVER_META, clusterName, mapMonitorUtil);
-  }
+        LocalDateTime now = LocalDateTime.now();
+        // check machine mate
+        for (ClusterMetaType metaType : ClusterMetaType.values()) {
+            Map<String, HashMap<String, Object>> clusterMeta
+                    = clusterManager.getClusterMeta(metaType, "");
 
-  private UsageUtil getMachineUsage() {
-    OperatingSystemMXBean operatingSystemMXBean
-        = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("clusterMeta : {}", clusterMeta);
+            }
 
-    // Returns the amount of free physical memory in bytes.
-    long freePhysicalMemorySize = operatingSystemMXBean.getFreePhysicalMemorySize();
+            for (Map.Entry<String, HashMap<String, Object>> entry : clusterMeta.entrySet()) {
+                String key = entry.getKey();
+                Map<String, Object> meta = entry.getValue();
 
-    // Returns the total amount of physical memory in bytes.
-    long totalPhysicalMemorySize = operatingSystemMXBean.getTotalPhysicalMemorySize();
+                // Metadata that has been offline is not processed
+                String status = (String) meta.get(ClusterMeta.STATUS);
+                if (status.equals(ClusterMeta.OFFLINE_STATUS)) {
+                    continue;
+                }
 
-    // Returns the "recent cpu usage" for the whole system.
-    double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
+                Object heartbeat = meta.get(ClusterMeta.LATEST_HEARTBEAT);
+                if (heartbeat instanceof LocalDateTime) {
+                    LocalDateTime dHeartbeat = (LocalDateTime) heartbeat;
+                    Duration duration = Duration.between(dHeartbeat, now);
+                    long timeInterval = duration.getSeconds() * 1000; // Convert to milliseconds
+                    if (timeInterval > heartbeatTimeout) {
+                        // Set the metadata for the heartbeat timeout to offline
+                        // Cannot delete metadata
+                        HashMap<String, Object> mapValues = new HashMap<>();
+                        mapValues.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);
+                        clusterManager.putClusterMeta(metaType, key, mapValues);
+                        LOGGER.warn("offline heartbeat timeout[{}] meta[{}]", dHeartbeat, key);
+                    }
+                } else {
+                    LOGGER.error("wrong data type");
+                }
+            }
+        }
+    }
 
-    int process = Runtime.getRuntime().availableProcessors();
+    // The interpreter process sends a heartbeat to the cluster,
+    // indicating that the process is still active.
+    private void sendHeartbeat() {
+        HashMap<String, Object> mapMonitorUtil = new HashMap<>();
+        mapMonitorUtil.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
+        mapMonitorUtil.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);
 
-    UsageUtil monitorUtil = new UsageUtil();
-    monitorUtil.memoryUsed = totalPhysicalMemorySize - freePhysicalMemorySize;
-    monitorUtil.memoryCapacity = totalPhysicalMemorySize;
-    monitorUtil.cpuUsed = (long) (process * systemCpuLoad * 100);
-    monitorUtil.cpuCapacity = process * 100;
+        clusterManager.putClusterMeta(INTP_PROCESS_META, metaKey, mapMonitorUtil);
+    }
 
-    return monitorUtil;
-  }
+    // send the usage of each service
+    private void sendMachineUsage() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("sendMachineUsage >>>");
+        }
 
-  private class UsageUtil {
-    private long memoryUsed = 0;
-    private long memoryCapacity = 0;
-    private long cpuUsed = 0;
-    private long cpuCapacity = 0;
-  }
+        // Limit queue size
+        while (monitorUsageQueues.size() > USAGE_QUEUE_LIMIT) {
+            monitorUsageQueues.poll();
+        }
+        UsageUtil monitorUtil = getMachineUsage();
+        monitorUsageQueues.add(monitorUtil);
+
+        UsageUtil avgMonitorUtil = new UsageUtil();
+        for (UsageUtil monitor : monitorUsageQueues) {
+            avgMonitorUtil.memoryUsed += monitor.memoryUsed;
+            avgMonitorUtil.memoryCapacity += monitor.memoryCapacity;
+            avgMonitorUtil.cpuUsed += monitor.cpuUsed;
+            avgMonitorUtil.cpuCapacity += monitor.cpuCapacity;
+        }
+
+        // Resource consumption average
+        int queueSize = monitorUsageQueues.size();
+        avgMonitorUtil.memoryUsed = avgMonitorUtil.memoryUsed / queueSize;
+        avgMonitorUtil.memoryCapacity = avgMonitorUtil.memoryCapacity / queueSize;
+        avgMonitorUtil.cpuUsed = avgMonitorUtil.cpuUsed / queueSize;
+        avgMonitorUtil.cpuCapacity = avgMonitorUtil.cpuCapacity / queueSize;
+
+        HashMap<String, Object> mapMonitorUtil = new HashMap<>();
+        mapMonitorUtil.put(ClusterMeta.MEMORY_USED, avgMonitorUtil.memoryUsed);
+        mapMonitorUtil.put(ClusterMeta.MEMORY_CAPACITY, avgMonitorUtil.memoryCapacity);
+        mapMonitorUtil.put(ClusterMeta.CPU_USED, avgMonitorUtil.cpuUsed);
+        mapMonitorUtil.put(ClusterMeta.CPU_CAPACITY, avgMonitorUtil.cpuCapacity);
+        mapMonitorUtil.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
+        mapMonitorUtil.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);
+
+        String clusterName = clusterManager.getClusterNodeName();
+        clusterManager.putClusterMeta(SERVER_META, clusterName, mapMonitorUtil);
+    }
+
+    private UsageUtil getMachineUsage() {
+        OperatingSystemMXBean operatingSystemMXBean
+                = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
+        // Returns the amount of free physical memory in bytes.
+        long freePhysicalMemorySize = operatingSystemMXBean.getFreePhysicalMemorySize();
+
+        // Returns the total amount of physical memory in bytes.
+        long totalPhysicalMemorySize = operatingSystemMXBean.getTotalPhysicalMemorySize();
+
+        // Returns the "recent cpu usage" for the whole system.
+        double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
+
+        int process = Runtime.getRuntime().availableProcessors();
+
+        UsageUtil monitorUtil = new UsageUtil();
+        monitorUtil.memoryUsed = totalPhysicalMemorySize - freePhysicalMemorySize;
+        monitorUtil.memoryCapacity = totalPhysicalMemorySize;
+        monitorUtil.cpuUsed = (long) (process * systemCpuLoad * 100);
+        monitorUtil.cpuCapacity = process * 100;
+
+        return monitorUtil;
+    }
+
+    private class UsageUtil {
+        private long memoryUsed = 0;
+        private long memoryCapacity = 0;
+        private long cpuUsed = 0;
+        private long cpuCapacity = 0;
+    }
 }

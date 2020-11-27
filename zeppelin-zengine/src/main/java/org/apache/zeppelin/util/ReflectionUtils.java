@@ -23,66 +23,65 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Utility class for creating instances via java reflection.
- *
  */
 public class ReflectionUtils {
 
-  private ReflectionUtils() {
-    throw new IllegalStateException("Utility class");
-  }
-
-  public static Class<?> getClazz(String className) throws IOException {
-    Class<?> clazz = null;
-    try {
-      clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
-    } catch (ClassNotFoundException e) {
-      throw new IOException("Unable to load class: " + className, e);
+    private ReflectionUtils() {
+        throw new IllegalStateException("Utility class");
     }
 
-    return clazz;
-  }
+    public static Class<?> getClazz(String className) throws IOException {
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Unable to load class: " + className, e);
+        }
 
-  private static <T> T getNewInstance(Class<T> clazz) throws IOException {
-    T instance;
-    try {
-      instance = clazz.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new IOException(
-          "Unable to instantiate class with 0 arguments: " + clazz.getName(), e);
+        return clazz;
     }
-    return instance;
-  }
 
-  private static <T> T getNewInstance(Class<T> clazz,
-                                      Class<?>[] parameterTypes,
-                                      Object[] parameters)
-      throws IOException {
-    T instance;
-    try {
-      Constructor<T> constructor = clazz.getConstructor(parameterTypes);
-      instance = constructor.newInstance(parameters);
-    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-      throw new IOException(
-          "Unable to instantiate class with " + parameters.length + " arguments: " +
-              clazz.getName(), e);
+    private static <T> T getNewInstance(Class<T> clazz) throws IOException {
+        T instance;
+        try {
+            instance = clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IOException(
+                    "Unable to instantiate class with 0 arguments: " + clazz.getName(), e);
+        }
+        return instance;
     }
-    return instance;
-  }
 
-  public static <T> T createClazzInstance(String className) throws IOException {
-    Class<?> clazz = getClazz(className);
-    @SuppressWarnings("unchecked")
-    T instance = (T) getNewInstance(clazz);
-    return instance;
-  }
+    private static <T> T getNewInstance(Class<T> clazz,
+                                        Class<?>[] parameterTypes,
+                                        Object[] parameters)
+            throws IOException {
+        T instance;
+        try {
+            Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+            instance = constructor.newInstance(parameters);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new IOException(
+                    "Unable to instantiate class with " + parameters.length + " arguments: " +
+                            clazz.getName(), e);
+        }
+        return instance;
+    }
 
-  public static <T> T createClazzInstance(String className,
-                                          Class<?>[] parameterTypes,
-                                          Object[] parameters) throws IOException {
-    Class<?> clazz = getClazz(className);
-    T instance = (T) getNewInstance(clazz, parameterTypes, parameters);
-    return instance;
-  }
+    public static <T> T createClazzInstance(String className) throws IOException {
+        Class<?> clazz = getClazz(className);
+        @SuppressWarnings("unchecked")
+        T instance = (T) getNewInstance(clazz);
+        return instance;
+    }
+
+    public static <T> T createClazzInstance(String className,
+                                            Class<?>[] parameterTypes,
+                                            Object[] parameters) throws IOException {
+        Class<?> clazz = getClazz(className);
+        T instance = (T) getNewInstance(clazz, parameterTypes, parameters);
+        return instance;
+    }
 
 
 }

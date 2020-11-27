@@ -22,51 +22,52 @@ import org.apache.zeppelin.resource.ResourceSet;
  * Application wrapper
  */
 public class ClassLoaderApplication extends Application {
-  Application app;
-  ClassLoader cl;
-  public ClassLoaderApplication(Application app, ClassLoader cl) throws ApplicationException {
-    super(app.context());
-    this.app = app;
-    this.cl = cl;
-  }
+    Application app;
+    ClassLoader cl;
 
-  @Override
-  public void run(ResourceSet args) throws ApplicationException {
-    // instantiate
-    ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(cl);
-    try {
-      app.run(args);
-    } catch (ApplicationException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    } finally {
-      Thread.currentThread().setContextClassLoader(oldcl);
+    public ClassLoaderApplication(Application app, ClassLoader cl) throws ApplicationException {
+        super(app.context());
+        this.app = app;
+        this.cl = cl;
     }
-  }
 
-  @Override
-  public void unload() throws ApplicationException {
-    // instantiate
-    ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(cl);
-    try {
-      app.unload();
-    } catch (ApplicationException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    } finally {
-      Thread.currentThread().setContextClassLoader(oldcl);
+    @Override
+    public void run(ResourceSet args) throws ApplicationException {
+        // instantiate
+        ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(cl);
+        try {
+            app.run(args);
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApplicationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldcl);
+        }
     }
-  }
 
-  public ClassLoader getClassLoader() {
-    return cl;
-  }
+    @Override
+    public void unload() throws ApplicationException {
+        // instantiate
+        ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(cl);
+        try {
+            app.unload();
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApplicationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldcl);
+        }
+    }
 
-  public Application getInnerApplication() {
-    return app;
-  }
+    public ClassLoader getClassLoader() {
+        return cl;
+    }
+
+    public Application getInnerApplication() {
+        return app;
+    }
 }

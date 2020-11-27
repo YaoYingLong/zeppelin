@@ -40,71 +40,71 @@ import java.util.concurrent.TimeUnit;
  */
 public class YarnAppMonitor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YarnAppMonitor.class);
-  private static YarnAppMonitor instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(YarnAppMonitor.class);
+    private static YarnAppMonitor instance;
 
-  private ZeppelinConfiguration conf;
-  private ScheduledExecutorService executor;
-  private YarnClient yarnClient;
-  private ConcurrentHashMap<ApplicationId, RemoteInterpreterManagedProcess> apps;
+    private ZeppelinConfiguration conf;
+    private ScheduledExecutorService executor;
+    private YarnClient yarnClient;
+    private ConcurrentHashMap<ApplicationId, RemoteInterpreterManagedProcess> apps;
 
-  public static synchronized YarnAppMonitor get() {
-    if (instance == null) {
-      instance = new YarnAppMonitor();
+    private YarnAppMonitor() {
+        try {
+            this.conf = ZeppelinConfiguration.create();
+            this.yarnClient = YarnClient.createYarnClient();
+            YarnConfiguration yarnConf = new YarnConfiguration();
+            // disable timeline service as we only query yarn app here.
+            // Otherwise we may hit this kind of ERROR:
+            // java.lang.ClassNotFoundException: com.sun.jersey.api.client.config.ClientConfig
+            yarnConf.set("yarn.timeline-service.enabled", "false");
+            yarnClient.init(yarnConf);
+            yarnClient.start();
+            this.executor = Executors.newSingleThreadScheduledExecutor(new SchedulerThreadFactory("YarnAppsMonitor-Thread"));
+            this.apps = new ConcurrentHashMap<>();
+            this.executor.scheduleAtFixedRate(() -> {
+                        try {
+                            Iterator<Map.Entry<ApplicationId, RemoteInterpreterManagedProcess>> iter = apps.entrySet().iterator();
+                            while (iter.hasNext()) {
+                                Map.Entry<ApplicationId, RemoteInterpreterManagedProcess> entry = iter.next();
+                                ApplicationId appId = entry.getKey();
+                                RemoteInterpreterManagedProcess interpreterManagedProcess = entry.getValue();
+                                ApplicationReport appReport = yarnClient.getApplicationReport(appId);
+                                if (appReport.getYarnApplicationState() == YarnApplicationState.FAILED ||
+                                        appReport.getYarnApplicationState() == YarnApplicationState.KILLED) {
+                                    String yarnDiagnostics = appReport.getDiagnostics();
+                                    interpreterManagedProcess.processStopped("Yarn diagnostics: " + yarnDiagnostics);
+                                    iter.remove();
+                                    LOGGER.info("Remove {} from YarnAppMonitor, because its state is {}", appId,
+                                            appReport.getYarnApplicationState());
+                                } else if (appReport.getYarnApplicationState() == YarnApplicationState.FINISHED) {
+                                    iter.remove();
+                                    LOGGER.info("Remove {} from YarnAppMonitor, because its state is ", appId,
+                                            appReport.getYarnApplicationState());
+                                }
+                            }
+                        } catch (Exception e) {
+                            LOGGER.warn("Fail to check yarn app status", e);
+                        }
+                    },
+                    conf.getInt("zeppelin.interpreter.yarn.monitor.interval_secs", 10),
+                    conf.getInt("zeppelin.interpreter.yarn.monitor.interval_secs", 10),
+                    TimeUnit.SECONDS);
+
+            LOGGER.info("YarnAppMonitor is started");
+        } catch (Throwable e) {
+            LOGGER.warn("Fail to initialize YarnAppMonitor", e);
+        }
     }
-    return instance;
-  }
 
-  private YarnAppMonitor() {
-    try {
-      this.conf = ZeppelinConfiguration.create();
-      this.yarnClient = YarnClient.createYarnClient();
-      YarnConfiguration yarnConf = new YarnConfiguration();
-      // disable timeline service as we only query yarn app here.
-      // Otherwise we may hit this kind of ERROR:
-      // java.lang.ClassNotFoundException: com.sun.jersey.api.client.config.ClientConfig
-      yarnConf.set("yarn.timeline-service.enabled", "false");
-      yarnClient.init(yarnConf);
-      yarnClient.start();
-      this.executor = Executors.newSingleThreadScheduledExecutor(new SchedulerThreadFactory("YarnAppsMonitor-Thread"));
-      this.apps = new ConcurrentHashMap<>();
-      this.executor.scheduleAtFixedRate(() -> {
-                try {
-                  Iterator<Map.Entry<ApplicationId, RemoteInterpreterManagedProcess>> iter = apps.entrySet().iterator();
-                  while (iter.hasNext()) {
-                    Map.Entry<ApplicationId, RemoteInterpreterManagedProcess> entry = iter.next();
-                    ApplicationId appId = entry.getKey();
-                    RemoteInterpreterManagedProcess interpreterManagedProcess = entry.getValue();
-                    ApplicationReport appReport = yarnClient.getApplicationReport(appId);
-                    if (appReport.getYarnApplicationState() == YarnApplicationState.FAILED ||
-                            appReport.getYarnApplicationState() == YarnApplicationState.KILLED) {
-                      String yarnDiagnostics = appReport.getDiagnostics();
-                      interpreterManagedProcess.processStopped("Yarn diagnostics: " + yarnDiagnostics);
-                      iter.remove();
-                      LOGGER.info("Remove {} from YarnAppMonitor, because its state is {}", appId ,
-                              appReport.getYarnApplicationState());
-                    } else if (appReport.getYarnApplicationState() == YarnApplicationState.FINISHED) {
-                      iter.remove();
-                      LOGGER.info("Remove {} from YarnAppMonitor, because its state is ", appId,
-                              appReport.getYarnApplicationState());
-                    }
-                  }
-                } catch (Exception e) {
-                  LOGGER.warn("Fail to check yarn app status", e);
-                }
-              },
-              conf.getInt("zeppelin.interpreter.yarn.monitor.interval_secs", 10),
-              conf.getInt("zeppelin.interpreter.yarn.monitor.interval_secs", 10),
-              TimeUnit.SECONDS);
-
-      LOGGER.info("YarnAppMonitor is started");
-    } catch (Throwable e) {
-      LOGGER.warn("Fail to initialize YarnAppMonitor", e);
+    public static synchronized YarnAppMonitor get() {
+        if (instance == null) {
+            instance = new YarnAppMonitor();
+        }
+        return instance;
     }
-  }
 
-  public void addYarnApp(ApplicationId appId, RemoteInterpreterManagedProcess interpreterManagedProcess) {
-    LOGGER.info("Add {} to YarnAppMonitor", appId);
-    this.apps.put(appId, interpreterManagedProcess);
-  }
+    public void addYarnApp(ApplicationId appId, RemoteInterpreterManagedProcess interpreterManagedProcess) {
+        LOGGER.info("Add {} to YarnAppMonitor", appId);
+        this.apps.put(appId, interpreterManagedProcess);
+    }
 }

@@ -36,65 +36,65 @@ import java.util.Map;
  * Hadoop compatible FileSystem based RecoveryStorage implementation.
  * All the running interpreter process info will be save into files on hdfs.
  * Each interpreter setting will have one file.
- *
+ * <p>
  * Save InterpreterProcess in the format of:
  * InterpreterGroupId host:port
  */
 public class FileSystemRecoveryStorage extends RecoveryStorage {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemRecoveryStorage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemRecoveryStorage.class);
 
-  private FileSystemStorage fs;
-  private Path recoveryDir;
-  private InterpreterSettingManager interpreterSettingManager;
+    private FileSystemStorage fs;
+    private Path recoveryDir;
+    private InterpreterSettingManager interpreterSettingManager;
 
-  public FileSystemRecoveryStorage(ZeppelinConfiguration zConf,
-                                   InterpreterSettingManager interpreterSettingManager)
-      throws IOException {
-    super(zConf);
-    this.interpreterSettingManager = interpreterSettingManager;
-    String recoveryDirProperty = zConf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_DIR);
-    this.fs = new FileSystemStorage(zConf, recoveryDirProperty);
-    LOGGER.info("Creating FileSystem: " + this.fs.getFs().getClass().getName() +
-        " for Zeppelin Recovery.");
-    this.recoveryDir = this.fs.makeQualified(new Path(recoveryDirProperty));
-    LOGGER.info("Using folder {} to store recovery data", recoveryDir);
-    this.fs.tryMkDir(recoveryDir);
-  }
-
-  @Override
-  public void onInterpreterClientStart(InterpreterClient client) throws IOException {
-    save(client.getInterpreterSettingName());
-  }
-
-  @Override
-  public void onInterpreterClientStop(InterpreterClient client) throws IOException {
-    save(client.getInterpreterSettingName());
-  }
-
-  private void save(String interpreterSettingName) throws IOException {
-    InterpreterSetting interpreterSetting =
-        interpreterSettingManager.getInterpreterSettingByName(interpreterSettingName);
-    String recoveryData = RecoveryUtils.getRecoveryData(interpreterSetting);
-    LOGGER.debug("Updating recovery data of {}: {}", interpreterSettingName, recoveryData);
-    Path recoveryFile = new Path(recoveryDir, interpreterSettingName + ".recovery");
-    fs.writeFile(recoveryData, recoveryFile, true);
-  }
-
-  @Override
-  public Map<String, InterpreterClient> restore() throws IOException {
-    Map<String, InterpreterClient> clients = new HashMap<>();
-    List<Path> paths = fs.list(new Path(recoveryDir + "/*.recovery"));
-
-    for (Path path : paths) {
-      String fileName = path.getName();
-      String interpreterSettingName = fileName.substring(0,
-          fileName.length() - ".recovery".length());
-      String recoveryContent = fs.readFile(path);
-      clients.putAll(RecoveryUtils.restoreFromRecoveryData(
-              recoveryContent, interpreterSettingName, interpreterSettingManager, zConf));
+    public FileSystemRecoveryStorage(ZeppelinConfiguration zConf,
+                                     InterpreterSettingManager interpreterSettingManager)
+            throws IOException {
+        super(zConf);
+        this.interpreterSettingManager = interpreterSettingManager;
+        String recoveryDirProperty = zConf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_DIR);
+        this.fs = new FileSystemStorage(zConf, recoveryDirProperty);
+        LOGGER.info("Creating FileSystem: " + this.fs.getFs().getClass().getName() +
+                " for Zeppelin Recovery.");
+        this.recoveryDir = this.fs.makeQualified(new Path(recoveryDirProperty));
+        LOGGER.info("Using folder {} to store recovery data", recoveryDir);
+        this.fs.tryMkDir(recoveryDir);
     }
 
-    return clients;
-  }
+    @Override
+    public void onInterpreterClientStart(InterpreterClient client) throws IOException {
+        save(client.getInterpreterSettingName());
+    }
+
+    @Override
+    public void onInterpreterClientStop(InterpreterClient client) throws IOException {
+        save(client.getInterpreterSettingName());
+    }
+
+    private void save(String interpreterSettingName) throws IOException {
+        InterpreterSetting interpreterSetting =
+                interpreterSettingManager.getInterpreterSettingByName(interpreterSettingName);
+        String recoveryData = RecoveryUtils.getRecoveryData(interpreterSetting);
+        LOGGER.debug("Updating recovery data of {}: {}", interpreterSettingName, recoveryData);
+        Path recoveryFile = new Path(recoveryDir, interpreterSettingName + ".recovery");
+        fs.writeFile(recoveryData, recoveryFile, true);
+    }
+
+    @Override
+    public Map<String, InterpreterClient> restore() throws IOException {
+        Map<String, InterpreterClient> clients = new HashMap<>();
+        List<Path> paths = fs.list(new Path(recoveryDir + "/*.recovery"));
+
+        for (Path path : paths) {
+            String fileName = path.getName();
+            String interpreterSettingName = fileName.substring(0,
+                    fileName.length() - ".recovery".length());
+            String recoveryContent = fs.readFile(path);
+            clients.putAll(RecoveryUtils.restoreFromRecoveryData(
+                    recoveryContent, interpreterSettingName, interpreterSettingManager, zConf));
+        }
+
+        return clients;
+    }
 }

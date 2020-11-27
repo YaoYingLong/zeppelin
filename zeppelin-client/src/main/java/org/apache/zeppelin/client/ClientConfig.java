@@ -24,45 +24,45 @@ import org.apache.commons.lang3.StringUtils;
  * query interval of polling note/paragraph result.
  */
 public class ClientConfig {
-  private String zeppelinRestUrl;
-  private long queryInterval ;
-  private String knoxSSOUrl;
+    private String zeppelinRestUrl;
+    private long queryInterval;
+    private String knoxSSOUrl;
 
-  public ClientConfig(String zeppelinRestUrl) {
-    this(zeppelinRestUrl, 1000);
-  }
-
-  public ClientConfig(String zeppelinRestUrl, long queryInterval) {
-    this(zeppelinRestUrl, queryInterval, null);
-  }
-
-  public ClientConfig(String zeppelinRestUrl, long queryInterval, String knoxSSOUrl) {
-    this.zeppelinRestUrl = removeTrailingSlash(zeppelinRestUrl);
-    this.queryInterval = queryInterval;
-    this.knoxSSOUrl = knoxSSOUrl;
-  }
-
-  private String removeTrailingSlash(String zeppelinRestUrl) {
-    if (zeppelinRestUrl.endsWith("/")) {
-      return zeppelinRestUrl.substring(0, zeppelinRestUrl.length() - 1);
-    } else {
-      return zeppelinRestUrl;
+    public ClientConfig(String zeppelinRestUrl) {
+        this(zeppelinRestUrl, 1000);
     }
-  }
 
-  public String getZeppelinRestUrl() {
-    return zeppelinRestUrl;
-  }
+    public ClientConfig(String zeppelinRestUrl, long queryInterval) {
+        this(zeppelinRestUrl, queryInterval, null);
+    }
 
-  public long getQueryInterval() {
-    return queryInterval;
-  }
+    public ClientConfig(String zeppelinRestUrl, long queryInterval, String knoxSSOUrl) {
+        this.zeppelinRestUrl = removeTrailingSlash(zeppelinRestUrl);
+        this.queryInterval = queryInterval;
+        this.knoxSSOUrl = knoxSSOUrl;
+    }
 
-  public boolean isUseKnox() {
-    return StringUtils.isNotBlank(knoxSSOUrl);
-  }
+    private String removeTrailingSlash(String zeppelinRestUrl) {
+        if (zeppelinRestUrl.endsWith("/")) {
+            return zeppelinRestUrl.substring(0, zeppelinRestUrl.length() - 1);
+        } else {
+            return zeppelinRestUrl;
+        }
+    }
 
-  public String getKnoxSSOUrl() {
-    return knoxSSOUrl;
-  }
+    public String getZeppelinRestUrl() {
+        return zeppelinRestUrl;
+    }
+
+    public long getQueryInterval() {
+        return queryInterval;
+    }
+
+    public boolean isUseKnox() {
+        return StringUtils.isNotBlank(knoxSSOUrl);
+    }
+
+    public String getKnoxSSOUrl() {
+        return knoxSSOUrl;
+    }
 }

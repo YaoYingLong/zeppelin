@@ -17,18 +17,19 @@
   <nz-divider></nz-divider>
   <div>
     <p>
-      Enter comma separated users and groups in the fields. <br />
+      Enter comma separated users and groups in the fields. <br/>
       Empty field (*) implies anyone can do the operation.
     </p>
   </div>
   <div>
-    <form nz-form class="permissions-form">
+    <form class="permissions-form" nz-form>
       <nz-form-item [nzGutter]="12">
         <nz-form-label [nzSpan]="3">Owners</nz-form-label>
         <nz-form-control [nzSpan]="4">
-          <nz-select nzSize="small" [(ngModel)]="permissions.owners" nzServerSearch (nzOnSearch)="searchUser($event)" nzMode="multiple" name="owners">
+          <nz-select (nzOnSearch)="searchUser($event)" [(ngModel)]="permissions.owners" name="owners" nzMode="multiple"
+                     nzServerSearch nzSize="small">
             <nz-option *ngFor="let item of permissions.owners" [nzLabel]="item" [nzValue]="item"></nz-option>
-            <nz-option-group [nzLabel]="item.text" *ngFor="let item of listOfUserAndRole">
+            <nz-option-group *ngFor="let item of listOfUserAndRole" [nzLabel]="item.text">
               <nz-option *ngFor="let o of item.children" [nzLabel]="o" [nzValue]="o"></nz-option>
             </nz-option-group>
           </nz-select>
@@ -40,9 +41,10 @@
       <nz-form-item [nzGutter]="12">
         <nz-form-label [nzSpan]="3">Writers</nz-form-label>
         <nz-form-control [nzSpan]="4">
-          <nz-select nzSize="small" [(ngModel)]="permissions.writers" nzServerSearch (nzOnSearch)="searchUser($event)" nzMode="multiple" name="writers">
+          <nz-select (nzOnSearch)="searchUser($event)" [(ngModel)]="permissions.writers" name="writers" nzMode="multiple"
+                     nzServerSearch nzSize="small">
             <nz-option *ngFor="let item of permissions.writers" [nzLabel]="item" [nzValue]="item"></nz-option>
-            <nz-option-group [nzLabel]="item.text" *ngFor="let item of listOfUserAndRole">
+            <nz-option-group *ngFor="let item of listOfUserAndRole" [nzLabel]="item.text">
               <nz-option *ngFor="let o of item.children" [nzLabel]="o" [nzValue]="o"></nz-option>
             </nz-option-group>
           </nz-select>
@@ -54,9 +56,10 @@
       <nz-form-item [nzGutter]="12">
         <nz-form-label [nzSpan]="3">Runners</nz-form-label>
         <nz-form-control [nzSpan]="4">
-          <nz-select nzSize="small" [(ngModel)]="permissions.runners" nzServerSearch (nzOnSearch)="searchUser($event)" nzMode="multiple" name="runners">
+          <nz-select (nzOnSearch)="searchUser($event)" [(ngModel)]="permissions.runners" name="runners" nzMode="multiple"
+                     nzServerSearch nzSize="small">
             <nz-option *ngFor="let item of permissions.runners" [nzLabel]="item" [nzValue]="item"></nz-option>
-            <nz-option-group [nzLabel]="item.text" *ngFor="let item of listOfUserAndRole">
+            <nz-option-group *ngFor="let item of listOfUserAndRole" [nzLabel]="item.text">
               <nz-option *ngFor="let o of item.children" [nzLabel]="o" [nzValue]="o"></nz-option>
             </nz-option-group>
           </nz-select>
@@ -68,9 +71,10 @@
       <nz-form-item [nzGutter]="12">
         <nz-form-label [nzSpan]="3">Readers</nz-form-label>
         <nz-form-control [nzSpan]="4">
-          <nz-select nzSize="small" [(ngModel)]="permissions.readers" nzServerSearch (nzOnSearch)="searchUser($event)" nzMode="multiple" name="readers">
+          <nz-select (nzOnSearch)="searchUser($event)" [(ngModel)]="permissions.readers" name="readers" nzMode="multiple"
+                     nzServerSearch nzSize="small">
             <nz-option *ngFor="let item of permissions.readers" [nzLabel]="item" [nzValue]="item"></nz-option>
-            <nz-option-group [nzLabel]="item.text" *ngFor="let item of listOfUserAndRole">
+            <nz-option-group *ngFor="let item of listOfUserAndRole" [nzLabel]="item.text">
               <nz-option *ngFor="let o of item.children" [nzLabel]="o" [nzValue]="o"></nz-option>
             </nz-option-group>
           </nz-select>
@@ -81,8 +85,8 @@
       </nz-form-item>
     </form>
     <div class="submit-permissions">
-      <button nz-button nzType="primary" (click)="savePermissions()">Save</button>
-      <button nz-button nzType="default" (click)="closePermissions()">Cancel</button>
+      <button (click)="savePermissions()" nz-button nzType="primary">Save</button>
+      <button (click)="closePermissions()" nz-button nzType="default">Cancel</button>
     </div>
   </div>
 </div>

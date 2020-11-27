@@ -10,10 +10,10 @@
   ~ limitations under the License.
   -->
 
-<div class="ant-code-editor-loading" *ngIf="nzLoading">
+<div *ngIf="nzLoading" class="ant-code-editor-loading">
   <nz-spin></nz-spin>
 </div>
 
-<div class="ant-code-editor-toolkit" *ngIf="nzToolkit">
+<div *ngIf="nzToolkit" class="ant-code-editor-toolkit">
   <ng-template [ngTemplateOutlet]="nzToolkit"></ng-template>
 </div>

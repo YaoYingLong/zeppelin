@@ -10,14 +10,14 @@
   ~ limitations under the License.
   -->
 
-<div class="elastic" #elasticElement [class.min]="min">
+<div #elasticElement [class.min]="min" class="elastic">
   <input #inputElement
-         [ngModel]="editValue"
+         (blur)="setEditorState(false)"
+         (input)="updateInputWidth()"
+         (keydown.enter)="setEditorState(false)"
+         (keydown.esc)="cancelEdit()"
          (ngModelChange)="updateValue($event)"
          *ngIf="showEditor"
-         (blur)="setEditorState(false)"
-         (keydown.esc)="cancelEdit()"
-         (keydown.enter)="setEditorState(false)"
-         (input)="updateInputWidth()">
-  <p #pElement *ngIf="!showEditor" (click)="setEditorState(true)">{{value || defaultTitle}}</p>
+         [ngModel]="editValue">
+  <p #pElement (click)="setEditorState(true)" *ngIf="!showEditor">{{value || defaultTitle}}</p>
 </div>

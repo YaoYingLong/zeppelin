@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Author {
 
-  @SerializedName("name")
-  private String name;
+    @SerializedName("name")
+    private String name;
 
 }

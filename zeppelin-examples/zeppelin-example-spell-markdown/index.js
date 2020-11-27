@@ -15,11 +15,7 @@
  * limitations under the License.
  */
 
-import {
-    SpellBase,
-    SpellResult,
-    DefaultDisplayType,
-} from 'zeppelin-spell';
+import {DefaultDisplayType, SpellBase, SpellResult,} from 'zeppelin-spell';
 
 import md from 'markdown';
 

@@ -22,28 +22,28 @@ import java.util.Set;
 
 /**
  * The Zeppelin Node Entity
- *
  */
 public class Node extends GraphEntity {
 
-  /**
-   * The labels (types) attached to a node
-   */
-  private Set<String> labels;
+    /**
+     * The labels (types) attached to a node
+     */
+    private Set<String> labels;
 
-  public Node() {}
+    public Node() {
+    }
 
-  
-  public Node(long id, Map<String, Object> data, Set<String> labels) {
-    super(id, data, labels.iterator().next());
-  }
 
-  public Set<String> getLabels() {
-    return labels;
-  }
+    public Node(long id, Map<String, Object> data, Set<String> labels) {
+        super(id, data, labels.iterator().next());
+    }
 
-  public void setLabels(Set<String> labels) {
-    this.labels = labels;
-  }
- 
+    public Set<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Set<String> labels) {
+        this.labels = labels;
+    }
+
 }

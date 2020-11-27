@@ -37,64 +37,64 @@ import static org.junit.Assert.assertTrue;
  * Tests for Apache Ignite interpreter ({@link IgniteInterpreter}).
  */
 public class IgniteInterpreterTest {
-  private static final String HOST = "127.0.0.1:47500..47509";
+    private static final String HOST = "127.0.0.1:47500..47509";
 
-  private static final InterpreterContext INTP_CONTEXT = InterpreterContext.builder().build();
+    private static final InterpreterContext INTP_CONTEXT = InterpreterContext.builder().build();
 
-  private IgniteInterpreter intp;
-  private Ignite ignite;
+    private IgniteInterpreter intp;
+    private Ignite ignite;
 
-  @Before
-  public void setUp() {
-    TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-    ipFinder.setAddresses(Collections.singletonList(HOST));
+    @Before
+    public void setUp() {
+        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
+        ipFinder.setAddresses(Collections.singletonList(HOST));
 
-    TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
-    discoSpi.setIpFinder(ipFinder);
+        TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
+        discoSpi.setIpFinder(ipFinder);
 
-    IgniteConfiguration cfg = new IgniteConfiguration();
-    cfg.setDiscoverySpi(discoSpi);
+        IgniteConfiguration cfg = new IgniteConfiguration();
+        cfg.setDiscoverySpi(discoSpi);
 
-    cfg.setGridName("test");
+        cfg.setGridName("test");
 
-    ignite = Ignition.start(cfg);
+        ignite = Ignition.start(cfg);
 
-    Properties props = new Properties();
-    props.setProperty(IgniteSqlInterpreter.IGNITE_JDBC_URL,
-            "jdbc:ignite:cfg://cache=person@default-ignite-jdbc.xml");
-    props.setProperty(IgniteInterpreter.IGNITE_CLIENT_MODE, "false");
-    props.setProperty(IgniteInterpreter.IGNITE_PEER_CLASS_LOADING_ENABLED, "false");
-    props.setProperty(IgniteInterpreter.IGNITE_ADDRESSES, HOST);
+        Properties props = new Properties();
+        props.setProperty(IgniteSqlInterpreter.IGNITE_JDBC_URL,
+                "jdbc:ignite:cfg://cache=person@default-ignite-jdbc.xml");
+        props.setProperty(IgniteInterpreter.IGNITE_CLIENT_MODE, "false");
+        props.setProperty(IgniteInterpreter.IGNITE_PEER_CLASS_LOADING_ENABLED, "false");
+        props.setProperty(IgniteInterpreter.IGNITE_ADDRESSES, HOST);
 
-    intp = new IgniteInterpreter(props);
-    intp.open();
-  }
+        intp = new IgniteInterpreter(props);
+        intp.open();
+    }
 
-  @After
-  public void tearDown() {
-    ignite.close();
-    intp.close();
-  }
+    @After
+    public void tearDown() {
+        ignite.close();
+        intp.close();
+    }
 
-  @Test
-  public void testInterpret() {
-    String sizeVal = "size";
+    @Test
+    public void testInterpret() {
+        String sizeVal = "size";
 
-    InterpreterResult result = intp.interpret("import org.apache.ignite.IgniteCache\n" +
-            "val " + sizeVal + " = ignite.cluster().nodes().size()", INTP_CONTEXT);
+        InterpreterResult result = intp.interpret("import org.apache.ignite.IgniteCache\n" +
+                "val " + sizeVal + " = ignite.cluster().nodes().size()", INTP_CONTEXT);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertTrue(result.message().get(0).getData().contains(sizeVal + ": Int = " +
-            ignite.cluster().nodes().size()));
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+        assertTrue(result.message().get(0).getData().contains(sizeVal + ": Int = " +
+                ignite.cluster().nodes().size()));
 
-    result = intp.interpret("\"123\"\n  .toInt", INTP_CONTEXT);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-  }
+        result = intp.interpret("\"123\"\n  .toInt", INTP_CONTEXT);
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    }
 
-  @Test
-  public void testInterpretInvalidInput() {
-    InterpreterResult result = intp.interpret("invalid input", INTP_CONTEXT);
+    @Test
+    public void testInterpretInvalidInput() {
+        InterpreterResult result = intp.interpret("invalid input", INTP_CONTEXT);
 
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
-  }
+        assertEquals(InterpreterResult.Code.ERROR, result.code());
+    }
 }

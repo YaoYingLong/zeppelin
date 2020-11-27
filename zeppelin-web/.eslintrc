@@ -1,5 +1,8 @@
 {
-  "extends": ["eslint:recommended", "google"],
+  "extends": [
+    "eslint:recommended",
+    "google"
+  ],
   "env": {
     "browser": true,
     "jasmine": true,
@@ -27,7 +30,7 @@
     "BootstrapDialog": false,
     "Handsontable": false,
     "moment": false,
-    "zeppelin" : false,
+    "zeppelin": false,
     "process": false
   },
   "rules": {
@@ -35,20 +38,53 @@
     "camelcase": 2,
     "curly": 2,
     "eqeqeq": 2,
-    "wrap-iife": [2, "any"],
+    "wrap-iife": [
+      2,
+      "any"
+    ],
     "new-cap": 2,
     "no-caller": 2,
-    "quotes": [2, "single"],
+    "quotes": [
+      2,
+      "single"
+    ],
     "no-shadow": 0,
     "no-undef": 2,
-    "no-unused-vars": [2, { "vars": "local", "args": "none" }],
-    "strict": [2, "global"],
-    "max-len": [2, {"code": 120, "ignoreComments": true, "ignoreRegExpLiterals": true}],
+    "no-unused-vars": [
+      2,
+      {
+        "vars": "local",
+        "args": "none"
+      }
+    ],
+    "strict": [
+      2,
+      "global"
+    ],
+    "max-len": [
+      2,
+      {
+        "code": 120,
+        "ignoreComments": true,
+        "ignoreRegExpLiterals": true
+      }
+    ],
     "require-jsdoc": "off",
-    "no-console": ["off"],
+    "no-console": [
+      "off"
+    ],
     "valid-jsdoc": "off",
-    "semi": [2, "always"],
+    "semi": [
+      2,
+      "always"
+    ],
     "no-invalid-this": 1,
-    "indent": ["error", 2, { "SwitchCase": 1 }]
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ]
   }
 }

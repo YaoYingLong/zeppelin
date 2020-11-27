@@ -10,8 +10,8 @@
  * limitations under the License.
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { TableData, Visualization, VISUALIZATION } from '@zeppelin/visualization';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
+import {TableData, Visualization, VISUALIZATION} from '@zeppelin/visualization';
 
 @Component({
   selector: 'lib-helium-vis-example',
@@ -31,7 +31,9 @@ import { TableData, Visualization, VISUALIZATION } from '@zeppelin/visualization
 })
 export class JsonVisComponent implements OnInit {
   tableData: TableData;
-  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {}
+
+  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {
+  }
 
   ngOnInit() {
   }

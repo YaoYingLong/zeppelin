@@ -26,12 +26,12 @@ export class NoteRenameComponent implements OnInit {
   @Input() newName: string;
   @Input() id: string;
 
+  constructor(private messageService: MessageService, private nzModalRef: NzModalRef) {}
+
   rename() {
     this.messageService.noteRename(this.id, this.newName);
     this.nzModalRef.destroy();
   }
-
-  constructor(private messageService: MessageService, private nzModalRef: NzModalRef) {}
 
   ngOnInit() {}
 }

@@ -17,11 +17,11 @@
 
 package org.apache.zeppelin.service;
 
+import org.apache.shiro.realm.Realm;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.shiro.realm.Realm;
 
 /**
  * Interface for Zeppelin Security.
@@ -29,33 +29,37 @@ import org.apache.shiro.realm.Realm;
  */
 public interface AuthenticationService {
 
-  /**
-   * Get current principal/username.
-   * @return
-   */
-  String getPrincipal();
+    /**
+     * Get current principal/username.
+     *
+     * @return
+     */
+    String getPrincipal();
 
-  /**
-   * Get roles associated with current principal
-   * @return
-   */
-  Set<String> getAssociatedRoles();
+    /**
+     * Get roles associated with current principal
+     *
+     * @return
+     */
+    Set<String> getAssociatedRoles();
 
-  Collection<Realm> getRealmsList();
+    Collection<Realm> getRealmsList();
 
-  boolean isAuthenticated();
+    boolean isAuthenticated();
 
-  /**
-   * Used for user auto-completion
-   * @param searchText
-   * @param numUsersToFetch
-   * @return
-   */
-  List<String> getMatchedUsers(String searchText, int numUsersToFetch);
+    /**
+     * Used for user auto-completion
+     *
+     * @param searchText
+     * @param numUsersToFetch
+     * @return
+     */
+    List<String> getMatchedUsers(String searchText, int numUsersToFetch);
 
-  /**
-   * Used for role auto-completion
-   * @return
-   */
-  List<String> getMatchedRoles();
+    /**
+     * Used for role auto-completion
+     *
+     * @return
+     */
+    List<String> getMatchedRoles();
 }

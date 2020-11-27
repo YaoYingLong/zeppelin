@@ -20,7 +20,7 @@ package org.apache.zeppelin.cluster.meta;
  * Type of cluster metadata operation
  */
 public enum ClusterMetaOperation {
-  GET_OPERATION,
-  PUT_OPERATION,
-  DELETE_OPERATION
+    GET_OPERATION,
+    PUT_OPERATION,
+    DELETE_OPERATION
 }

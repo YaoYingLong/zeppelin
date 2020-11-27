@@ -17,16 +17,10 @@
 package org.apache.zeppelin.rest;
 
 import com.google.gson.Gson;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,48 +30,45 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class KnoxRestApiTest extends AbstractTestRestApi {
-  private final String knoxCookie = "hadoop-jwt=eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI" +
-          "6IktOT1hTU08iLCJleHAiOjE1MTM3NDU1MDd9.E2cWQo2sq75h0G_9fc9nWkL0SFMI5x_-Z0Zzr0NzQ86X4jfx" +
-          "liWYjr0M17Bm9GfPHRRR66s7YuYXa6DLbB4fHE0cyOoQnkfJFpU_vr1xhy0_0URc5v-Gb829b9rxuQfjKe-37h" +
-          "qbUdkwww2q6QQETVMvzp0rQKprUClZujyDvh0;";
+    private static final Logger LOG = LoggerFactory.getLogger(KnoxRestApiTest.class);
+    private final String knoxCookie = "hadoop-jwt=eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI" +
+            "6IktOT1hTU08iLCJleHAiOjE1MTM3NDU1MDd9.E2cWQo2sq75h0G_9fc9nWkL0SFMI5x_-Z0Zzr0NzQ86X4jfx" +
+            "liWYjr0M17Bm9GfPHRRR66s7YuYXa6DLbB4fHE0cyOoQnkfJFpU_vr1xhy0_0URc5v-Gb829b9rxuQfjKe-37h" +
+            "qbUdkwww2q6QQETVMvzp0rQKprUClZujyDvh0;";
+    @Rule
+    public ErrorCollector collector = new ErrorCollector();
+    Gson gson = new Gson();
 
-  @Rule
-  public ErrorCollector collector = new ErrorCollector();
+    @BeforeClass
+    public static void init() throws Exception {
+        AbstractTestRestApi.startUpWithKnoxEnable(KnoxRestApiTest.class.getSimpleName());
+    }
 
-  private static final Logger LOG = LoggerFactory.getLogger(KnoxRestApiTest.class);
+    @AfterClass
+    public static void destroy() throws Exception {
+        AbstractTestRestApi.shutDown();
+    }
 
-  Gson gson = new Gson();
+    @Before
+    public void setUp() {
+    }
 
-  @BeforeClass
-  public static void init() throws Exception {
-    AbstractTestRestApi.startUpWithKnoxEnable(KnoxRestApiTest.class.getSimpleName());
-  }
+    @Test
+    @Ignore
+    public void testThatOtherUserCanAccessNoteIfPermissionNotSet() throws IOException {
+        CloseableHttpResponse loginWithoutCookie = httpGet("/api/security/ticket");
+        Map result = gson.fromJson(EntityUtils.toString(loginWithoutCookie.getEntity(), StandardCharsets.UTF_8), Map.class);
 
-  @AfterClass
-  public static void destroy() throws Exception {
-    AbstractTestRestApi.shutDown();
-  }
+        collector.checkThat("response contains redirect URL",
+                ((Map) result.get("body")).get("redirectURL").toString(), CoreMatchers.equalTo(
+                        "https://domain.example.com/gateway/knoxsso/knoxauth/login.html?originalUrl="));
 
-  @Before
-  public void setUp() {
-  }
+        CloseableHttpResponse loginWithCookie = httpGet("/api/security/ticket", "", "", knoxCookie);
+        result = gson.fromJson(EntityUtils.toString(loginWithCookie.getEntity(), StandardCharsets.UTF_8), Map.class);
 
-  @Test
-  @Ignore
-  public void testThatOtherUserCanAccessNoteIfPermissionNotSet() throws IOException {
-    CloseableHttpResponse loginWithoutCookie = httpGet("/api/security/ticket");
-    Map result = gson.fromJson(EntityUtils.toString(loginWithoutCookie.getEntity(), StandardCharsets.UTF_8), Map.class);
+        collector.checkThat("User logged in as admin",
+                ((Map) result.get("body")).get("principal").toString(), CoreMatchers.equalTo("admin"));
 
-    collector.checkThat("response contains redirect URL",
-        ((Map) result.get("body")).get("redirectURL").toString(), CoreMatchers.equalTo(
-            "https://domain.example.com/gateway/knoxsso/knoxauth/login.html?originalUrl="));
-
-    CloseableHttpResponse loginWithCookie = httpGet("/api/security/ticket", "", "", knoxCookie);
-    result = gson.fromJson(EntityUtils.toString(loginWithCookie.getEntity(), StandardCharsets.UTF_8), Map.class);
-
-    collector.checkThat("User logged in as admin",
-        ((Map) result.get("body")).get("principal").toString(), CoreMatchers.equalTo("admin"));
-
-    System.out.println(result);
-  }
+        System.out.println(result);
+    }
 }

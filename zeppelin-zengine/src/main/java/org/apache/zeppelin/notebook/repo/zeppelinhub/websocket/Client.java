@@ -24,63 +24,61 @@ import org.slf4j.LoggerFactory;
 /**
  * Client to connect Zeppelin and ZeppelinHub via websocket API.
  * Implemented using singleton pattern.
- * 
  */
 public class Client {
-  private static final Logger LOG = LoggerFactory.getLogger(Client.class);
-  private final ZeppelinhubClient zeppelinhubClient;
-  private final ZeppelinClient zeppelinClient;
-  private static Client instance = null;
+    private static final Logger LOG = LoggerFactory.getLogger(Client.class);
+    private static final int MB = 1048576;
+    private static final int MAXIMUM_NOTE_SIZE = 64 * MB;
+    private static Client instance = null;
+    private final ZeppelinhubClient zeppelinhubClient;
+    private final ZeppelinClient zeppelinClient;
 
-  private static final int MB = 1048576;
-  private static final int MAXIMUM_NOTE_SIZE = 64 * MB;
-
-  public static Client initialize(String zeppelinUri, String zeppelinhubUri, String token, 
-      ZeppelinConfiguration conf) {
-    if (instance == null) {
-      instance = new Client(zeppelinUri, zeppelinhubUri, token, conf);
+    private Client(String zeppelinUri, String zeppelinhubUri, String token,
+                   ZeppelinConfiguration conf) {
+        LOG.debug("Init Client");
+        zeppelinhubClient = ZeppelinhubClient.initialize(zeppelinhubUri, token);
+        zeppelinClient = ZeppelinClient.initialize(zeppelinUri, token, conf);
     }
-    return instance;
-  }
 
-  public static Client getInstance() {
-    return instance;
-  }
-
-  private Client(String zeppelinUri, String zeppelinhubUri, String token,
-      ZeppelinConfiguration conf) {
-    LOG.debug("Init Client");
-    zeppelinhubClient = ZeppelinhubClient.initialize(zeppelinhubUri, token);
-    zeppelinClient = ZeppelinClient.initialize(zeppelinUri, token, conf);
-  }
-
-  public void start() {
-    if (zeppelinhubClient != null) {
-      zeppelinhubClient.start();
+    public static Client initialize(String zeppelinUri, String zeppelinhubUri, String token,
+                                    ZeppelinConfiguration conf) {
+        if (instance == null) {
+            instance = new Client(zeppelinUri, zeppelinhubUri, token, conf);
+        }
+        return instance;
     }
-    if (zeppelinClient != null) {
-      zeppelinClient.start();
+
+    public static Client getInstance() {
+        return instance;
     }
-  }
 
-  public void stop() {
-    if (zeppelinhubClient != null) {
-      zeppelinhubClient.stop();
+    public static int getMaxNoteSize() {
+        return MAXIMUM_NOTE_SIZE;
     }
-    if (zeppelinClient != null) {
-      zeppelinClient.stop();
+
+    public void start() {
+        if (zeppelinhubClient != null) {
+            zeppelinhubClient.start();
+        }
+        if (zeppelinClient != null) {
+            zeppelinClient.start();
+        }
     }
-  }
 
-  public void relayToZeppelinHub(String message, String token) {
-    zeppelinhubClient.send(message, token);
-  }
+    public void stop() {
+        if (zeppelinhubClient != null) {
+            zeppelinhubClient.stop();
+        }
+        if (zeppelinClient != null) {
+            zeppelinClient.stop();
+        }
+    }
 
-  public void relayToZeppelin(Message message, String noteId) {
-    zeppelinClient.send(message, noteId);
-  }
+    public void relayToZeppelinHub(String message, String token) {
+        zeppelinhubClient.send(message, token);
+    }
 
-  public static int getMaxNoteSize() {
-    return MAXIMUM_NOTE_SIZE;
-  }
+    public void relayToZeppelin(Message message, String noteId) {
+        zeppelinClient.send(message, noteId);
+    }
 }

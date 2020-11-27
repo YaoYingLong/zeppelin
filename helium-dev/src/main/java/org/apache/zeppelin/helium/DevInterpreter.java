@@ -33,88 +33,88 @@ import java.util.Properties;
  */
 public class DevInterpreter extends Interpreter {
 
-  private InterpreterEvent interpreterEvent;
-  private InterpreterContext context;
-  private DevZeppelinContext z;
+    private InterpreterEvent interpreterEvent;
+    private InterpreterContext context;
+    private DevZeppelinContext z;
 
-  public static boolean isInterpreterName(String replName) {
-    return replName.equals("dev");
-  }
-
-  /**
-   * event handler for org.apache.zeppelin.helium.ZeppelinApplicationDevServer
-   */
-  public static interface InterpreterEvent {
-    public InterpreterResult interpret(String st, InterpreterContext context);
-  }
-
-  public DevInterpreter(Properties property) {
-    super(property);
-  }
-
-  public DevInterpreter(Properties property, InterpreterEvent interpreterEvent) {
-    super(property);
-    this.interpreterEvent = interpreterEvent;
-  }
-
-  @Override
-  public void open() {
-    this.z = new DevZeppelinContext(null, 1000);
-  }
-
-  @Override
-  public void close() {
-  }
-
-  public void rerun() {
-    try {
-      z.run(context.getParagraphId());
-    } catch (IOException e) {
-      throw new RuntimeException("Fail to rerun", e);
+    public DevInterpreter(Properties property) {
+        super(property);
     }
-  }
 
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
-      throws InterpreterException {
-    this.context = context;
-    this.z.setInterpreterContext(context);
-    try {
-      return interpreterEvent.interpret(st, context);
-    } catch (Exception e) {
-      throw new InterpreterException(e);
+    public DevInterpreter(Properties property, InterpreterEvent interpreterEvent) {
+        super(property);
+        this.interpreterEvent = interpreterEvent;
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-  }
+    public static boolean isInterpreterName(String replName) {
+        return replName.equals("dev");
+    }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.NATIVE;
-  }
+    @Override
+    public void open() {
+        this.z = new DevZeppelinContext(null, 1000);
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+    @Override
+    public void close() {
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
-    return new LinkedList<>();
-  }
+    public void rerun() {
+        try {
+            z.run(context.getParagraphId());
+        } catch (IOException e) {
+            throw new RuntimeException("Fail to rerun", e);
+        }
+    }
 
-  public InterpreterContext getLastInterpretContext() {
-    return context;
-  }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context)
+            throws InterpreterException {
+        this.context = context;
+        this.z.setInterpreterContext(context);
+        try {
+            return interpreterEvent.interpret(st, context);
+        } catch (Exception e) {
+            throw new InterpreterException(e);
+        }
+    }
 
-  public void setInterpreterEvent(InterpreterEvent event) {
-    this.interpreterEvent = event;
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
+    }
 
-  public InterpreterEvent getInterpreterEvent() {
-    return interpreterEvent;
-  }
+    @Override
+    public FormType getFormType() {
+        return FormType.NATIVE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
+
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return new LinkedList<>();
+    }
+
+    public InterpreterContext getLastInterpretContext() {
+        return context;
+    }
+
+    public InterpreterEvent getInterpreterEvent() {
+        return interpreterEvent;
+    }
+
+    public void setInterpreterEvent(InterpreterEvent event) {
+        this.interpreterEvent = event;
+    }
+
+    /**
+     * event handler for org.apache.zeppelin.helium.ZeppelinApplicationDevServer
+     */
+    public static interface InterpreterEvent {
+        public InterpreterResult interpret(String st, InterpreterContext context);
+    }
 }

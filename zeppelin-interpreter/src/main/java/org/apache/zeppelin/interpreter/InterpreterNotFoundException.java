@@ -5,18 +5,18 @@ package org.apache.zeppelin.interpreter;
  */
 public class InterpreterNotFoundException extends InterpreterException {
 
-  public InterpreterNotFoundException() {
-  }
+    public InterpreterNotFoundException() {
+    }
 
-  public InterpreterNotFoundException(String message) {
-    super(message);
-  }
+    public InterpreterNotFoundException(String message) {
+        super(message);
+    }
 
-  public InterpreterNotFoundException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public InterpreterNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public InterpreterNotFoundException(Throwable cause) {
-    super(cause);
-  }
+    public InterpreterNotFoundException(Throwable cause) {
+        super(cause);
+    }
 }

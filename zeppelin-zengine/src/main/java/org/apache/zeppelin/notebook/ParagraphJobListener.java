@@ -24,6 +24,6 @@ import org.apache.zeppelin.scheduler.JobListener;
  * Listener for Paragraph Job.
  */
 public interface ParagraphJobListener extends JobListener<Paragraph> {
-  //TODO(savalek) Temporary solution. Need to refactor cron to be able to notify frontend directly.
-  void noteRunningStatusChange(String noteId, boolean newStatus);
+    //TODO(savalek) Temporary solution. Need to refactor cron to be able to notify frontend directly.
+    void noteRunningStatusChange(String noteId, boolean newStatus);
 }

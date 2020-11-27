@@ -25,33 +25,33 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class AutoReadWriteLock {
 
-  private final ReentrantReadWriteLock rwlock;
+    private final ReentrantReadWriteLock rwlock;
 
-  public AutoReadWriteLock() {
-    this(new ReentrantReadWriteLock());
-  }
+    public AutoReadWriteLock() {
+        this(new ReentrantReadWriteLock());
+    }
 
-  public AutoReadWriteLock(ReentrantReadWriteLock rwlock) {
-    this.rwlock = rwlock;
-  }
+    public AutoReadWriteLock(ReentrantReadWriteLock rwlock) {
+        this.rwlock = rwlock;
+    }
 
-  public AutoLock lockForRead() {
-    rwlock.readLock().lock();
-    return new AutoLock() {
-      @Override
-      public void close() {
-        rwlock.readLock().unlock();
-      }
-    };
-  }
+    public AutoLock lockForRead() {
+        rwlock.readLock().lock();
+        return new AutoLock() {
+            @Override
+            public void close() {
+                rwlock.readLock().unlock();
+            }
+        };
+    }
 
-  public AutoLock lockForWrite() {
-    rwlock.writeLock().lock();
-    return new AutoLock() {
-      @Override
-      public void close() {
-        rwlock.writeLock().unlock();
-      }
-    };
-  }
+    public AutoLock lockForWrite() {
+        rwlock.writeLock().lock();
+        return new AutoLock() {
+            @Override
+            public void close() {
+                rwlock.writeLock().unlock();
+            }
+        };
+    }
 }

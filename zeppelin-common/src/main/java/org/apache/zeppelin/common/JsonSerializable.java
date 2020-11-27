@@ -22,5 +22,5 @@ package org.apache.zeppelin.common;
  */
 public interface JsonSerializable {
 
-  String toJson();
+    String toJson();
 }

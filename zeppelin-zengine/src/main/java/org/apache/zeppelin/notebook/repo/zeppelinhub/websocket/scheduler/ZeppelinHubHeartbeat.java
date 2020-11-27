@@ -24,25 +24,24 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Routine that send PING event to zeppelinhub.
- *
  */
 public class ZeppelinHubHeartbeat implements Runnable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinHubHeartbeat.class);
-  private ZeppelinhubClient client;
-  
-  public static ZeppelinHubHeartbeat newInstance(ZeppelinhubClient client) {
-    return new ZeppelinHubHeartbeat(client);
-  }
-  
-  private ZeppelinHubHeartbeat(ZeppelinhubClient client) {
-    this.client = client;
-  }
-  
-  @Override
-  public void run() {
-    LOGGER.debug("Sending PING to zeppelinhub token");
-    for (String token: UserTokenContainer.getInstance().getAllTokens()) {
-      client.send(ZeppelinhubUtils.pingMessage(token), token);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinHubHeartbeat.class);
+    private ZeppelinhubClient client;
+
+    private ZeppelinHubHeartbeat(ZeppelinhubClient client) {
+        this.client = client;
     }
-  }  
+
+    public static ZeppelinHubHeartbeat newInstance(ZeppelinhubClient client) {
+        return new ZeppelinHubHeartbeat(client);
+    }
+
+    @Override
+    public void run() {
+        LOGGER.debug("Sending PING to zeppelinhub token");
+        for (String token : UserTokenContainer.getInstance().getAllTokens()) {
+            client.send(ZeppelinhubUtils.pingMessage(token), token);
+        }
+    }
 }

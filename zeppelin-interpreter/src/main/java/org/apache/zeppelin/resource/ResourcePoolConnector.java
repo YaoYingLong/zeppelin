@@ -20,35 +20,38 @@ package org.apache.zeppelin.resource;
  * Connect resource pools running in remote process
  */
 public interface ResourcePoolConnector {
-  /**
-   * Get list of resources from all other resource pools in remote processes
-   * @return
-   */
-  ResourceSet getAllResources();
+    /**
+     * Get list of resources from all other resource pools in remote processes
+     *
+     * @return
+     */
+    ResourceSet getAllResources();
 
-  /**
-   * Read remote object
-   * @return
-   */
-  Object readResource(ResourceId id);
+    /**
+     * Read remote object
+     *
+     * @return
+     */
+    Object readResource(ResourceId id);
 
-  /**
-   * Invoke method of Resource and get return
-   * @return
-   */
-  Object invokeMethod(
-      ResourceId id,
-      String methodName,
-      Class[] paramTypes,
-      Object[] params);
+    /**
+     * Invoke method of Resource and get return
+     *
+     * @return
+     */
+    Object invokeMethod(
+            ResourceId id,
+            String methodName,
+            Class[] paramTypes,
+            Object[] params);
 
-  /**
-   * Invoke method, put result into resource pool and return
-   */
-  Resource invokeMethod(
-      ResourceId id,
-      String methodName,
-      Class[] paramTypes,
-      Object[] params,
-      String returnResourceName);
+    /**
+     * Invoke method, put result into resource pool and return
+     */
+    Resource invokeMethod(
+            ResourceId id,
+            String methodName,
+            Class[] paramTypes,
+            Object[] params,
+            String returnResourceName);
 }

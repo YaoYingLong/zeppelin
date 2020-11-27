@@ -16,24 +16,6 @@
  */
 package org.apache.zeppelin.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.security.auth.x500.X500Principal;
-
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
@@ -50,14 +32,26 @@ import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
+import javax.security.auth.x500.X500Principal;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class PEMImporter {
-     private PEMImporter() {
+    private PEMImporter() {
         // do nothing
     }
 
     public static KeyStore loadTrustStore(File certificateChainFile)
-        throws IOException, GeneralSecurityException
-    {
+            throws IOException, GeneralSecurityException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
 
@@ -70,8 +64,7 @@ public class PEMImporter {
     }
 
     public static KeyStore loadKeyStore(File certificateChainFile, File privateKeyFile, String keyPassword)
-        throws IOException, GeneralSecurityException
-    {
+            throws IOException, GeneralSecurityException {
         PrivateKey key;
         try {
             key = createPrivateKey(privateKeyFile, keyPassword);
@@ -91,11 +84,9 @@ public class PEMImporter {
     }
 
     private static List<X509Certificate> readCertificateChain(File certificateChainFile)
-        throws IOException, GeneralSecurityException
-    {
+            throws IOException, GeneralSecurityException {
         final List<X509Certificate> certs = new ArrayList<>();
-        try(final PemReader pemReader = new PemReader(Files.newBufferedReader(certificateChainFile.toPath())))
-        {
+        try (final PemReader pemReader = new PemReader(Files.newBufferedReader(certificateChainFile.toPath()))) {
             final PemObject pemObject = pemReader.readPemObject();
             final CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
             final ByteArrayInputStream bais = new ByteArrayInputStream(pemObject.getContent());
@@ -126,26 +117,18 @@ public class PEMImporter {
                 PEMEncryptedKeyPair ckp = (PEMEncryptedKeyPair) privateKeyObject;
                 PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().build(keyPassword.toCharArray());
                 kp = converter.getKeyPair(ckp.decryptKeyPair(decProv));
-            }
-            else if (privateKeyObject instanceof PEMKeyPair)
-            {
+            } else if (privateKeyObject instanceof PEMKeyPair) {
                 // Unencrypted key - no password needed
                 PEMKeyPair ukp = (PEMKeyPair) privateKeyObject;
                 kp = converter.getKeyPair(ukp);
-            }
-            else if (privateKeyObject instanceof PrivateKeyInfo)
-            {
+            } else if (privateKeyObject instanceof PrivateKeyInfo) {
                 PrivateKeyInfo pki = (PrivateKeyInfo) privateKeyObject;
                 return converter.getPrivateKey(pki);
-            }
-            else if (privateKeyObject instanceof PKCS8EncryptedPrivateKeyInfo)
-            {
+            } else if (privateKeyObject instanceof PKCS8EncryptedPrivateKeyInfo) {
                 PKCS8EncryptedPrivateKeyInfo ckp = (PKCS8EncryptedPrivateKeyInfo) privateKeyObject;
                 InputDecryptorProvider devProv = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(keyPassword.toCharArray());
                 return converter.getPrivateKey(ckp.decryptPrivateKeyInfo(devProv));
-            }
-            else
-            {
+            } else {
                 throw new GeneralSecurityException("Unsupported key type: " + privateKeyObject.getClass());
             }
             return kp.getPrivate();

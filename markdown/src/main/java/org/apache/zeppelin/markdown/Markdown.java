@@ -17,11 +17,6 @@
 
 package org.apache.zeppelin.markdown;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
@@ -30,111 +25,113 @@ import org.apache.zeppelin.interpreter.InterpreterUtils;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * MarkdownInterpreter interpreter for Zeppelin.
  */
 public class Markdown extends Interpreter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Markdown.class);
-
-  private MarkdownParser parser;
-
-  /**
-   * Markdown Parser Type.
-   */
-  public enum MarkdownParserType {
-    PEGDOWN {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_PEGDOWN;
-      }
-    },
-
-    MARKDOWN4j {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_MARKDOWN4J;
-      }
-    },
-
-    FLEXMARK {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_FLEXMARK;
-      }
+    public static final String MARKDOWN_PARSER_TYPE = "markdown.parser.type";
+    public static final String PARSER_TYPE_PEGDOWN = "pegdown";
+    public static final String PARSER_TYPE_MARKDOWN4J = "markdown4j";
+    public static final String PARSER_TYPE_FLEXMARK = "flexmark";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Markdown.class);
+    private MarkdownParser parser;
+    public Markdown(Properties property) {
+        super(property);
     }
 
-  }
+    public static MarkdownParser createMarkdownParser(String parserType) {
+        LOGGER.debug("Creating {} markdown interpreter", parserType);
 
-  public static final String MARKDOWN_PARSER_TYPE = "markdown.parser.type";
-  public static final String PARSER_TYPE_PEGDOWN = "pegdown";
-  public static final String PARSER_TYPE_MARKDOWN4J = "markdown4j";
-  public static final String PARSER_TYPE_FLEXMARK = "flexmark";
-
-  public Markdown(Properties property) {
-    super(property);
-  }
-
-  public static MarkdownParser createMarkdownParser(String parserType) {
-    LOGGER.debug("Creating {} markdown interpreter", parserType);
-
-    if (MarkdownParserType.PEGDOWN.toString().equals(parserType)) {
-      return new PegdownParser();
-    } else if (MarkdownParserType.FLEXMARK.toString().equals(parserType)) {
-      return new FlexmarkParser();
-    } else {
-      // default parser
-      return new Markdown4jParser();
-    }
-  }
-
-  @Override
-  public void open() {
-    String parserType = getProperty(MARKDOWN_PARSER_TYPE);
-    parser = createMarkdownParser(parserType);
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public InterpreterResult interpret(String markdownText, InterpreterContext interpreterContext) {
-    String html;
-
-    try {
-      html = parser.render(markdownText);
-    } catch (RuntimeException e) {
-      LOGGER.error("Exception in MarkdownInterpreter while interpret ", e);
-      return new InterpreterResult(Code.ERROR, InterpreterUtils.getMostRelevantMessage(e));
+        if (MarkdownParserType.PEGDOWN.toString().equals(parserType)) {
+            return new PegdownParser();
+        } else if (MarkdownParserType.FLEXMARK.toString().equals(parserType)) {
+            return new FlexmarkParser();
+        } else {
+            // default parser
+            return new Markdown4jParser();
+        }
     }
 
-    return new InterpreterResult(Code.SUCCESS, "%html " + html);
-  }
+    @Override
+    public void open() {
+        String parserType = getProperty(MARKDOWN_PARSER_TYPE);
+        parser = createMarkdownParser(parserType);
+    }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-  }
+    @Override
+    public void close() {
+    }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.SIMPLE;
-  }
+    @Override
+    public InterpreterResult interpret(String markdownText, InterpreterContext interpreterContext) {
+        String html;
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+        try {
+            html = parser.render(markdownText);
+        } catch (RuntimeException e) {
+            LOGGER.error("Exception in MarkdownInterpreter while interpret ", e);
+            return new InterpreterResult(Code.ERROR, InterpreterUtils.getMostRelevantMessage(e));
+        }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton()
-        .createOrGetParallelScheduler(Markdown.class.getName() + this.hashCode(), 5);
-  }
+        return new InterpreterResult(Code.SUCCESS, "%html " + html);
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
-    return null;
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
+    }
+
+    @Override
+    public FormType getFormType() {
+        return FormType.SIMPLE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton()
+                .createOrGetParallelScheduler(Markdown.class.getName() + this.hashCode(), 5);
+    }
+
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return null;
+    }
+
+    /**
+     * Markdown Parser Type.
+     */
+    public enum MarkdownParserType {
+        PEGDOWN {
+            @Override
+            public String toString() {
+                return PARSER_TYPE_PEGDOWN;
+            }
+        },
+
+        MARKDOWN4j {
+            @Override
+            public String toString() {
+                return PARSER_TYPE_MARKDOWN4J;
+            }
+        },
+
+        FLEXMARK {
+            @Override
+            public String toString() {
+                return PARSER_TYPE_FLEXMARK;
+            }
+        }
+
+    }
 }

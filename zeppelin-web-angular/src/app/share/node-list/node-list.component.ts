@@ -33,6 +33,17 @@ export class NodeListComponent extends MessageListenersManager implements OnInit
   nodes = [];
   activatedId: string;
 
+  constructor(
+    private noteListService: NoteListService,
+    public messageService: MessageService,
+    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
+    private nzModalService: NzModalService,
+    private noteActionService: NoteActionService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super(messageService);
+  }
+
   activeNote(id: string) {
     this.activatedId = id;
   }
@@ -131,17 +142,6 @@ export class NodeListComponent extends MessageListenersManager implements OnInit
     const noteName1 = this.getNoteName(note1);
     const noteName2 = this.getNoteName(note2);
     return noteName1.localeCompare(noteName2);
-  }
-
-  constructor(
-    private noteListService: NoteListService,
-    public messageService: MessageService,
-    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
-    private nzModalService: NzModalService,
-    private noteActionService: NoteActionService,
-    private cdr: ChangeDetectorRef
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {

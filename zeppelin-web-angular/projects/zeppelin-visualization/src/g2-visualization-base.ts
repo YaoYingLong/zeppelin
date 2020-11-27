@@ -10,13 +10,13 @@
  * limitations under the License.
  */
 
-import { GraphConfig } from '@zeppelin/sdk';
+import {GraphConfig} from '@zeppelin/sdk';
 
-import { G2VisualizationComponentBase } from './g2-visualization-component-base';
-import { PivotTransformation } from './pivot-transformation';
-import { Transformation } from './transformation';
-import { Visualization } from './visualization';
-import { VisualizationComponentPortal } from './visualization-component-portal';
+import {G2VisualizationComponentBase} from './g2-visualization-component-base';
+import {PivotTransformation} from './pivot-transformation';
+import {Transformation} from './transformation';
+import {Visualization} from './visualization';
+import {VisualizationComponentPortal} from './visualization-component-portal';
 
 export abstract class G2VisualizationBase extends Visualization<G2VisualizationComponentBase> {
   pivot = new PivotTransformation(this.getConfig());

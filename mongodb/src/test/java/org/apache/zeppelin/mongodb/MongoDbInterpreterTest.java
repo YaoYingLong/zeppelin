@@ -17,143 +17,138 @@
 
 package org.apache.zeppelin.mongodb;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.zeppelin.interpreter.*;
+import org.apache.zeppelin.interpreter.InterpreterResult.Code;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 import java.util.Scanner;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResult.Code;
-import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 /**
  * As there is no 'mongo' on the build platform, these tests simulates some basic behavior.
- *
  */
 public class MongoDbInterpreterTest implements InterpreterOutputListener {
-  
-  private static final String SHELL_EXTENSION =
-      new Scanner(MongoDbInterpreter.class.getResourceAsStream("/shell_extension.js"), "UTF-8")
-      .useDelimiter("\\A").next();
-  
-  private static final boolean IS_WINDOWS = System.getProperty("os.name")
-      .startsWith("Windows");
-  
-  private static final String MONGO_SHELL = System.getProperty("java.io.tmpdir") +
-          (System.getProperty("java.io.tmpdir").endsWith(File.separator) ? StringUtils.EMPTY : File.separator)
-          + "zeppelin-mongo-scripts"+ File.separator +"mongo-test." + (IS_WINDOWS ? "bat" : "sh");
-    
-  private final Properties props = new Properties();
-  private final MongoDbInterpreter interpreter = new MongoDbInterpreter(props);
-  private final InterpreterOutput out = new InterpreterOutput(this);
 
-  private final InterpreterContext context = InterpreterContext.builder().setNoteId("test")
-          .setInterpreterOut(out).setNoteId("test").setParagraphId("test").build();
+    private static final String SHELL_EXTENSION =
+            new Scanner(MongoDbInterpreter.class.getResourceAsStream("/shell_extension.js"), "UTF-8")
+                    .useDelimiter("\\A").next();
 
-  private ByteBuffer buffer;
-  
-  @BeforeClass
-  public static void setup() {
-    // Create a fake 'mongo'
-    final File mongoFile = new File(MONGO_SHELL);
-    try {
-      FileUtils.write(mongoFile, (IS_WINDOWS ? "@echo off\ntype \"%3%\"" : "cat \"$3\""));
-      FileUtils.forceDeleteOnExit(mongoFile);
-    }
-    catch (IOException ex) {
-      System.out.println(ex.getMessage());
-    }
-  }
-  
-  @Before
-  public void init() {
-    buffer = ByteBuffer.allocate(10000);
-    props.put("mongo.shell.path", (IS_WINDOWS ? "" : "sh ") + MONGO_SHELL);
-    props.put("mongo.shell.command.table.limit", "10000");
-    props.put("mongo.server.database", "test");
-    props.put("mongo.server.username", "");
-    props.put("mongo.server.password", "");
-    props.put("mongo.server.authenticationDatabase", "");
-    props.put("mongo.shell.command.timeout", "10000");
-    props.put("mongo.interpreter.concurrency.max", "10");
-    props.put("mongo.server.host", "localhost");
-    props.put("mongo.server.port", "27017");
+    private static final boolean IS_WINDOWS = System.getProperty("os.name")
+            .startsWith("Windows");
 
-    interpreter.open();
-  }
+    private static final String MONGO_SHELL = System.getProperty("java.io.tmpdir") +
+            (System.getProperty("java.io.tmpdir").endsWith(File.separator) ? StringUtils.EMPTY : File.separator)
+            + "zeppelin-mongo-scripts" + File.separator + "mongo-test." + (IS_WINDOWS ? "bat" : "sh");
 
-  @After
-  public void destroy(){
-    interpreter.close();
-  }
+    private final Properties props = new Properties();
+    private final MongoDbInterpreter interpreter = new MongoDbInterpreter(props);
+    private final InterpreterOutput out = new InterpreterOutput(this);
 
-  @Test
-  public void testSuccess() {
-    final String userScript = "print('hello');";
-    
-    final InterpreterResult res = interpreter.interpret(userScript, context);
+    private final InterpreterContext context = InterpreterContext.builder().setNoteId("test")
+            .setInterpreterOut(out).setNoteId("test").setParagraphId("test").build();
 
-    assertSame("Check SUCCESS: " + res.message(), Code.SUCCESS, res.code());
-    
-    try {
-      out.flush();
-    } catch (IOException ex) {
-      System.out.println(ex.getMessage());
+    private ByteBuffer buffer;
+
+    @BeforeClass
+    public static void setup() {
+        // Create a fake 'mongo'
+        final File mongoFile = new File(MONGO_SHELL);
+        try {
+            FileUtils.write(mongoFile, (IS_WINDOWS ? "@echo off\ntype \"%3%\"" : "cat \"$3\""));
+            FileUtils.forceDeleteOnExit(mongoFile);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
-    final String resultScript = new String(getBufferBytes());
-    
-    final String expectedScript = SHELL_EXTENSION.replace(
-        "TABLE_LIMIT_PLACEHOLDER", interpreter.getProperty("mongo.shell.command.table.limit"))
-            .replace("TARGET_DB_PLACEHOLDER", interpreter.getProperty("mongo.server.database"))
-            .replace("USER_NAME_PLACEHOLDER", interpreter.getProperty("mongo.server.username"))
-            .replace("PASSWORD_PLACEHOLDER", interpreter.getProperty("mongo.server.password"))
-            .replace("AUTH_DB_PLACEHOLDER", interpreter. getProperty("mongo.server.authenticationDatabase"))+
-        userScript;
-    
-    // The script that is executed must contain the functions provided by this interpreter
-    assertEquals("Check SCRIPT", expectedScript, resultScript);
-  }
-  
-  @Test
-  public void testBadConf() {
-    props.setProperty("mongo.shell.path", "/bad/path/to/mongo");
-    final InterpreterResult res = interpreter.interpret("print('hello')", context);
+    @Before
+    public void init() {
+        buffer = ByteBuffer.allocate(10000);
+        props.put("mongo.shell.path", (IS_WINDOWS ? "" : "sh ") + MONGO_SHELL);
+        props.put("mongo.shell.command.table.limit", "10000");
+        props.put("mongo.server.database", "test");
+        props.put("mongo.server.username", "");
+        props.put("mongo.server.password", "");
+        props.put("mongo.server.authenticationDatabase", "");
+        props.put("mongo.shell.command.timeout", "10000");
+        props.put("mongo.interpreter.concurrency.max", "10");
+        props.put("mongo.server.host", "localhost");
+        props.put("mongo.server.port", "27017");
 
-    assertSame(Code.ERROR, res.code());
-  }
+        interpreter.open();
+    }
 
-  @Override
-  public void onUpdateAll(InterpreterOutput interpreterOutput) {
+    @After
+    public void destroy() {
+        interpreter.close();
+    }
 
-  }
+    @Test
+    public void testSuccess() {
+        final String userScript = "print('hello');";
 
-  @Override
-  public void onAppend(int i, InterpreterResultMessageOutput interpreterResultMessageOutput,
-                       byte[] bytes) {
-    buffer.put(bytes);
-  }
+        final InterpreterResult res = interpreter.interpret(userScript, context);
 
-  @Override
-  public void onUpdate(int i, InterpreterResultMessageOutput interpreterResultMessageOutput) {
-  }
+        assertSame("Check SUCCESS: " + res.message(), Code.SUCCESS, res.code());
 
-  private byte[] getBufferBytes() {
-    buffer.flip();
-    final byte[] bufferBytes = new byte[buffer.remaining()];
-    buffer.get(bufferBytes);
-    return bufferBytes;
-  }
+        try {
+            out.flush();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        final String resultScript = new String(getBufferBytes());
+
+        final String expectedScript = SHELL_EXTENSION.replace(
+                "TABLE_LIMIT_PLACEHOLDER", interpreter.getProperty("mongo.shell.command.table.limit"))
+                .replace("TARGET_DB_PLACEHOLDER", interpreter.getProperty("mongo.server.database"))
+                .replace("USER_NAME_PLACEHOLDER", interpreter.getProperty("mongo.server.username"))
+                .replace("PASSWORD_PLACEHOLDER", interpreter.getProperty("mongo.server.password"))
+                .replace("AUTH_DB_PLACEHOLDER", interpreter.getProperty("mongo.server.authenticationDatabase")) +
+                userScript;
+
+        // The script that is executed must contain the functions provided by this interpreter
+        assertEquals("Check SCRIPT", expectedScript, resultScript);
+    }
+
+    @Test
+    public void testBadConf() {
+        props.setProperty("mongo.shell.path", "/bad/path/to/mongo");
+        final InterpreterResult res = interpreter.interpret("print('hello')", context);
+
+        assertSame(Code.ERROR, res.code());
+    }
+
+    @Override
+    public void onUpdateAll(InterpreterOutput interpreterOutput) {
+
+    }
+
+    @Override
+    public void onAppend(int i, InterpreterResultMessageOutput interpreterResultMessageOutput,
+                         byte[] bytes) {
+        buffer.put(bytes);
+    }
+
+    @Override
+    public void onUpdate(int i, InterpreterResultMessageOutput interpreterResultMessageOutput) {
+    }
+
+    private byte[] getBufferBytes() {
+        buffer.flip();
+        final byte[] bufferBytes = new byte[buffer.remaining()];
+        buffer.get(bufferBytes);
+        return bufferBytes;
+    }
 }

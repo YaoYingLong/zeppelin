@@ -24,21 +24,21 @@ import java.io.IOException;
 
 public class UpgradeNoteFileTool {
 
-  public static void main(String[] args) throws IOException {
-    Options options = new Options();
-    Option input = new Option("d", "deleteOld", false, "Whether delete old note file");
-    options.addOption(input);
-    CommandLineParser parser = new DefaultParser();
-    CommandLine cmd = null;
-    try {
-      cmd = parser.parse(options, args);
-    } catch (ParseException e) {
-      System.out.println(e);
-      System.exit(1);
-    }
+    public static void main(String[] args) throws IOException {
+        Options options = new Options();
+        Option input = new Option("d", "deleteOld", false, "Whether delete old note file");
+        options.addOption(input);
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
 
-    ZeppelinConfiguration conf = ZeppelinConfiguration.create();
-    NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
-    notebookRepoSync.convertNoteFiles(conf, cmd.hasOption("d"));
-  }
+        ZeppelinConfiguration conf = ZeppelinConfiguration.create();
+        NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
+        notebookRepoSync.convertNoteFiles(conf, cmd.hasOption("d"));
+    }
 }

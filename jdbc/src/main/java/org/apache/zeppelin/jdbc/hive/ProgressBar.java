@@ -25,20 +25,20 @@ import java.io.PrintStream;
  * This class is only created for hive >= 2.3 where progress bar is supported.
  */
 public class ProgressBar {
-  private InPlaceUpdateStream.EventNotifier eventNotifier;
+    private InPlaceUpdateStream.EventNotifier eventNotifier;
 
-  public ProgressBar() {
-    this.eventNotifier = new InPlaceUpdateStream.EventNotifier();
-  }
+    public ProgressBar() {
+        this.eventNotifier = new InPlaceUpdateStream.EventNotifier();
+    }
 
-  public void operationLogShowedToUser() {
-    this.eventNotifier.operationLogShowedToUser();
-  }
+    public void operationLogShowedToUser() {
+        this.eventNotifier.operationLogShowedToUser();
+    }
 
-  public BeelineInPlaceUpdateStream getInPlaceUpdateStream(OutputStream out) {
-    return new BeelineInPlaceUpdateStream(
-            new PrintStream(out),
-            eventNotifier
-    );
-  }
+    public BeelineInPlaceUpdateStream getInPlaceUpdateStream(OutputStream out) {
+        return new BeelineInPlaceUpdateStream(
+                new PrintStream(out),
+                eventNotifier
+        );
+    }
 }

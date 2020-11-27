@@ -38,57 +38,64 @@ import java.util.Map;
  */
 public class StandardInterpreterLauncher extends InterpreterLauncher {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(StandardInterpreterLauncher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StandardInterpreterLauncher.class);
 
-  public StandardInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
-    super(zConf, recoveryStorage);
-  }
-
-  @Override
-  public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
-    LOGGER.info("Launching new interpreter process of {}", context.getInterpreterSettingGroup());
-    this.properties = context.getProperties();
-    InterpreterOption option = context.getOption();
-    InterpreterRunner runner = context.getRunner();
-    String groupName = context.getInterpreterSettingGroup();
-    String name = context.getInterpreterSettingName();
-    int connectTimeout = getConnectTimeout();
-    int connectionPoolSize = getConnectPoolSize();
-
-    if (option.isExistingProcess()) {
-      return new RemoteInterpreterRunningProcess(
-          context.getInterpreterSettingName(),
-          context.getInterpreterGroupId(),
-          connectTimeout,
-          connectionPoolSize,
-          context.getIntpEventServerHost(),
-          context.getIntpEventServerPort(),
-          option.getHost(),
-          option.getPort(),
-          false);
-    } else {
-      // create new remote process
-      String localRepoPath = zConf.getInterpreterLocalRepoPath() + "/"
-          + context.getInterpreterSettingId();
-      return new RemoteInterpreterManagedProcess(
-          runner != null ? runner.getPath() : zConf.getInterpreterRemoteRunnerPath(),
-          context.getIntpEventServerPort(), context.getIntpEventServerHost(), zConf.getInterpreterPortRange(),
-          zConf.getInterpreterDir() + "/" + groupName, localRepoPath,
-          buildEnvFromProperties(context), connectTimeout, connectionPoolSize, name,
-          context.getInterpreterGroupId(), option.isUserImpersonate());
+    public StandardInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
+        super(zConf, recoveryStorage);
     }
-  }
 
-  public Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) throws IOException {
-    Map<String, String> env = EnvironmentUtils.getProcEnvironment();
-    for (Map.Entry<Object,Object> entry : context.getProperties().entrySet()) {
-      String key = (String) entry.getKey();
-      String value = (String) entry.getValue();
-      if (RemoteInterpreterUtils.isEnvString(key) && !StringUtils.isBlank(value)) {
-        env.put(key, value);
-      }
+    @Override
+    public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
+        LOGGER.info("Launching new interpreter process of {}", context.getInterpreterSettingGroup());
+        this.properties = context.getProperties();
+        InterpreterOption option = context.getOption();
+        InterpreterRunner runner = context.getRunner();
+        String groupName = context.getInterpreterSettingGroup();
+        String name = context.getInterpreterSettingName();
+        int connectTimeout = getConnectTimeout();
+        int connectionPoolSize = getConnectPoolSize();
+
+        if (option.isExistingProcess()) {
+            return new RemoteInterpreterRunningProcess(
+                    context.getInterpreterSettingName(),
+                    context.getInterpreterGroupId(),
+                    connectTimeout,
+                    connectionPoolSize,
+                    context.getIntpEventServerHost(),
+                    context.getIntpEventServerPort(),
+                    option.getHost(),
+                    option.getPort(),
+                    false);
+        } else {
+            // create new remote process
+            String localRepoPath = zConf.getInterpreterLocalRepoPath() + "/"
+                    + context.getInterpreterSettingId();
+            return new RemoteInterpreterManagedProcess(
+                    runner != null ? runner.getPath() : zConf.getInterpreterRemoteRunnerPath(),
+                    context.getIntpEventServerPort(),
+                    context.getIntpEventServerHost(),
+                    zConf.getInterpreterPortRange(),
+                    zConf.getInterpreterDir() + "/" + groupName,
+                    localRepoPath,
+                    buildEnvFromProperties(context),
+                    connectTimeout,
+                    connectionPoolSize,
+                    name,
+                    context.getInterpreterGroupId(),
+                    option.isUserImpersonate());
+        }
     }
-    env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
-    return env;
-  }
+
+    public Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) throws IOException {
+        Map<String, String> env = EnvironmentUtils.getProcEnvironment();
+        for (Map.Entry<Object, Object> entry : context.getProperties().entrySet()) {
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
+            if (RemoteInterpreterUtils.isEnvString(key) && !StringUtils.isBlank(value)) {
+                env.put(key, value);
+            }
+        }
+        env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
+        return env;
+    }
 }

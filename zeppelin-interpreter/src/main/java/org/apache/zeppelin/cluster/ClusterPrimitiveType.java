@@ -29,29 +29,29 @@ import io.atomix.primitive.service.ServiceConfig;
  * To create a new type, implement the PrimitiveType interface
  */
 public class ClusterPrimitiveType implements PrimitiveType {
-  public static final ClusterPrimitiveType INSTANCE = new ClusterPrimitiveType();
+    public static final ClusterPrimitiveType INSTANCE = new ClusterPrimitiveType();
 
-  public static final String PRIMITIVE_NAME = "CLUSTER_PRIMITIVE";
+    public static final String PRIMITIVE_NAME = "CLUSTER_PRIMITIVE";
 
-  @Override
-  public String name() {
-    return PRIMITIVE_NAME;
-  }
+    @Override
+    public String name() {
+        return PRIMITIVE_NAME;
+    }
 
-  @Override
-  public PrimitiveConfig newConfig() {
-    throw new UnsupportedOperationException();
-  }
+    @Override
+    public PrimitiveConfig newConfig() {
+        throw new UnsupportedOperationException();
+    }
 
-  @Override
-  public PrimitiveBuilder newBuilder(String primitiveName,
-                                     PrimitiveConfig config,
-                                     PrimitiveManagementService managementService) {
-    throw new UnsupportedOperationException();
-  }
+    @Override
+    public PrimitiveBuilder newBuilder(String primitiveName,
+                                       PrimitiveConfig config,
+                                       PrimitiveManagementService managementService) {
+        throw new UnsupportedOperationException();
+    }
 
-  @Override
-  public PrimitiveService newService(ServiceConfig config) {
-    return new ClusterStateMachine();
-  }
+    @Override
+    public PrimitiveService newService(ServiceConfig config) {
+        return new ClusterStateMachine();
+    }
 }

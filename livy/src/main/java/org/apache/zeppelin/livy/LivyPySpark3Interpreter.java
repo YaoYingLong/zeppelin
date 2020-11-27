@@ -25,13 +25,13 @@ import java.util.Properties;
  */
 public class LivyPySpark3Interpreter extends LivyPySparkBaseInterpreter {
 
-  public LivyPySpark3Interpreter(Properties property) {
-    super(property);
-  }
+    public LivyPySpark3Interpreter(Properties property) {
+        super(property);
+    }
 
-  @Override
-  public String getSessionKind() {
-    return "pyspark3";
-  }
+    @Override
+    public String getSessionKind() {
+        return "pyspark3";
+    }
 
 }

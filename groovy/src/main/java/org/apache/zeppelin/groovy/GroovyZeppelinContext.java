@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.groovy;
 
-import org.apache.zeppelin.interpreter.ZeppelinContext;
 import org.apache.zeppelin.interpreter.InterpreterHookRegistry;
+import org.apache.zeppelin.interpreter.ZeppelinContext;
 
 import java.util.List;
 import java.util.Map;
@@ -28,22 +28,22 @@ import java.util.Map;
  */
 public class GroovyZeppelinContext extends ZeppelinContext {
 
-  public GroovyZeppelinContext(InterpreterHookRegistry hooks, int maxResult) {
-    super(hooks, maxResult);
-  }
+    public GroovyZeppelinContext(InterpreterHookRegistry hooks, int maxResult) {
+        super(hooks, maxResult);
+    }
 
-  @Override
-  public Map<String, String> getInterpreterClassMap() {
-    return null;
-  }
+    @Override
+    public Map<String, String> getInterpreterClassMap() {
+        return null;
+    }
 
-  @Override
-  public List<Class> getSupportedClasses() {
-    return null;
-  }
+    @Override
+    public List<Class> getSupportedClasses() {
+        return null;
+    }
 
-  @Override
-  public String showData(Object obj, int maxResult) {
-    return null;
-  }
+    @Override
+    public String showData(Object obj, int maxResult) {
+        return null;
+    }
 }

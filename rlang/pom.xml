@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -85,7 +85,7 @@
             <classifier>tests</classifier>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -195,7 +195,8 @@
                         </filter>
                     </filters>
                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                             <resource>reference.conf</resource>
                         </transformer>
@@ -205,7 +206,9 @@
                             <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
                         </excludes>
                     </artifactSet>
-                    <outputFile>${project.build.directory}/../../interpreter/r/${interpreter.jar.name}-${project.version}.jar</outputFile>
+                    <outputFile>
+                        ${project.build.directory}/../../interpreter/r/${interpreter.jar.name}-${project.version}.jar
+                    </outputFile>
                 </configuration>
                 <executions>
                     <execution>
@@ -225,7 +228,7 @@
                     <reuseForks>false</reuseForks>
                     <argLine>-Xmx2048m -XX:MaxMetaspaceSize=512m</argLine>
                     <environmentVariables>
-                      <ZEPPELIN_HOME>${basedir}/../</ZEPPELIN_HOME>
+                        <ZEPPELIN_HOME>${basedir}/../</ZEPPELIN_HOME>
                     </environmentVariables>
                 </configuration>
             </plugin>

@@ -24,34 +24,34 @@ import java.util.List;
  * Represent the note execution result.
  */
 public class NoteResult {
-  private String noteId;
-  private boolean isRunning;
-  private List<ParagraphResult> paragraphResultList;
+    private String noteId;
+    private boolean isRunning;
+    private List<ParagraphResult> paragraphResultList;
 
-  public NoteResult(String noteId, boolean isRunning, List<ParagraphResult> paragraphResultList) {
-    this.noteId = noteId;
-    this.isRunning = isRunning;
-    this.paragraphResultList = paragraphResultList;
-  }
+    public NoteResult(String noteId, boolean isRunning, List<ParagraphResult> paragraphResultList) {
+        this.noteId = noteId;
+        this.isRunning = isRunning;
+        this.paragraphResultList = paragraphResultList;
+    }
 
-  public String getNoteId() {
-    return noteId;
-  }
+    public String getNoteId() {
+        return noteId;
+    }
 
-  public boolean isRunning() {
-    return isRunning;
-  }
+    public boolean isRunning() {
+        return isRunning;
+    }
 
-  public List<ParagraphResult> getParagraphResultList() {
-    return paragraphResultList;
-  }
+    public List<ParagraphResult> getParagraphResultList() {
+        return paragraphResultList;
+    }
 
-  @Override
-  public String toString() {
-    return "NoteResult{" +
-            "noteId='" + noteId + '\'' +
-            ", isRunning=" + isRunning +
-            ", paragraphResultList=" + paragraphResultList +
-            '}';
-  }
+    @Override
+    public String toString() {
+        return "NoteResult{" +
+                "noteId='" + noteId + '\'' +
+                ", isRunning=" + isRunning +
+                ", paragraphResultList=" + paragraphResultList +
+                '}';
+    }
 }

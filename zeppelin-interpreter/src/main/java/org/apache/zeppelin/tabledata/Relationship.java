@@ -21,43 +21,43 @@ import java.util.Map;
 
 /**
  * The Zeppelin Relationship entity
- *
  */
 public class Relationship extends GraphEntity {
 
-  /**
-   * Source node ID
-   */
-  private long source;
+    /**
+     * Source node ID
+     */
+    private long source;
 
-  /**
-   * End node ID
-   */
-  private long target;
+    /**
+     * End node ID
+     */
+    private long target;
 
-  public Relationship() {}
+    public Relationship() {
+    }
 
-  public Relationship(long id, Map<String, Object> data, long source,
-      long target, String label) {
-    super(id, data, label);
-    this.setSource(source);
-    this.setTarget(target);
-  }
+    public Relationship(long id, Map<String, Object> data, long source,
+                        long target, String label) {
+        super(id, data, label);
+        this.setSource(source);
+        this.setTarget(target);
+    }
 
-  public long getSource() {
-    return source;
-  }
+    public long getSource() {
+        return source;
+    }
 
-  public void setSource(long startNodeId) {
-    this.source = startNodeId;
-  }
+    public void setSource(long startNodeId) {
+        this.source = startNodeId;
+    }
 
-  public long getTarget() {
-    return target;
-  }
+    public long getTarget() {
+        return target;
+    }
 
-  public void setTarget(long endNodeId) {
-    this.target = endNodeId;
-  }
+    public void setTarget(long endNodeId) {
+        this.target = endNodeId;
+    }
 
 }

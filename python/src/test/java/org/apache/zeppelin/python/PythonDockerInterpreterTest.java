@@ -30,55 +30,51 @@ import java.util.Properties;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class PythonDockerInterpreterTest {
-  private PythonDockerInterpreter docker;
-  private PythonInterpreter python;
+    private PythonDockerInterpreter docker;
+    private PythonInterpreter python;
 
-  @Before
-  public void setUp() throws InterpreterException {
-    docker = spy(new PythonDockerInterpreter(new Properties()));
-    python = mock(PythonInterpreter.class);
+    @Before
+    public void setUp() throws InterpreterException {
+        docker = spy(new PythonDockerInterpreter(new Properties()));
+        python = mock(PythonInterpreter.class);
 
-    InterpreterGroup group = new InterpreterGroup();
-    group.put("note", Arrays.asList(python, docker));
-    python.setInterpreterGroup(group);
-    docker.setInterpreterGroup(group);
+        InterpreterGroup group = new InterpreterGroup();
+        group.put("note", Arrays.asList(python, docker));
+        python.setInterpreterGroup(group);
+        docker.setInterpreterGroup(group);
 
-    doReturn(true).when(docker).pull(any(InterpreterOutput.class), anyString());
-    doReturn(new File("/scriptpath")).when(python).getPythonWorkDir();
-    doReturn(PythonDockerInterpreter.class.getName()).when(docker).getClassName();
-    doReturn(PythonInterpreter.class.getName()).when(python).getClassName();
-    docker.open();
-  }
+        doReturn(true).when(docker).pull(any(InterpreterOutput.class), anyString());
+        doReturn(new File("/scriptpath")).when(python).getPythonWorkDir();
+        doReturn(PythonDockerInterpreter.class.getName()).when(docker).getClassName();
+        doReturn(PythonInterpreter.class.getName()).when(python).getClassName();
+        docker.open();
+    }
 
-  @Test
-  public void testActivateEnv() throws InterpreterException {
-    InterpreterContext context = getInterpreterContext();
-    docker.interpret("activate env", context);
-    verify(python, times(1)).open();
-    verify(python, times(1)).close();
-    verify(docker, times(1)).pull(any(InterpreterOutput.class), anyString());
-    verify(python).setPythonExec(Mockito.matches("docker run -i --rm -v.*"));
-  }
+    @Test
+    public void testActivateEnv() throws InterpreterException {
+        InterpreterContext context = getInterpreterContext();
+        docker.interpret("activate env", context);
+        verify(python, times(1)).open();
+        verify(python, times(1)).close();
+        verify(docker, times(1)).pull(any(InterpreterOutput.class), anyString());
+        verify(python).setPythonExec(Mockito.matches("docker run -i --rm -v.*"));
+    }
 
-  @Test
-  public void testDeactivate() throws InterpreterException {
-    InterpreterContext context = getInterpreterContext();
-    docker.interpret("deactivate", context);
-    verify(python, times(1)).open();
-    verify(python, times(1)).close();
-    verify(python).setPythonExec(null);
-  }
+    @Test
+    public void testDeactivate() throws InterpreterException {
+        InterpreterContext context = getInterpreterContext();
+        docker.interpret("deactivate", context);
+        verify(python, times(1)).open();
+        verify(python, times(1)).close();
+        verify(python).setPythonExec(null);
+    }
 
-  private InterpreterContext getInterpreterContext() {
-    return InterpreterContext.builder()
-        .setInterpreterOut(new InterpreterOutput(null))
-        .build();
-  }
+    private InterpreterContext getInterpreterContext() {
+        return InterpreterContext.builder()
+                .setInterpreterOut(new InterpreterOutput(null))
+                .build();
+    }
 }

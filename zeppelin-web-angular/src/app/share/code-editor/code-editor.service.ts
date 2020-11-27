@@ -32,6 +32,7 @@ function tryTriggerFunc(fn?: (...args: any[]) => any): (...args: any) => void {
     }
   };
 }
+
 // tslint:enable no-any
 
 @Injectable({

@@ -63,7 +63,7 @@
     "className": "org.apache.zeppelin.python.PythonInterpreterPandasSql",
     "properties": {
     },
-    "editor":{
+    "editor": {
       "language": "sql",
       "editOnDblClick": false,
       "completionKey": "TAB",
@@ -88,7 +88,7 @@
     "className": "org.apache.zeppelin.python.PythonDockerInterpreter",
     "properties": {
     },
-    "editor":{
+    "editor": {
       "language": "sh",
       "editOnDblClick": false,
       "completionSupport": false

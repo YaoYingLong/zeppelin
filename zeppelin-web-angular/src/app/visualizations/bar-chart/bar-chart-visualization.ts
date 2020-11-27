@@ -25,6 +25,7 @@ export class BarChartVisualization extends G2VisualizationBase {
     this.portalOutlet,
     this.viewContainerRef
   );
+
   constructor(config: GraphConfig, private portalOutlet: CdkPortalOutlet, private viewContainerRef: ViewContainerRef) {
     super(config);
   }

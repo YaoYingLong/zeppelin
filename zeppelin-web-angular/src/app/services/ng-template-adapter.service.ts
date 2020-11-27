@@ -28,6 +28,7 @@ export interface NgTemplateCheckResult {
 })
 export class NgTemplateAdapterService {
   constructor(private nzModalService: NzModalService) {}
+
   preCheck(origin: string): NgTemplateCheckResult | null {
     const regexp = /(%angular)([\s\S]*<[\s\S]*>)/im;
     const math = regexp.exec(origin);

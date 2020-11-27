@@ -36,95 +36,95 @@ import java.net.URISyntaxException;
  * GitHub integration to store notebooks in a GitHub repository.
  * It uses the same simple logic implemented in @see
  * {@link org.apache.zeppelin.notebook.repo.GitNotebookRepo}
- *
+ * <p>
  * The logic for updating the local repository from the remote repository is the following:
  * - When the <code>GitHubNotebookRepo</code> is initialized
  * - When pushing the changes to the remote repository
- *
+ * <p>
  * The logic for updating the remote repository on GitHub from local repository is the following:
  * - When commit the changes (saving the notebook)
- *
+ * <p>
  * You should be able to use this integration with all remote git repositories that accept
  * username + password authentication, not just GitHub.
  */
 public class OldGitHubNotebookRepo extends OldGitNotebookRepo {
-  private static final Logger LOG = LoggerFactory.getLogger(GitHubNotebookRepo.class);
-  private ZeppelinConfiguration zeppelinConfiguration;
-  private Git git;
+    private static final Logger LOG = LoggerFactory.getLogger(GitHubNotebookRepo.class);
+    private ZeppelinConfiguration zeppelinConfiguration;
+    private Git git;
 
-  @Override
-  public void init(ZeppelinConfiguration conf) throws IOException {
-    super.init(conf);
-    LOG.debug("initializing GitHubNotebookRepo");
-    this.git = super.getGit();
-    this.zeppelinConfiguration = conf;
+    @Override
+    public void init(ZeppelinConfiguration conf) throws IOException {
+        super.init(conf);
+        LOG.debug("initializing GitHubNotebookRepo");
+        this.git = super.getGit();
+        this.zeppelinConfiguration = conf;
 
-    configureRemoteStream();
-    pullFromRemoteStream();
-  }
-
-  @Override
-  public Revision checkpoint(String pattern, String commitMessage, AuthenticationInfo subject) {
-    Revision revision = super.checkpoint(pattern, commitMessage, subject);
-
-    updateRemoteStream();
-
-    return revision;
-  }
-
-  private void configureRemoteStream() {
-    try {
-      LOG.debug("Setting up remote stream");
-      RemoteAddCommand remoteAddCommand = git.remoteAdd();
-      remoteAddCommand.setName(zeppelinConfiguration.getZeppelinNotebookGitRemoteOrigin());
-      remoteAddCommand.setUri(new URIish(zeppelinConfiguration.getZeppelinNotebookGitURL()));
-      remoteAddCommand.call();
-    } catch (GitAPIException e) {
-      LOG.error("Error configuring GitHub", e);
-    } catch (URISyntaxException e) {
-      LOG.error("Error in GitHub URL provided", e);
+        configureRemoteStream();
+        pullFromRemoteStream();
     }
-  }
 
-  private void updateRemoteStream() {
-    LOG.debug("Updating remote stream");
+    @Override
+    public Revision checkpoint(String pattern, String commitMessage, AuthenticationInfo subject) {
+        Revision revision = super.checkpoint(pattern, commitMessage, subject);
 
-    pullFromRemoteStream();
-    pushToRemoteSteam();
-  }
+        updateRemoteStream();
 
-  private void pullFromRemoteStream() {
-    try {
-      LOG.debug("Pulling latest changes from remote stream");
-      PullCommand pullCommand = git.pull();
-      pullCommand.setCredentialsProvider(
-        new UsernamePasswordCredentialsProvider(
-          zeppelinConfiguration.getZeppelinNotebookGitUsername(),
-          zeppelinConfiguration.getZeppelinNotebookGitAccessToken()
-        )
-      );
-
-      pullCommand.call();
-
-    } catch (GitAPIException e) {
-      LOG.error("Error when pulling latest changes from remote repository", e);
+        return revision;
     }
-  }
 
-  private void pushToRemoteSteam() {
-    try {
-      LOG.debug("Pushing latest changes to remote stream");
-      PushCommand pushCommand = git.push();
-      pushCommand.setCredentialsProvider(
-        new UsernamePasswordCredentialsProvider(
-          zeppelinConfiguration.getZeppelinNotebookGitUsername(),
-          zeppelinConfiguration.getZeppelinNotebookGitAccessToken()
-        )
-      );
-
-      pushCommand.call();
-    } catch (GitAPIException e) {
-      LOG.error("Error when pushing latest changes to remote repository", e);
+    private void configureRemoteStream() {
+        try {
+            LOG.debug("Setting up remote stream");
+            RemoteAddCommand remoteAddCommand = git.remoteAdd();
+            remoteAddCommand.setName(zeppelinConfiguration.getZeppelinNotebookGitRemoteOrigin());
+            remoteAddCommand.setUri(new URIish(zeppelinConfiguration.getZeppelinNotebookGitURL()));
+            remoteAddCommand.call();
+        } catch (GitAPIException e) {
+            LOG.error("Error configuring GitHub", e);
+        } catch (URISyntaxException e) {
+            LOG.error("Error in GitHub URL provided", e);
+        }
     }
-  }
+
+    private void updateRemoteStream() {
+        LOG.debug("Updating remote stream");
+
+        pullFromRemoteStream();
+        pushToRemoteSteam();
+    }
+
+    private void pullFromRemoteStream() {
+        try {
+            LOG.debug("Pulling latest changes from remote stream");
+            PullCommand pullCommand = git.pull();
+            pullCommand.setCredentialsProvider(
+                    new UsernamePasswordCredentialsProvider(
+                            zeppelinConfiguration.getZeppelinNotebookGitUsername(),
+                            zeppelinConfiguration.getZeppelinNotebookGitAccessToken()
+                    )
+            );
+
+            pullCommand.call();
+
+        } catch (GitAPIException e) {
+            LOG.error("Error when pulling latest changes from remote repository", e);
+        }
+    }
+
+    private void pushToRemoteSteam() {
+        try {
+            LOG.debug("Pushing latest changes to remote stream");
+            PushCommand pushCommand = git.push();
+            pushCommand.setCredentialsProvider(
+                    new UsernamePasswordCredentialsProvider(
+                            zeppelinConfiguration.getZeppelinNotebookGitUsername(),
+                            zeppelinConfiguration.getZeppelinNotebookGitAccessToken()
+                    )
+            );
+
+            pushCommand.call();
+        } catch (GitAPIException e) {
+            LOG.error("Error when pushing latest changes to remote repository", e);
+        }
+    }
 }

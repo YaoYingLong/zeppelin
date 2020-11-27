@@ -20,7 +20,7 @@ package org.apache.zeppelin.cluster;
 import org.apache.zeppelin.interpreter.launcher.InterpreterClient;
 
 public interface ClusterCallback<T> {
-  InterpreterClient online(T result);
+    InterpreterClient online(T result);
 
-  void offline();
+    void offline();
 }

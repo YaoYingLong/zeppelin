@@ -17,82 +17,83 @@
 package org.apache.zeppelin.resource;
 
 import com.google.gson.Gson;
-import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
+
+import java.io.Serializable;
 
 /**
  * Identifying resource
  */
 public class ResourceId implements JsonSerializable, Serializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  // resourcePoolId is the interpreterGroupId which is unique across one Zeppelin instance
-  private final String resourcePoolId;
-  private final String name;
-  private final String noteId;
-  private final String paragraphId;
+    // resourcePoolId is the interpreterGroupId which is unique across one Zeppelin instance
+    private final String resourcePoolId;
+    private final String name;
+    private final String noteId;
+    private final String paragraphId;
 
-  ResourceId(String resourcePoolId, String name) {
-    this.resourcePoolId = resourcePoolId;
-    this.noteId = null;
-    this.paragraphId = null;
-    this.name = name;
-  }
-
-  ResourceId(String resourcePoolId, String noteId, String paragraphId, String name) {
-    this.resourcePoolId = resourcePoolId;
-    this.noteId = noteId;
-    this.paragraphId = paragraphId;
-    this.name = name;
-  }
-
-  public String getResourcePoolId() {
-    return resourcePoolId;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getNoteId() {
-    return noteId;
-  }
-
-  public String getParagraphId() {
-    return paragraphId;
-  }
-
-  @Override
-  public int hashCode() {
-    return (resourcePoolId + noteId + paragraphId + name).hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof ResourceId) {
-      ResourceId r = (ResourceId) o;
-      return equals(r.name, name) && equals(r.resourcePoolId, resourcePoolId) &&
-          equals(r.noteId, noteId) && equals(r.paragraphId, paragraphId);
-    } else {
-      return false;
+    ResourceId(String resourcePoolId, String name) {
+        this.resourcePoolId = resourcePoolId;
+        this.noteId = null;
+        this.paragraphId = null;
+        this.name = name;
     }
-  }
 
-  private boolean equals(String a, String b) {
-    if (a == null && b == null) {
-      return true;
-    } else if (a != null && b != null) {
-      return a.equals(b);
-    } else {
-      return false;
+    ResourceId(String resourcePoolId, String noteId, String paragraphId, String name) {
+        this.resourcePoolId = resourcePoolId;
+        this.noteId = noteId;
+        this.paragraphId = paragraphId;
+        this.name = name;
     }
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public static ResourceId fromJson(String json) {
+        return gson.fromJson(json, ResourceId.class);
+    }
 
-  public static ResourceId fromJson(String json) {
-    return gson.fromJson(json, ResourceId.class);
-  }
+    public String getResourcePoolId() {
+        return resourcePoolId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public String getParagraphId() {
+        return paragraphId;
+    }
+
+    @Override
+    public int hashCode() {
+        return (resourcePoolId + noteId + paragraphId + name).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ResourceId) {
+            ResourceId r = (ResourceId) o;
+            return equals(r.name, name) && equals(r.resourcePoolId, resourcePoolId) &&
+                    equals(r.noteId, noteId) && equals(r.paragraphId, paragraphId);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean equals(String a, String b) {
+        if (a == null && b == null) {
+            return true;
+        } else if (a != null && b != null) {
+            return a.equals(b);
+        } else {
+            return false;
+        }
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

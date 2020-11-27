@@ -23,35 +23,35 @@ import java.util.HashMap;
  * Cluster operations, cluster types, encapsulation objects for keys and values
  */
 public class ClusterMetaEntity implements Serializable {
-  private ClusterMetaOperation operation;
-  private ClusterMetaType type;
-  private String key;
-  private HashMap<String, Object> values = new HashMap<>();
+    private ClusterMetaOperation operation;
+    private ClusterMetaType type;
+    private String key;
+    private HashMap<String, Object> values = new HashMap<>();
 
-  public ClusterMetaEntity(ClusterMetaOperation operation, ClusterMetaType type,
-                           String key, HashMap<String, Object> values) {
-    this.operation = operation;
-    this.type = type;
-    this.key = key;
+    public ClusterMetaEntity(ClusterMetaOperation operation, ClusterMetaType type,
+                             String key, HashMap<String, Object> values) {
+        this.operation = operation;
+        this.type = type;
+        this.key = key;
 
-    if (null != values) {
-      this.values.putAll(values);
+        if (null != values) {
+            this.values.putAll(values);
+        }
     }
-  }
 
-  public ClusterMetaOperation getOperation() {
-    return operation;
-  }
+    public ClusterMetaOperation getOperation() {
+        return operation;
+    }
 
-  public ClusterMetaType getMetaType() {
-    return type;
-  }
+    public ClusterMetaType getMetaType() {
+        return type;
+    }
 
-  public String getKey() {
-    return key;
-  }
+    public String getKey() {
+        return key;
+    }
 
-  public HashMap<String, Object> getValues() {
-    return values;
-  }
+    public HashMap<String, Object> getValues() {
+        return values;
+    }
 }

@@ -26,69 +26,71 @@ import java.io.StringReader;
 import java.util.Properties;
 
 /**
+ * Interpreter配置自定义的特殊Interpreter。它由Zeppelin隐式附加到每个InterpreterGroup。
+ * <p>
  * Special Interpreter for Interpreter Configuration customization. It is attached to each
  * InterpreterGroup implicitly by Zeppelin.
  */
 public class ConfInterpreter extends Interpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConfInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfInterpreter.class);
 
-  protected String sessionId;
-  protected String interpreterGroupId;
-  protected InterpreterSetting interpreterSetting;
+    protected String sessionId;
+    protected String interpreterGroupId;
+    protected InterpreterSetting interpreterSetting;
 
 
-  public ConfInterpreter(Properties properties,
-                         String sessionId,
-                         String interpreterGroupId,
-                         InterpreterSetting interpreterSetting) {
-    super(properties);
-    this.sessionId = sessionId;
-    this.interpreterGroupId = interpreterGroupId;
-    this.interpreterSetting = interpreterSetting;
-  }
-
-  @Override
-  public void open() throws InterpreterException {
-
-  }
-
-  @Override
-  public void close() throws InterpreterException {
-
-  }
-
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
-      throws InterpreterException {
-
-    try {
-      Properties finalProperties = new Properties();
-      finalProperties.putAll(getProperties());
-      Properties newProperties = new Properties();
-      newProperties.load(new StringReader(st));
-      finalProperties.putAll(newProperties);
-      LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
-      interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
-    } catch (IOException e) {
-      LOGGER.error("Fail to update interpreter setting", e);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+    public ConfInterpreter(Properties properties,
+                           String sessionId,
+                           String interpreterGroupId,
+                           InterpreterSetting interpreterSetting) {
+        super(properties);
+        this.sessionId = sessionId;
+        this.interpreterGroupId = interpreterGroupId;
+        this.interpreterSetting = interpreterSetting;
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
+    @Override
+    public void open() throws InterpreterException {
 
-  }
+    }
 
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return FormType.NATIVE;
-  }
+    @Override
+    public void close() throws InterpreterException {
 
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return 0;
-  }
+    }
+
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context)
+            throws InterpreterException {
+
+        try {
+            Properties finalProperties = new Properties();
+            finalProperties.putAll(getProperties());
+            Properties newProperties = new Properties();
+            newProperties.load(new StringReader(st));
+            finalProperties.putAll(newProperties);
+            LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
+            interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
+            return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+        } catch (IOException e) {
+            LOGGER.error("Fail to update interpreter setting", e);
+            return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    @Override
+    public void cancel(InterpreterContext context) throws InterpreterException {
+
+    }
+
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return FormType.NATIVE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return 0;
+    }
 }

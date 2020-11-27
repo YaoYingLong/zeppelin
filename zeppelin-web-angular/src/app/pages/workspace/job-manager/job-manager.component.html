@@ -11,17 +11,17 @@
   -->
 
 <zeppelin-page-header
-  title="Job"
+  [divider]="true"
   description="You can monitor the status of notebook and navigate to note or paragraph."
-  [divider]="true">
-  <form class="header-form" nz-form [nzLayout]="'inline'" [formGroup]="form">
+  title="Job">
+  <form [formGroup]="form" [nzLayout]="'inline'" class="header-form" nz-form>
     <nz-form-item>
       <nz-form-control>
         <nz-input-group [nzPrefix]="prefixSearch">
           <input formControlName="noteName" nz-input placeholder="Search jobs..."/>
         </nz-input-group>
         <ng-template #prefixSearch>
-          <i nz-icon nzType="search" nzTheme="outline"></i>
+          <i nz-icon nzTheme="outline" nzType="search"></i>
         </ng-template>
       </nz-form-control>
     </nz-form-item>
@@ -29,8 +29,8 @@
       <nz-form-label>Interpreter</nz-form-label>
       <nz-form-control>
         <nz-select class="interpreter-select" formControlName="interpreter">
-          <nz-option nzValue="*" nzLabel="All"></nz-option>
-          <nz-option *ngFor="let item of interpreters" [nzValue]="item" [nzLabel]="item"></nz-option>
+          <nz-option nzLabel="All" nzValue="*"></nz-option>
+          <nz-option *ngFor="let item of interpreters" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -38,7 +38,7 @@
       <nz-form-label>Sort</nz-form-label>
       <nz-form-control>
         <nz-select class="sort-select" formControlName="sortBy">
-          <nz-option *ngFor="let item of sortKeys" [nzValue]="item" [nzLabel]="item"></nz-option>
+          <nz-option *ngFor="let item of sortKeys" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -50,7 +50,7 @@
     </nz-form-item>
     <nz-form-item class="status-legend">
       <nz-form-control>
-        <zeppelin-job-manager-job-status *ngFor="let item of jobStatusKeys" [status]="item" [showText]="true">
+        <zeppelin-job-manager-job-status *ngFor="let item of jobStatusKeys" [showText]="true" [status]="item">
         </zeppelin-job-manager-job-status>
       </nz-form-control>
     </nz-form-item>
@@ -58,17 +58,17 @@
 </zeppelin-page-header>
 <div class="content">
   <nz-card *ngIf="loading; else jobs">
-    <nz-skeleton [nzTitle]="false" [nzLoading]="true" [nzActive]="true">
+    <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzTitle]="false">
     </nz-skeleton>
   </nz-card>
 
   <ng-template #jobs>
     <zeppelin-job-manager-job
-      *ngFor="let item of filteredJobs"
-      [note]="item"
-      [highlight]="filterString"
       (start)="onStart($event)"
-      (stop)="onStop($event)">
+      (stop)="onStop($event)"
+      *ngFor="let item of filteredJobs"
+      [highlight]="filterString"
+      [note]="item">
     </zeppelin-job-manager-job>
     <nz-empty *ngIf="filteredJobs.length === 0" nzNotFoundContent="No Job found"></nz-empty>
   </ng-template>

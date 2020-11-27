@@ -10,10 +10,10 @@
  * limitations under the License.
  */
 
-import { CdkPortalOutlet, ComponentPortal, ComponentType, PortalInjector } from '@angular/cdk/portal';
-import { ComponentFactoryResolver, InjectionToken, ViewContainerRef } from '@angular/core';
+import {CdkPortalOutlet, ComponentPortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
+import {ComponentFactoryResolver, InjectionToken, ViewContainerRef} from '@angular/core';
 
-import { Visualization } from './visualization';
+import {Visualization} from './visualization';
 
 export const VISUALIZATION = new InjectionToken<Visualization>('Visualization');
 
@@ -24,7 +24,8 @@ export class VisualizationComponentPortal<T extends Visualization, C> {
     private portalOutlet: CdkPortalOutlet,
     private viewContainerRef: ViewContainerRef,
     private componentFactoryResolver?: ComponentFactoryResolver
-  ) {}
+  ) {
+  }
 
   createInjector() {
     const userInjector = this.viewContainerRef && this.viewContainerRef.injector;

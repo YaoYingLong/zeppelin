@@ -34,72 +34,72 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SubmarineInterpreterTest extends BaseInterpreterTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(SubmarineInterpreterTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SubmarineInterpreterTest.class);
 
-  private SubmarineInterpreter submarineIntp;
+    private SubmarineInterpreter submarineIntp;
 
-  @Override
-  public void setUp() throws InterpreterException {
-    Properties properties = new Properties();
-    properties.setProperty(ZEPPELIN_SUBMARINE_AUTH_TYPE, "simple");
-    properties.setProperty("zeppelin.python.useIPython", "false");
-    properties.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
-    properties.setProperty(SubmarineConstants.SUBMARINE_HADOOP_KEYTAB, "keytab");
-    properties.setProperty(SubmarineConstants.SUBMARINE_HADOOP_PRINCIPAL, "user");
+    @Override
+    public void setUp() throws InterpreterException {
+        Properties properties = new Properties();
+        properties.setProperty(ZEPPELIN_SUBMARINE_AUTH_TYPE, "simple");
+        properties.setProperty("zeppelin.python.useIPython", "false");
+        properties.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
+        properties.setProperty(SubmarineConstants.SUBMARINE_HADOOP_KEYTAB, "keytab");
+        properties.setProperty(SubmarineConstants.SUBMARINE_HADOOP_PRINCIPAL, "user");
 
-    submarineIntp = new SubmarineInterpreter(properties);
+        submarineIntp = new SubmarineInterpreter(properties);
 
-    InterpreterContext.set(getIntpContext());
-    submarineIntp.open();
-  }
-
-  @Test
-  public void testDashboard() throws InterpreterException {
-    String script = "dashboard";
-    InterpreterContext intpContext = getIntpContext();
-
-    InterpreterResult interpreterResult = submarineIntp.interpret(script, intpContext);
-    String message = interpreterResult.toJson();
-    LOGGER.info(message);
-
-    assertEquals(interpreterResult.code(), InterpreterResult.Code.SUCCESS);
-    assertTrue(intpContext.out().size() >= 2);
-
-    String dashboardTemplate = intpContext.out().getOutputAt(0).toString();
-    LOGGER.info(dashboardTemplate);
-    assertTrue("Did not generate template!", (dashboardTemplate.length() > 500));
-  }
-
-  @Test
-  public void testJobRun() throws InterpreterException {
-    String script = "JOB_RUN";
-    InterpreterContext intpContext = getIntpContext();
-
-    intpContext.getAngularObjectRegistry().add(OPERATION_TYPE, "JOB_RUN", "noteId", "paragraphId");
-
-    InterpreterResult interpreterResult = submarineIntp.interpret(script, intpContext);
-    String message = interpreterResult.toJson();
-    LOGGER.info(message);
-
-    assertEquals(interpreterResult.code(), InterpreterResult.Code.SUCCESS);
-    assertTrue(intpContext.out().size() >= 2);
-    String template = intpContext.out().getOutputAt(0).toString();
-    assertTrue("Did not generate template!", (template.length() > 500));
-
-    SubmarineJob job = submarineIntp.getSubmarineContext().getSubmarineJob("noteId");
-    int loop = 10;
-    while (loop-- > 0 && !job.getRunning()) {
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        LOGGER.error(e.getMessage(), e);
-      }
+        InterpreterContext.set(getIntpContext());
+        submarineIntp.open();
     }
-    LOGGER.info("job.getRunning() = " + job.getRunning());
-  }
 
-  @Override
-  public void tearDown() throws InterpreterException {
-    submarineIntp.close();
-  }
+    @Test
+    public void testDashboard() throws InterpreterException {
+        String script = "dashboard";
+        InterpreterContext intpContext = getIntpContext();
+
+        InterpreterResult interpreterResult = submarineIntp.interpret(script, intpContext);
+        String message = interpreterResult.toJson();
+        LOGGER.info(message);
+
+        assertEquals(interpreterResult.code(), InterpreterResult.Code.SUCCESS);
+        assertTrue(intpContext.out().size() >= 2);
+
+        String dashboardTemplate = intpContext.out().getOutputAt(0).toString();
+        LOGGER.info(dashboardTemplate);
+        assertTrue("Did not generate template!", (dashboardTemplate.length() > 500));
+    }
+
+    @Test
+    public void testJobRun() throws InterpreterException {
+        String script = "JOB_RUN";
+        InterpreterContext intpContext = getIntpContext();
+
+        intpContext.getAngularObjectRegistry().add(OPERATION_TYPE, "JOB_RUN", "noteId", "paragraphId");
+
+        InterpreterResult interpreterResult = submarineIntp.interpret(script, intpContext);
+        String message = interpreterResult.toJson();
+        LOGGER.info(message);
+
+        assertEquals(interpreterResult.code(), InterpreterResult.Code.SUCCESS);
+        assertTrue(intpContext.out().size() >= 2);
+        String template = intpContext.out().getOutputAt(0).toString();
+        assertTrue("Did not generate template!", (template.length() > 500));
+
+        SubmarineJob job = submarineIntp.getSubmarineContext().getSubmarineJob("noteId");
+        int loop = 10;
+        while (loop-- > 0 && !job.getRunning()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        LOGGER.info("job.getRunning() = " + job.getRunning());
+    }
+
+    @Override
+    public void tearDown() throws InterpreterException {
+        submarineIntp.close();
+    }
 }

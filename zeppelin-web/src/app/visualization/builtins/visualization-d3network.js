@@ -63,7 +63,7 @@ export default class NetworkVisualization extends Visualization {
     console.log('Rendering the graph');
 
     if (networkData.graph.edges.length &&
-        !networkData.isDefaultSet) {
+      !networkData.isDefaultSet) {
       networkData.isDefaultSet = true;
       this._setEdgesDefaults(networkData.graph);
     }
@@ -90,17 +90,17 @@ export default class NetworkVisualization extends Visualization {
       let dx = end.x - start.x;
       let dy = end.y - start.y;
       let dr = d.totalCount === 1
-              ? 0 : Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + (1 / d.totalCount) * (d.count - 1));
+        ? 0 : Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + (1 / d.totalCount) * (d.count - 1));
       let sweep = leftHand ? 0 : 1;
       return `M${start.x},${start.y}A${dr},${dr} 0 0,${sweep} ${end.x},${end.y}`;
     };
     // Use elliptical arc path segments to doubly-encode directionality.
     const tick = () => {
       // Links
-      linkPath.attr('d', function(d) {
+      linkPath.attr('d', function (d) {
         return arcPath(true, d);
       });
-      textPath.attr('d', function(d) {
+      textPath.attr('d', function (d) {
         return arcPath(d.source.x < d.target.x, d);
       });
       // Nodes
@@ -166,20 +166,20 @@ export default class NetworkVisualization extends Visualization {
 
     const drag = d3.behavior.drag()
       .origin((d) => d)
-      .on('dragstart', function(d) {
+      .on('dragstart', function (d) {
         console.log('dragstart');
         d3.event.sourceEvent.stopPropagation();
         d3.select(this).classed('dragging', true);
         self.force.stop();
       })
-      .on('drag', function(d) {
+      .on('drag', function (d) {
         console.log('drag');
         d.px += d3.event.dx;
         d.py += d3.event.dy;
         d.x += d3.event.dx;
         d.y += d3.event.dy;
       })
-      .on('dragend', function(d) {
+      .on('dragend', function (d) {
         console.log('dragend');
         d.fixed = true;
         d3.select(this).classed('dragging', false);
@@ -242,25 +242,25 @@ export default class NetworkVisualization extends Visualization {
       .enter().append('svg:circle')
       .attr('r', (d) => nodeSize)
       .attr('fill', (d) => networkData.graph.labels && d.label in networkData.graph.labels
-                  ? networkData.graph.labels[d.label] : '#000000')
+        ? networkData.graph.labels[d.label] : '#000000')
       .call(drag);
     const text = container.append('svg:g').selectAll('g')
       .data(self.force.nodes())
       .enter().append('svg:g');
     text.append('svg:text')
-        .attr('x', (d) => nodeSize + textOffset)
-        .attr('size', nodeSize)
-        .attr('y', '.31em')
-        .attr('class', (d) => 'nodeLabel shadow label-' + d.label)
-        .text(showLabel)
-        .style('opacity', defaultOpacity);
+      .attr('x', (d) => nodeSize + textOffset)
+      .attr('size', nodeSize)
+      .attr('y', '.31em')
+      .attr('class', (d) => 'nodeLabel shadow label-' + d.label)
+      .text(showLabel)
+      .style('opacity', defaultOpacity);
     text.append('svg:text')
-        .attr('x', (d) => nodeSize + textOffset)
-        .attr('size', nodeSize)
-        .attr('y', '.31em')
-        .attr('class', (d) => 'nodeLabel label-' + d.label)
-        .text(showLabel)
-        .style('opacity', defaultOpacity);
+      .attr('x', (d) => nodeSize + textOffset)
+      .attr('size', nodeSize)
+      .attr('y', '.31em')
+      .attr('class', (d) => 'nodeLabel label-' + d.label)
+      .text(showLabel)
+      .style('opacity', defaultOpacity);
   }
 
   destroy() {
@@ -298,7 +298,7 @@ export default class NetworkVisualization extends Visualization {
       .forEach((edge, index) => {
         let prevEdge = graph.edges[index - 1];
         edge.count = (index > 0 && +edge.source === +prevEdge.source && +edge.target === +prevEdge.target
-            ? prevEdge.count : 0) + 1;
+          ? prevEdge.count : 0) + 1;
         edge.totalCount = graph.edges
           .filter((innerEdge) => +edge.source === +innerEdge.source && +edge.target === +innerEdge.target)
           .length;
@@ -319,7 +319,7 @@ export default class NetworkVisualization extends Visualization {
   getNetworkProperties(graph) {
     const baseCols = ['id', 'label'];
     const properties = {};
-    graph.nodes.forEach(function(node) {
+    graph.nodes.forEach(function (node) {
       const hasLabel = 'label' in node && node.label !== '';
       if (!hasLabel) {
         return;
@@ -327,7 +327,7 @@ export default class NetworkVisualization extends Visualization {
       const label = node.label;
       const hasKey = hasLabel && label in properties;
       const keys = _.uniq(Object.keys(node.data || {})
-              .concat(hasKey ? properties[label].keys : baseCols));
+        .concat(hasKey ? properties[label].keys : baseCols));
       if (!hasKey) {
         properties[label] = {selected: 'label'};
       }

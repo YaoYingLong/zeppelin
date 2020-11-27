@@ -22,15 +22,15 @@ package org.apache.zeppelin.display.ui;
  */
 public class Select extends OptionInput<Object> {
 
-  public Select() {
+    public Select() {
 
-  }
+    }
 
-  public Select(String name, Object defaultValue, ParamOption[] options) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = defaultValue;
-    this.options = options;
-  }
+    public Select(String name, Object defaultValue, ParamOption[] options) {
+        this.name = name;
+        this.displayName = name;
+        this.defaultValue = defaultValue;
+        this.options = options;
+    }
 
 }

@@ -22,13 +22,13 @@ import java.io.Serializable;
  * Row representation of table data
  */
 public class Row implements Serializable {
-  private final Object[] data;
+    private final Object[] data;
 
-  public Row(Object [] data) {
-    this.data = data;
-  }
+    public Row(Object[] data) {
+        this.data = data;
+    }
 
-  public Object [] get() {
-    return data;
-  }
+    public Object[] get() {
+        return data;
+    }
 }

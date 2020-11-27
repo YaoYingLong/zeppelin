@@ -21,45 +21,45 @@ package org.apache.zeppelin.interpreter;
  * Builder class for ExecutionContext.
  */
 public class ExecutionContextBuilder {
-  private String user;
-  private String noteId;
-  private String interpreterGroupId;
-  private String defaultInterpreterGroup = "";
-  private boolean inIsolatedMode = false;
-  private String startTime = "";
+    private String user;
+    private String noteId;
+    private String interpreterGroupId;
+    private String defaultInterpreterGroup = "";
+    private boolean inIsolatedMode = false;
+    private String startTime = "";
 
-  public ExecutionContextBuilder setUser(String user) {
-    this.user = user;
-    return this;
-  }
+    public ExecutionContextBuilder setUser(String user) {
+        this.user = user;
+        return this;
+    }
 
-  public ExecutionContextBuilder setNoteId(String noteId) {
-    this.noteId = noteId;
-    return this;
-  }
+    public ExecutionContextBuilder setNoteId(String noteId) {
+        this.noteId = noteId;
+        return this;
+    }
 
-  public ExecutionContextBuilder setDefaultInterpreterGroup(String defaultInterpreterGroup) {
-    this.defaultInterpreterGroup = defaultInterpreterGroup;
-    return this;
-  }
+    public ExecutionContextBuilder setDefaultInterpreterGroup(String defaultInterpreterGroup) {
+        this.defaultInterpreterGroup = defaultInterpreterGroup;
+        return this;
+    }
 
-  public ExecutionContextBuilder setInIsolatedMode(boolean inIsolatedMode) {
-    this.inIsolatedMode = inIsolatedMode;
-    return this;
-  }
+    public ExecutionContextBuilder setInIsolatedMode(boolean inIsolatedMode) {
+        this.inIsolatedMode = inIsolatedMode;
+        return this;
+    }
 
-  public ExecutionContextBuilder setStartTime(String startTime) {
-    this.startTime = startTime;
-    return this;
-  }
+    public ExecutionContextBuilder setStartTime(String startTime) {
+        this.startTime = startTime;
+        return this;
+    }
 
-  public ExecutionContextBuilder setInterpreterGroupId(String interpreterGroupId) {
-    this.interpreterGroupId = interpreterGroupId;
-    return this;
-  }
+    public ExecutionContextBuilder setInterpreterGroupId(String interpreterGroupId) {
+        this.interpreterGroupId = interpreterGroupId;
+        return this;
+    }
 
-  public ExecutionContext createExecutionContext() {
-    return new ExecutionContext(user, noteId, interpreterGroupId, defaultInterpreterGroup, inIsolatedMode, startTime);
-  }
+    public ExecutionContext createExecutionContext() {
+        return new ExecutionContext(user, noteId, interpreterGroupId, defaultInterpreterGroup, inIsolatedMode, startTime);
+    }
 
 }

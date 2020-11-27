@@ -18,6 +18,7 @@
 
 import matplotlib
 
+
 def configure(**kwargs):
     """
     Generic configure function.
@@ -35,7 +36,7 @@ def configure(**kwargs):
         context - ZeppelinContext instance (requires PY4J)
     """
     _config.update(**kwargs)
-        
+
     # Broadcast relevant changes to matplotlib RC
     _on_config_change()
 
@@ -50,38 +51,38 @@ def get(key):
 def _on_config_change():
     # dpi
     dpi = _config['dpi']
-    
+
     # For older versions of matplotlib, savefig.dpi is not synced with
     # figure.dpi by default
     matplotlib.rcParams['figure.dpi'] = dpi
     if matplotlib.__version__ < '2.0.0':
         matplotlib.rcParams['savefig.dpi'] = dpi
-    
+
     # Width and height
     width = float(_config['width']) / dpi
     height = float(_config['height']) / dpi
     matplotlib.rcParams['figure.figsize'] = (width, height)
-    
+
     # Font size
     fontsize = _config['fontsize']
     matplotlib.rcParams['font.size'] = fontsize
-    
+
     # Default Figure Format
     fmt = _config['format']
     supported_formats = _config['supported_formats']
     if fmt not in supported_formats:
-        raise ValueError("Unsupported format %s" %fmt)
+        raise ValueError("Unsupported format %s" % fmt)
 
     if matplotlib.__version__ < '1.2.0':
         matplotlib.rcParams.update({'savefig.format': fmt})
     else:
         matplotlib.rcParams['savefig.format'] = fmt
-    
+
     # Interactive mode
     interactive = _config['interactive']
     matplotlib.interactive(interactive)
-    
-    
+
+
 def _init_config():
     dpi = matplotlib.rcParams['figure.dpi']
     if matplotlib.__version__ < '1.2.0':
@@ -91,8 +92,8 @@ def _init_config():
     fontsize = matplotlib.rcParams['font.size']
     _config['dpi'] = dpi
     _config['format'] = fmt
-    _config['width'] = width*dpi
-    _config['height'] = height*dpi
+    _config['width'] = width * dpi
+    _config['height'] = height * dpi
     _config['fontsize'] = fontsize
     _config['close'] = True
     _config['interactive'] = matplotlib.is_interactive()

@@ -28,91 +28,91 @@ import java.util.regex.Pattern;
  */
 public class ResourceSet extends LinkedList<Resource> implements JsonSerializable {
 
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  public ResourceSet(Collection<Resource> resources) {
-    super(resources);
-  }
-
-  public ResourceSet() {
-    super();
-  }
-
-  public ResourceSet filterByNameRegex(String regex) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (Pattern.matches(regex, r.getResourceId().getName())) {
-        result.add(r);
-      }
+    public ResourceSet(Collection<Resource> resources) {
+        super(resources);
     }
-    return result;
-  }
 
-  public ResourceSet filterByName(String name) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (r.getResourceId().getName().equals(name)) {
-        result.add(r);
-      }
+    public ResourceSet() {
+        super();
     }
-    return result;
-  }
 
-  public ResourceSet filterByClassnameRegex(String regex) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (Pattern.matches(regex, r.getClassName())) {
-        result.add(r);
-      }
+    public static ResourceSet fromJson(String json) {
+        return gson.fromJson(json, ResourceSet.class);
     }
-    return result;
-  }
 
-  public ResourceSet filterByClassname(String className) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (r.getClassName().equals(className)) {
-        result.add(r);
-      }
+    public ResourceSet filterByNameRegex(String regex) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (Pattern.matches(regex, r.getResourceId().getName())) {
+                result.add(r);
+            }
+        }
+        return result;
     }
-    return result;
-  }
 
-  public ResourceSet filterByNoteId(String noteId) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (equals(r.getResourceId().getNoteId(), noteId)) {
-        result.add(r);
-      }
+    public ResourceSet filterByName(String name) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (r.getResourceId().getName().equals(name)) {
+                result.add(r);
+            }
+        }
+        return result;
     }
-    return result;
-  }
 
-  public ResourceSet filterByParagraphId(String paragraphId) {
-    ResourceSet result = new ResourceSet();
-    for (Resource r : this) {
-      if (equals(r.getResourceId().getParagraphId(), paragraphId)) {
-        result.add(r);
-      }
+    public ResourceSet filterByClassnameRegex(String regex) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (Pattern.matches(regex, r.getClassName())) {
+                result.add(r);
+            }
+        }
+        return result;
     }
-    return result;
-  }
 
-  private boolean equals(String a, String b) {
-    if (a == null && b == null) {
-      return true;
-    } else if (a != null && b != null) {
-      return a.equals(b);
-    } else {
-      return false;
+    public ResourceSet filterByClassname(String className) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (r.getClassName().equals(className)) {
+                result.add(r);
+            }
+        }
+        return result;
     }
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public ResourceSet filterByNoteId(String noteId) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (equals(r.getResourceId().getNoteId(), noteId)) {
+                result.add(r);
+            }
+        }
+        return result;
+    }
 
-  public static ResourceSet fromJson(String json) {
-    return gson.fromJson(json, ResourceSet.class);
-  }
+    public ResourceSet filterByParagraphId(String paragraphId) {
+        ResourceSet result = new ResourceSet();
+        for (Resource r : this) {
+            if (equals(r.getResourceId().getParagraphId(), paragraphId)) {
+                result.add(r);
+            }
+        }
+        return result;
+    }
+
+    private boolean equals(String a, String b) {
+        if (a == null && b == null) {
+            return true;
+        } else if (a != null && b != null) {
+            return a.equals(b);
+        } else {
+            return false;
+        }
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

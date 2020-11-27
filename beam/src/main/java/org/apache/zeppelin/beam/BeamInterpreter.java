@@ -26,8 +26,8 @@ import java.util.Properties;
  */
 public class BeamInterpreter extends JavaInterpreter {
 
-  public BeamInterpreter(Properties property) {
-    super(property);
-  }
+    public BeamInterpreter(Properties property) {
+        super(property);
+    }
 
 }

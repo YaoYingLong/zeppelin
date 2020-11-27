@@ -21,94 +21,97 @@ package org.apache.zeppelin.resource;
  */
 public class DistributedResourcePool extends LocalResourcePool {
 
-  private final ResourcePoolConnector connector;
+    private final ResourcePoolConnector connector;
 
-  public DistributedResourcePool(String id, ResourcePoolConnector connector) {
-    super(id);
-    this.connector = connector;
-  }
-
-  @Override
-  public Resource get(String name) {
-    return get(name, true);
-  }
-
-  @Override
-  public Resource get(String noteId, String paragraphId, String name) {
-    return get(noteId, paragraphId, name, true);
-  }
-
-  /**
-   * get resource by name.
-   * @param name
-   * @param remote false only return from local resource
-   * @return null if resource not found.
-   */
-  public Resource get(String name, boolean remote) {
-    // try local first
-    Resource resource = super.get(name);
-    if (resource != null) {
-      return resource;
+    public DistributedResourcePool(String id, ResourcePoolConnector connector) {
+        super(id);
+        this.connector = connector;
     }
 
-    if (remote) {
-      ResourceSet resources = connector.getAllResources().filterByName(name);
-      if (resources.isEmpty()) {
-        return null;
-      } else {
-        // TODO(zjffdu) just assume there's no dupicated resources with the same name, but
-        // this assumption is false
-        return resources.get(0);
-      }
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * get resource by name.
-   * @param name
-   * @param remote false only return from local resource
-   * @return null if resource not found.
-   */
-  public Resource get(String noteId, String paragraphId, String name, boolean remote) {
-    // try local first
-    Resource resource = super.get(noteId, paragraphId, name);
-    if (resource != null) {
-      return resource;
+    @Override
+    public Resource get(String name) {
+        return get(name, true);
     }
 
-    if (remote) {
-      ResourceSet resources = connector.getAllResources()
-          .filterByNoteId(noteId)
-          .filterByParagraphId(paragraphId)
-          .filterByName(name);
-
-      if (resources.isEmpty()) {
-        return null;
-      } else {
-        return resources.get(0);
-      }
-    } else {
-      return null;
+    @Override
+    public Resource get(String noteId, String paragraphId, String name) {
+        return get(noteId, paragraphId, name, true);
     }
-  }
 
-  @Override
-  public ResourceSet getAll() {
-    return getAll(true);
-  }
+    /**
+     * get resource by name.
+     *
+     * @param name
+     * @param remote false only return from local resource
+     * @return null if resource not found.
+     */
+    public Resource get(String name, boolean remote) {
+        // try local first
+        Resource resource = super.get(name);
+        if (resource != null) {
+            return resource;
+        }
 
-  /**
-   * Get all resource from the pool
-   * @param remote false only return local resource
-   * @return
-   */
-  public ResourceSet getAll(boolean remote) {
-    ResourceSet all = super.getAll();
-    if (remote) {
-      all.addAll(connector.getAllResources());
+        if (remote) {
+            ResourceSet resources = connector.getAllResources().filterByName(name);
+            if (resources.isEmpty()) {
+                return null;
+            } else {
+                // TODO(zjffdu) just assume there's no dupicated resources with the same name, but
+                // this assumption is false
+                return resources.get(0);
+            }
+        } else {
+            return null;
+        }
     }
-    return all;
-  }
+
+    /**
+     * get resource by name.
+     *
+     * @param name
+     * @param remote false only return from local resource
+     * @return null if resource not found.
+     */
+    public Resource get(String noteId, String paragraphId, String name, boolean remote) {
+        // try local first
+        Resource resource = super.get(noteId, paragraphId, name);
+        if (resource != null) {
+            return resource;
+        }
+
+        if (remote) {
+            ResourceSet resources = connector.getAllResources()
+                    .filterByNoteId(noteId)
+                    .filterByParagraphId(paragraphId)
+                    .filterByName(name);
+
+            if (resources.isEmpty()) {
+                return null;
+            } else {
+                return resources.get(0);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ResourceSet getAll() {
+        return getAll(true);
+    }
+
+    /**
+     * Get all resource from the pool
+     *
+     * @param remote false only return local resource
+     * @return
+     */
+    public ResourceSet getAll(boolean remote) {
+        ResourceSet all = super.getAll();
+        if (remote) {
+            all.addAll(connector.getAllResources());
+        }
+        return all;
+    }
 }

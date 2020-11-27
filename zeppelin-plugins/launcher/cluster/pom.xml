@@ -16,75 +16,75 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <artifactId>zengine-plugins-parent</artifactId>
+    <parent>
+        <artifactId>zengine-plugins-parent</artifactId>
+        <groupId>org.apache.zeppelin</groupId>
+        <version>0.9.0-SNAPSHOT</version>
+        <relativePath>../../../zeppelin-plugins</relativePath>
+    </parent>
+
     <groupId>org.apache.zeppelin</groupId>
+    <artifactId>launcher-cluster</artifactId>
+    <packaging>jar</packaging>
     <version>0.9.0-SNAPSHOT</version>
-    <relativePath>../../../zeppelin-plugins</relativePath>
-  </parent>
+    <name>Zeppelin: Plugin Cluster Launcher</name>
+    <description>Launcher implementation to run interpreters on cluster</description>
 
-  <groupId>org.apache.zeppelin</groupId>
-  <artifactId>launcher-cluster</artifactId>
-  <packaging>jar</packaging>
-  <version>0.9.0-SNAPSHOT</version>
-  <name>Zeppelin: Plugin Cluster Launcher</name>
-  <description>Launcher implementation to run interpreters on cluster</description>
+    <properties>
+        <plugin.name>Launcher/ClusterInterpreterLauncher</plugin.name>
+    </properties>
 
-  <properties>
-    <plugin.name>Launcher/ClusterInterpreterLauncher</plugin.name>
-  </properties>
-  
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>launcher-docker</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.zeppelin</groupId>
+            <artifactId>launcher-docker</artifactId>
+            <version>0.9.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>${project.basedir}/src/test/resources</directory>
-      </testResource>
-      <testResource>
-        <directory>${project.basedir}/src/main/resources</directory>
-      </testResource>
-    </testResources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <skip>false</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>**/*.*</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
+    <build>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

@@ -17,113 +17,110 @@
 
 package org.apache.zeppelin.kotlin.repl.building;
 
-import static kotlin.script.experimental.jvm.JvmScriptingHostConfigurationKt.getDefaultJvmScriptingHostConfiguration;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import kotlin.script.experimental.host.ScriptingHostConfiguration;
 import org.apache.zeppelin.kotlin.context.KotlinReceiver;
+
+import java.io.File;
+import java.util.*;
+
+import static kotlin.script.experimental.jvm.JvmScriptingHostConfigurationKt.getDefaultJvmScriptingHostConfiguration;
 
 /**
  * Class that holds properties for Kotlin REPL creation,
  * namely implicit receiver, classpath, preloaded code, directory for class bytecode output,
  * max result limit and shortening types flag.
- *
+ * <p>
  * Set its parameters by chaining corresponding methods, e.g.
  * properties.outputDir(dir).shortenTypes(false)
- *
+ * <p>
  * Get its parameters via getters.
  */
 public class KotlinReplProperties {
 
-  private ScriptingHostConfiguration hostConf = getDefaultJvmScriptingHostConfiguration();
+    private ScriptingHostConfiguration hostConf = getDefaultJvmScriptingHostConfiguration();
 
-  private KotlinReceiver receiver;
-  private Set<String> classpath;
-  private List<String> codeOnLoad;
-  private String outputDir;
-  private int maxResult = 1000;
-  private boolean shortenTypes = true;
+    private KotlinReceiver receiver;
+    private Set<String> classpath;
+    private List<String> codeOnLoad;
+    private String outputDir;
+    private int maxResult = 1000;
+    private boolean shortenTypes = true;
 
-  public KotlinReplProperties() {
-    this.receiver = new KotlinReceiver();
+    public KotlinReplProperties() {
+        this.receiver = new KotlinReceiver();
 
-    this.classpath = new HashSet<>();
-    String[] javaClasspath = System.getProperty("java.class.path").split(File.pathSeparator);
-    Collections.addAll(classpath, javaClasspath);
+        this.classpath = new HashSet<>();
+        String[] javaClasspath = System.getProperty("java.class.path").split(File.pathSeparator);
+        Collections.addAll(classpath, javaClasspath);
 
-    this.codeOnLoad = new ArrayList<>();
-  }
+        this.codeOnLoad = new ArrayList<>();
+    }
 
-  public KotlinReplProperties receiver(KotlinReceiver receiver) {
-    this.receiver = receiver;
-    return this;
-  }
+    public KotlinReplProperties receiver(KotlinReceiver receiver) {
+        this.receiver = receiver;
+        return this;
+    }
 
-  public KotlinReplProperties classPath(String path) {
-    this.classpath.add(path);
-    return this;
-  }
+    public KotlinReplProperties classPath(String path) {
+        this.classpath.add(path);
+        return this;
+    }
 
-  public KotlinReplProperties classPath(Collection<String> paths) {
-    this.classpath.addAll(paths);
-    return this;
-  }
+    public KotlinReplProperties classPath(Collection<String> paths) {
+        this.classpath.addAll(paths);
+        return this;
+    }
 
-  public KotlinReplProperties codeOnLoad(String code) {
-    this.codeOnLoad.add(code);
-    return this;
-  }
+    public KotlinReplProperties codeOnLoad(String code) {
+        this.codeOnLoad.add(code);
+        return this;
+    }
 
-  public KotlinReplProperties codeOnLoad(Collection<String> code) {
-    this.codeOnLoad.addAll(code);
-    return this;
-  }
+    public KotlinReplProperties codeOnLoad(Collection<String> code) {
+        this.codeOnLoad.addAll(code);
+        return this;
+    }
 
-  public KotlinReplProperties outputDir(String outputDir) {
-    this.outputDir = outputDir;
-    return this;
-  }
+    public KotlinReplProperties outputDir(String outputDir) {
+        this.outputDir = outputDir;
+        return this;
+    }
 
-  public KotlinReplProperties maxResult(int maxResult) {
-    this.maxResult = maxResult;
-    return this;
-  }
+    public KotlinReplProperties maxResult(int maxResult) {
+        this.maxResult = maxResult;
+        return this;
+    }
 
-  public KotlinReplProperties shortenTypes(boolean shortenTypes) {
-    this.shortenTypes = shortenTypes;
-    return this;
-  }
+    public KotlinReplProperties shortenTypes(boolean shortenTypes) {
+        this.shortenTypes = shortenTypes;
+        return this;
+    }
 
-  public ScriptingHostConfiguration getHostConf() {
-    return hostConf;
-  }
+    public ScriptingHostConfiguration getHostConf() {
+        return hostConf;
+    }
 
-  public KotlinReceiver getReceiver() {
-    return receiver;
-  }
+    public KotlinReceiver getReceiver() {
+        return receiver;
+    }
 
-  public Set<String> getClasspath() {
-    return classpath;
-  }
+    public Set<String> getClasspath() {
+        return classpath;
+    }
 
-  public List<String> getCodeOnLoad() {
-    return codeOnLoad;
-  }
+    public List<String> getCodeOnLoad() {
+        return codeOnLoad;
+    }
 
-  public String getOutputDir() {
-    return outputDir;
-  }
+    public String getOutputDir() {
+        return outputDir;
+    }
 
-  public int getMaxResult() {
-    return maxResult;
-  }
+    public int getMaxResult() {
+        return maxResult;
+    }
 
-  public boolean getShortenTypes() {
-    return shortenTypes;
-  }
+    public boolean getShortenTypes() {
+        return shortenTypes;
+    }
 }

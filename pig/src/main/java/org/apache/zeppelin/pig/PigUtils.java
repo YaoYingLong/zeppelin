@@ -31,20 +31,19 @@ import java.util.List;
  *
  */
 public class PigUtils {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PigUtils.class);
+    protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final Logger LOGGER = LoggerFactory.getLogger(PigUtils.class);
 
-  protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static File createTempPigScript(String content) throws IOException {
+        File tmpFile = File.createTempFile("zeppelin", "pig");
+        LOGGER.debug("Create pig script file:" + tmpFile.getAbsolutePath());
+        FileWriter writer = new FileWriter(tmpFile);
+        IOUtils.write(content, writer);
+        writer.close();
+        return tmpFile.getAbsoluteFile();
+    }
 
-  public static File createTempPigScript(String content) throws IOException {
-    File tmpFile = File.createTempFile("zeppelin", "pig");
-    LOGGER.debug("Create pig script file:" + tmpFile.getAbsolutePath());
-    FileWriter writer = new FileWriter(tmpFile);
-    IOUtils.write(content, writer);
-    writer.close();
-    return tmpFile.getAbsoluteFile();
-  }
-
-  public static File createTempPigScript(List<String> lines) throws IOException {
-    return createTempPigScript(StringUtils.join(lines, "\n"));
-  }
+    public static File createTempPigScript(List<String> lines) throws IOException {
+        return createTempPigScript(StringUtils.join(lines, "\n"));
+    }
 }

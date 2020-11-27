@@ -20,17 +20,17 @@ package org.apache.zeppelin.rest.message;
  * UpdateParagraphRequest.
  */
 public class UpdateParagraphRequest {
-  String title;
-  String text;
+    String title;
+    String text;
 
-  public UpdateParagraphRequest() {
-  }
+    public UpdateParagraphRequest() {
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public String getText() {
-    return text;
-  }
+    public String getText() {
+        return text;
+    }
 }

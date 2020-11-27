@@ -24,6 +24,8 @@ import { filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotebookSearchComponent implements OnInit, OnDestroy {
+  results: NotebookSearchResultItem[] = [];
+  searching = false;
   private destroy$ = new Subject();
   private searchAction$ = this.router.params.pipe(
     takeUntil(this.destroy$),
@@ -32,9 +34,6 @@ export class NotebookSearchComponent implements OnInit, OnDestroy {
     tap(() => (this.searching = true)),
     switchMap(queryStr => this.notebookSearchService.search(queryStr))
   );
-
-  results: NotebookSearchResultItem[] = [];
-  searching = false;
 
   constructor(
     private cdr: ChangeDetectorRef,

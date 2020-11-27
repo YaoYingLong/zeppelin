@@ -12,17 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import sys
 import subprocess
+import sys
 from datetime import datetime, timedelta
 
+
 def main(file, cmd):
-    print cmd, "writing to", file
+    print
+    cmd, "writing to", file
     out = open(file, "w")
     count = 0
     process = subprocess.Popen(cmd,
-                           stderr=subprocess.STDOUT,
-                           stdout=subprocess.PIPE)
+                               stderr=subprocess.STDOUT,
+                               stdout=subprocess.PIPE)
 
     start = datetime.now()
     nextPrint = datetime.now() + timedelta(seconds=1)
@@ -33,7 +35,7 @@ def main(file, cmd):
         count = count + 1
         if datetime.now() > nextPrint:
             diff = datetime.now() - start
-            sys.stdout.write("\r%d seconds %d log lines"%(diff.seconds, count))
+            sys.stdout.write("\r%d seconds %d log lines" % (diff.seconds, count))
             sys.stdout.flush()
             nextPrint = datetime.now() + timedelta(seconds=10)
         out.write(line)
@@ -41,13 +43,15 @@ def main(file, cmd):
     out.close()
     errcode = process.wait()
     diff = datetime.now() - start
-    sys.stdout.write("\r%d seconds %d log lines"%(diff.seconds, count))
+    sys.stdout.write("\r%d seconds %d log lines" % (diff.seconds, count))
     sys.stdout.write("\n" + str(cmd) + " done " + str(errcode) + "\n")
     return errcode
 
+
 if __name__ == "__main__":
     if sys.argv < 1:
-        print "Usage: %s [file info]" % sys.argv[0]
+        print
+        "Usage: %s [file info]" % sys.argv[0]
         sys.exit(1)
 
     sys.exit(main(sys.argv[1], sys.argv[2:]))

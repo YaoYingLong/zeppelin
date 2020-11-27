@@ -21,30 +21,30 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
 import java.io.Serializable;
 
 public class Person implements Serializable {
-  @QuerySqlField
-  private String name;
+    @QuerySqlField
+    private String name;
 
-  @QuerySqlField
-  private int age;
+    @QuerySqlField
+    private int age;
 
-  public Person(String name, int age) {
-    this.name = name;
-    this.age = age;
-  }
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public int getAge() {
-    return age;
-  }
+    public int getAge() {
+        return age;
+    }
 
-  public void setAge(int age) {
-    this.age = age;
-  }
+    public void setAge(int age) {
+        this.age = age;
+    }
 }

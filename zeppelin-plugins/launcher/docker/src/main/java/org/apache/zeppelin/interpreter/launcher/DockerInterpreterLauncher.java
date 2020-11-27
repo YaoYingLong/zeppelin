@@ -28,59 +28,59 @@ import java.util.Map;
  * Interpreter Launcher which use shell script to launch the interpreter process.
  */
 public class DockerInterpreterLauncher extends InterpreterLauncher {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DockerInterpreterLauncher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockerInterpreterLauncher.class);
 
-  private InterpreterLaunchContext context;
+    private InterpreterLaunchContext context;
 
-  public DockerInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage)
-      throws IOException {
-    super(zConf, recoveryStorage);
-  }
-
-  @Override
-  public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
-    LOGGER.info("Launching Interpreter: " + context.getInterpreterSettingGroup());
-    this.context = context;
-    this.properties = context.getProperties();
-    int connectTimeout = getConnectTimeout();
-    if (connectTimeout < 200000) {
-      // DockerInterpreterLauncher needs to pull the image and create the container,
-      // it takes a long time, so the force is set to 200 seconds.
-      LOGGER.warn("DockerInterpreterLauncher needs to pull the image and create the container, " +
-          "it takes a long time, If the creation of the interpreter on docker fails, " +
-          "please increase the value of `zeppelin.interpreter.connect.timeout` " +
-          "in `zeppelin-site.xml`, recommend 200 seconds.");
+    public DockerInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage)
+            throws IOException {
+        super(zConf, recoveryStorage);
     }
 
-    StandardInterpreterLauncher interpreterLauncher = null;
-    if (isSpark()) {
-      interpreterLauncher = new SparkInterpreterLauncher(zConf, recoveryStorage);
-    } else if (isFlink()) {
-      interpreterLauncher = new FlinkInterpreterLauncher(zConf, recoveryStorage);
-    } else {
-      interpreterLauncher = new StandardInterpreterLauncher(zConf, recoveryStorage);
+    @Override
+    public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
+        LOGGER.info("Launching Interpreter: " + context.getInterpreterSettingGroup());
+        this.context = context;
+        this.properties = context.getProperties();
+        int connectTimeout = getConnectTimeout();
+        if (connectTimeout < 200000) {
+            // DockerInterpreterLauncher needs to pull the image and create the container,
+            // it takes a long time, so the force is set to 200 seconds.
+            LOGGER.warn("DockerInterpreterLauncher needs to pull the image and create the container, " +
+                    "it takes a long time, If the creation of the interpreter on docker fails, " +
+                    "please increase the value of `zeppelin.interpreter.connect.timeout` " +
+                    "in `zeppelin-site.xml`, recommend 200 seconds.");
+        }
+
+        StandardInterpreterLauncher interpreterLauncher = null;
+        if (isSpark()) {
+            interpreterLauncher = new SparkInterpreterLauncher(zConf, recoveryStorage);
+        } else if (isFlink()) {
+            interpreterLauncher = new FlinkInterpreterLauncher(zConf, recoveryStorage);
+        } else {
+            interpreterLauncher = new StandardInterpreterLauncher(zConf, recoveryStorage);
+        }
+        interpreterLauncher.setProperties(context.getProperties());
+        Map<String, String> env = interpreterLauncher.buildEnvFromProperties(context);
+
+        return new DockerInterpreterProcess(
+                zConf,
+                zConf.getDockerContainerImage(),
+                context.getInterpreterGroupId(),
+                context.getInterpreterSettingGroup(),
+                context.getInterpreterSettingName(),
+                properties,
+                env,
+                context.getIntpEventServerHost(),
+                context.getIntpEventServerPort(),
+                connectTimeout, 10);
     }
-    interpreterLauncher.setProperties(context.getProperties());
-    Map<String, String> env = interpreterLauncher.buildEnvFromProperties(context);
 
-    return new DockerInterpreterProcess(
-        zConf,
-        zConf.getDockerContainerImage(),
-        context.getInterpreterGroupId(),
-        context.getInterpreterSettingGroup(),
-        context.getInterpreterSettingName(),
-        properties,
-        env,
-        context.getIntpEventServerHost(),
-        context.getIntpEventServerPort(),
-        connectTimeout, 10);
-  }
+    boolean isSpark() {
+        return "spark".equalsIgnoreCase(context.getInterpreterSettingName());
+    }
 
-  boolean isSpark() {
-    return "spark".equalsIgnoreCase(context.getInterpreterSettingName());
-  }
-
-  boolean isFlink() {
-    return "flink".equalsIgnoreCase(context.getInterpreterSettingName());
-  }
+    boolean isFlink() {
+        return "flink".equalsIgnoreCase(context.getInterpreterSettingName());
+    }
 }

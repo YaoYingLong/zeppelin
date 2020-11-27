@@ -23,9 +23,9 @@ import static org.junit.Assert.assertEquals;
 
 public class InterpreterLauncherTest {
 
-  @Test
-  public void testEscapeSpecialCharacters() {
-    String cmd = "{}.";
-    assertEquals("\\{\\}\\.", InterpreterLauncher.escapeSpecialCharacter(cmd));
-  }
+    @Test
+    public void testEscapeSpecialCharacters() {
+        String cmd = "{}.";
+        assertEquals("\\{\\}\\.", InterpreterLauncher.escapeSpecialCharacter(cmd));
+    }
 }

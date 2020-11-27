@@ -16,49 +16,32 @@
  */
 package org.apache.zeppelin.server;
 
-import static com.google.common.base.Charsets.UTF_8;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Files;
+import org.eclipse.jetty.util.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.eclipse.jetty.util.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
+import static com.google.common.base.Charsets.UTF_8;
 
 /**
  * Resource for enabling html addons in index.html.
  */
 public class HtmlAddonResource extends Resource {
 
+    public static final String HTML_ADDON_IDENTIFIER = "zeppelin-index-with-addon";
+    public static final String INDEX_HTML_PATH = "/index.html";
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlAddonResource.class);
-
     private static final String TAG_BODY_OPENING = "<body"; // ignore bracket here to support potential html attributes
     private static final String TAG_BODY_CLOSING = "</body>";
     private static final String TAG_HEAD_CLOSING = "</head>";
     private static final String TAG_HTML_CLOSING = "</html>";
-
-    public static final String HTML_ADDON_IDENTIFIER = "zeppelin-index-with-addon";
-    public static final String INDEX_HTML_PATH = "/index.html";
-
     private final Resource indexResource;
     private File alteredTempFile = null;
     private byte[] alteredContent;

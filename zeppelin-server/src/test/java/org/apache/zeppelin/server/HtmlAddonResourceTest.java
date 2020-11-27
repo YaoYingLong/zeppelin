@@ -16,19 +16,18 @@
  */
 package org.apache.zeppelin.server;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import com.google.common.io.CharStreams;
+import org.eclipse.jetty.util.resource.Resource;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.eclipse.jetty.util.resource.Resource;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.google.common.io.CharStreams;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 public class HtmlAddonResourceTest {
 

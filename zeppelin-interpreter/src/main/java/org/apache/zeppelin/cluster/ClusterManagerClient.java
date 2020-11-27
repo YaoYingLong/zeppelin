@@ -25,55 +25,55 @@ import static org.apache.zeppelin.cluster.meta.ClusterMetaType.INTP_PROCESS_META
  * Cluster management client class instantiated in zeppelin-interperter
  */
 public class ClusterManagerClient extends ClusterManager {
-  private static ClusterManagerClient instance = null;
+    private static ClusterManagerClient instance = null;
 
-  public static ClusterManagerClient getInstance(ZeppelinConfiguration zConf) {
-    synchronized (ClusterManagerClient.class) {
-      if (instance == null) {
-        instance = new ClusterManagerClient(zConf);
-      }
-      return instance;
-    }
-  }
-
-  public ClusterManagerClient(ZeppelinConfiguration zConf) {
-    super(zConf);
-  }
-
-  @Override
-  public boolean raftInitialized() {
-    if (null != raftClient && null != raftSessionClient
-        && raftSessionClient.getState() == PrimitiveState.CONNECTED) {
-      return true;
+    public ClusterManagerClient(ZeppelinConfiguration zConf) {
+        super(zConf);
     }
 
-    return false;
-  }
-
-  @Override
-  public boolean isClusterLeader() {
-    return false;
-  }
-
-  // In the ClusterManagerClient metaKey equal interperterGroupId
-  public void start(String metaKey) {
-    if (!zConf.isClusterMode()) {
-      return;
+    public static ClusterManagerClient getInstance(ZeppelinConfiguration zConf) {
+        synchronized (ClusterManagerClient.class) {
+            if (instance == null) {
+                instance = new ClusterManagerClient(zConf);
+            }
+            return instance;
+        }
     }
-    super.start();
 
-    // Instantiated cluster monitoring class
-    clusterMonitor = new ClusterMonitor(this);
-    clusterMonitor.start(INTP_PROCESS_META, metaKey);
-  }
+    @Override
+    public boolean raftInitialized() {
+        if (null != raftClient && null != raftSessionClient
+                && raftSessionClient.getState() == PrimitiveState.CONNECTED) {
+            return true;
+        }
 
-  public void shutdown() {
-    if (!zConf.isClusterMode()) {
-      return;
+        return false;
     }
-    clusterMonitor.shutdown();
 
-    super.shutdown();
-    instance = null;
-  }
+    @Override
+    public boolean isClusterLeader() {
+        return false;
+    }
+
+    // In the ClusterManagerClient metaKey equal interperterGroupId
+    public void start(String metaKey) {
+        if (!zConf.isClusterMode()) {
+            return;
+        }
+        super.start();
+
+        // Instantiated cluster monitoring class
+        clusterMonitor = new ClusterMonitor(this);
+        clusterMonitor.start(INTP_PROCESS_META, metaKey);
+    }
+
+    public void shutdown() {
+        if (!zConf.isClusterMode()) {
+            return;
+        }
+        clusterMonitor.shutdown();
+
+        super.shutdown();
+        instance = null;
+    }
 }

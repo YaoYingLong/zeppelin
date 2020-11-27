@@ -20,8 +20,6 @@ package org.apache.zeppelin.service;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
-import org.apache.zeppelin.server.ZeppelinServer;
-import org.apache.zeppelin.socket.NotebookServer;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.AfterClass;
@@ -34,46 +32,44 @@ import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ConfigurationServiceTest extends AbstractTestRestApi {
 
-  private static ConfigurationService configurationService;
+    private static ConfigurationService configurationService;
 
-  private ServiceContext context =
-      new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
+    private ServiceContext context =
+            new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
 
-  private ServiceCallback callback = mock(ServiceCallback.class);
+    private ServiceCallback callback = mock(ServiceCallback.class);
 
-  @BeforeClass
-  public static void setUp() throws Exception {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
-        "helium");
-    AbstractTestRestApi.startUp(ConfigurationServiceTest.class.getSimpleName());
-    configurationService = TestUtils.getInstance(ConfigurationService.class);
-  }
-
-  @AfterClass
-  public static void destroy() throws Exception {
-    AbstractTestRestApi.shutDown();
-  }
-
-  @Test
-  public void testFetchConfiguration() throws IOException {
-    Map<String, String> properties = configurationService.getAllProperties(context, callback);
-    verify(callback).onSuccess(properties, context);
-    for (Map.Entry<String, String> entry : properties.entrySet()) {
-      assertFalse(entry.getKey().contains("password"));
+    @BeforeClass
+    public static void setUp() throws Exception {
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
+                "helium");
+        AbstractTestRestApi.startUp(ConfigurationServiceTest.class.getSimpleName());
+        configurationService = TestUtils.getInstance(ConfigurationService.class);
     }
 
-    reset(callback);
-    properties = configurationService.getPropertiesWithPrefix("zeppelin.server", context, callback);
-    verify(callback).onSuccess(properties, context);
-    for (Map.Entry<String, String> entry : properties.entrySet()) {
-      assertFalse(entry.getKey().contains("password"));
-      assertTrue(entry.getKey().startsWith("zeppelin.server"));
+    @AfterClass
+    public static void destroy() throws Exception {
+        AbstractTestRestApi.shutDown();
     }
-  }
+
+    @Test
+    public void testFetchConfiguration() throws IOException {
+        Map<String, String> properties = configurationService.getAllProperties(context, callback);
+        verify(callback).onSuccess(properties, context);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            assertFalse(entry.getKey().contains("password"));
+        }
+
+        reset(callback);
+        properties = configurationService.getPropertiesWithPrefix("zeppelin.server", context, callback);
+        verify(callback).onSuccess(properties, context);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            assertFalse(entry.getKey().contains("password"));
+            assertTrue(entry.getKey().startsWith("zeppelin.server"));
+        }
+    }
 }

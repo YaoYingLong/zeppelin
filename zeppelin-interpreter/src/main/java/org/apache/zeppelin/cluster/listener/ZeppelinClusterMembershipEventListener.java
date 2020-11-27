@@ -27,24 +27,24 @@ import org.slf4j.LoggerFactory;
  * Monitor whether the metadata in the cluster server changes
  */
 public class ZeppelinClusterMembershipEventListener implements ClusterMembershipEventListener {
-  private static final Logger LOGGER
-      = LoggerFactory.getLogger(ZeppelinClusterMembershipEventListener.class);
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(ZeppelinClusterMembershipEventListener.class);
 
-  @Override
-  public void event(ClusterMembershipEvent event) {
-    switch (event.type()) {
-      case MEMBER_ADDED:
-        LOGGER.info("{} joined the cluster.", event.subject().id());
-        break;
-      case MEMBER_REMOVED:
-        LOGGER.info("{} left the cluster.", event.subject().id());
-        break;
-      case METADATA_CHANGED:
-        LOGGER.info("{} meta data changed.", event.subject().id());
-        break;
-      case REACHABILITY_CHANGED:
-        LOGGER.info("{} reachability changed.", event.subject().id());
-        break;
+    @Override
+    public void event(ClusterMembershipEvent event) {
+        switch (event.type()) {
+            case MEMBER_ADDED:
+                LOGGER.info("{} joined the cluster.", event.subject().id());
+                break;
+            case MEMBER_REMOVED:
+                LOGGER.info("{} left the cluster.", event.subject().id());
+                break;
+            case METADATA_CHANGED:
+                LOGGER.info("{} meta data changed.", event.subject().id());
+                break;
+            case REACHABILITY_CHANGED:
+                LOGGER.info("{} reachability changed.", event.subject().id());
+                break;
+        }
     }
-  }
 }

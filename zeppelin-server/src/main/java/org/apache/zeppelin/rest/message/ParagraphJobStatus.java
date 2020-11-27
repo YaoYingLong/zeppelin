@@ -22,55 +22,55 @@ import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.scheduler.Job;
 
 public class ParagraphJobStatus {
-  private String id;
-  private String status;
-  private String errorMessage;
-  private String started;
-  private String finished;
-  private String progress;
+    private String id;
+    private String status;
+    private String errorMessage;
+    private String started;
+    private String finished;
+    private String progress;
 
-  public ParagraphJobStatus(Paragraph p) {
-    this.id = p.getId();
-    this.status = p.getStatus().toString();
-    if (p.getDateStarted() != null) {
-      this.started = p.getDateStarted().toString();
-    }
-    if (p.getDateFinished() != null) {
-      this.finished = p.getDateFinished().toString();
-    }
-    if (p.getStatus().isRunning()) {
-      this.progress = String.valueOf(p.progress());
-    } else if (p.isTerminated()){
-      this.progress = String.valueOf(100);
-      if (p.getStatus() == Job.Status.ERROR) {
-        if (!StringUtils.isBlank(p.getErrorMessage())) {
-          this.errorMessage = p.getErrorMessage();
-        } else {
-          this.errorMessage = p.getReturn().toString();
+    public ParagraphJobStatus(Paragraph p) {
+        this.id = p.getId();
+        this.status = p.getStatus().toString();
+        if (p.getDateStarted() != null) {
+            this.started = p.getDateStarted().toString();
         }
-      }
-    } else {
-      this.progress = String.valueOf(0);
+        if (p.getDateFinished() != null) {
+            this.finished = p.getDateFinished().toString();
+        }
+        if (p.getStatus().isRunning()) {
+            this.progress = String.valueOf(p.progress());
+        } else if (p.isTerminated()) {
+            this.progress = String.valueOf(100);
+            if (p.getStatus() == Job.Status.ERROR) {
+                if (!StringUtils.isBlank(p.getErrorMessage())) {
+                    this.errorMessage = p.getErrorMessage();
+                } else {
+                    this.errorMessage = p.getReturn().toString();
+                }
+            }
+        } else {
+            this.progress = String.valueOf(0);
+        }
     }
-  }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public String getStatus() {
-    return status;
-  }
+    public String getStatus() {
+        return status;
+    }
 
-  public String getStarted() {
-    return started;
-  }
+    public String getStarted() {
+        return started;
+    }
 
-  public String getFinished() {
-    return finished;
-  }
+    public String getFinished() {
+        return finished;
+    }
 
-  public String getProgress() {
-    return progress;
-  }
+    public String getProgress() {
+        return progress;
+    }
 }

@@ -23,129 +23,116 @@ import org.apache.hadoop.yarn.api.protocolrecords.GetApplicationsResponse;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.zeppelin.interpreter.ExecutionContextBuilder;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterFactory;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
-import org.apache.zeppelin.interpreter.InterpreterSettingManager;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.integration.DownloadUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class FlinkIntegrationTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(FlinkIntegrationTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(FlinkIntegrationTest.class);
 
-  private static MiniHadoopCluster hadoopCluster;
-  private static MiniZeppelin zeppelin;
-  private static InterpreterFactory interpreterFactory;
-  private static InterpreterSettingManager interpreterSettingManager;
+    private static MiniHadoopCluster hadoopCluster;
+    private static MiniZeppelin zeppelin;
+    private static InterpreterFactory interpreterFactory;
+    private static InterpreterSettingManager interpreterSettingManager;
 
-  private String flinkVersion;
-  private String hadoopHome;
-  private String flinkHome;
+    private String flinkVersion;
+    private String hadoopHome;
+    private String flinkHome;
 
-  public FlinkIntegrationTest(String flinkVersion) {
-    LOGGER.info("Testing FlinkVersion: " + flinkVersion);
-    this.flinkVersion = flinkVersion;
-    this.flinkHome = DownloadUtils.downloadFlink(flinkVersion);
-    this.hadoopHome = DownloadUtils.downloadHadoop("2.7.7");
-  }
-
-  @BeforeClass
-  public static void setUp() throws IOException {
-    Configuration conf = new Configuration();
-    conf.setBoolean(YarnConfiguration.YARN_MINICLUSTER_FIXED_PORTS, true);
-    hadoopCluster = new MiniHadoopCluster(conf);
-    hadoopCluster.start();
-
-    zeppelin = new MiniZeppelin();
-    zeppelin.start(FlinkIntegrationTest.class);
-    interpreterFactory = zeppelin.getInterpreterFactory();
-    interpreterSettingManager = zeppelin.getInterpreterSettingManager();
-  }
-
-  @AfterClass
-  public static void tearDown() throws IOException {
-    if (zeppelin != null) {
-      zeppelin.stop();
+    public FlinkIntegrationTest(String flinkVersion) {
+        LOGGER.info("Testing FlinkVersion: " + flinkVersion);
+        this.flinkVersion = flinkVersion;
+        this.flinkHome = DownloadUtils.downloadFlink(flinkVersion);
+        this.hadoopHome = DownloadUtils.downloadHadoop("2.7.7");
     }
-    if (hadoopCluster != null) {
-      hadoopCluster.stop();
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        Configuration conf = new Configuration();
+        conf.setBoolean(YarnConfiguration.YARN_MINICLUSTER_FIXED_PORTS, true);
+        hadoopCluster = new MiniHadoopCluster(conf);
+        hadoopCluster.start();
+
+        zeppelin = new MiniZeppelin();
+        zeppelin.start(FlinkIntegrationTest.class);
+        interpreterFactory = zeppelin.getInterpreterFactory();
+        interpreterSettingManager = zeppelin.getInterpreterSettingManager();
     }
-  }
 
-  private void testInterpreterBasics() throws IOException, InterpreterException {
-    // test FlinkInterpreter
-    Interpreter flinkInterpreter = interpreterFactory.getInterpreter("flink", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("flink").createExecutionContext());
+    @AfterClass
+    public static void tearDown() throws IOException {
+        if (zeppelin != null) {
+            zeppelin.stop();
+        }
+        if (hadoopCluster != null) {
+            hadoopCluster.stop();
+        }
+    }
 
-    InterpreterContext context = new InterpreterContext.Builder().setNoteId("note1").setParagraphId("paragraph_1").build();
-    InterpreterResult interpreterResult = flinkInterpreter.interpret("1+1", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertTrue(interpreterResult.message().get(0).getData().contains("2"));
+    private void testInterpreterBasics() throws IOException, InterpreterException {
+        // test FlinkInterpreter
+        Interpreter flinkInterpreter = interpreterFactory.getInterpreter("flink", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("flink").createExecutionContext());
 
-    interpreterResult = flinkInterpreter.interpret("val data = benv.fromElements(1, 2, 3)\ndata.collect()", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertTrue(interpreterResult.message().get(0).getData().contains("1, 2, 3"));
+        InterpreterContext context = new InterpreterContext.Builder().setNoteId("note1").setParagraphId("paragraph_1").build();
+        InterpreterResult interpreterResult = flinkInterpreter.interpret("1+1", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        assertTrue(interpreterResult.message().get(0).getData().contains("2"));
 
-    interpreterResult = flinkInterpreter.interpret("val data = senv.fromElements(1, 2, 3)\ndata.print()", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        interpreterResult = flinkInterpreter.interpret("val data = benv.fromElements(1, 2, 3)\ndata.collect()", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        assertTrue(interpreterResult.message().get(0).getData().contains("1, 2, 3"));
 
-    // check spark weburl in zeppelin-server side
-    InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getByName("flink");
-    assertEquals(1, flinkInterpreterSetting.getAllInterpreterGroups().size());
-    assertNotNull(flinkInterpreterSetting.getAllInterpreterGroups().get(0).getWebUrl());
-  }
+        interpreterResult = flinkInterpreter.interpret("val data = senv.fromElements(1, 2, 3)\ndata.print()", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
 
-  @Test
-  public void testLocalMode() throws IOException, YarnException, InterpreterException {
-    InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getInterpreterSettingByName("flink");
-    flinkInterpreterSetting.setProperty("FLINK_HOME", flinkHome);
-    flinkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
-    flinkInterpreterSetting.setProperty("flink.execution.mode", "local");
+        // check spark weburl in zeppelin-server side
+        InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getByName("flink");
+        assertEquals(1, flinkInterpreterSetting.getAllInterpreterGroups().size());
+        assertNotNull(flinkInterpreterSetting.getAllInterpreterGroups().get(0).getWebUrl());
+    }
 
-    testInterpreterBasics();
+    @Test
+    public void testLocalMode() throws IOException, YarnException, InterpreterException {
+        InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getInterpreterSettingByName("flink");
+        flinkInterpreterSetting.setProperty("FLINK_HOME", flinkHome);
+        flinkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
+        flinkInterpreterSetting.setProperty("flink.execution.mode", "local");
 
-    // no yarn application launched
-    GetApplicationsRequest request = GetApplicationsRequest.newInstance(EnumSet.of(YarnApplicationState.RUNNING));
-    GetApplicationsResponse response = hadoopCluster.getYarnCluster().getResourceManager().getClientRMService().getApplications(request);
-    assertEquals(0, response.getApplicationList().size());
+        testInterpreterBasics();
 
-    interpreterSettingManager.close();
-  }
+        // no yarn application launched
+        GetApplicationsRequest request = GetApplicationsRequest.newInstance(EnumSet.of(YarnApplicationState.RUNNING));
+        GetApplicationsResponse response = hadoopCluster.getYarnCluster().getResourceManager().getClientRMService().getApplications(request);
+        assertEquals(0, response.getApplicationList().size());
 
-  // TODO(zjffdu) enable it when make yarn integration test work
-  @Test
-  public void testYarnMode() throws IOException, InterpreterException, YarnException {
-    InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getInterpreterSettingByName("flink");
-    flinkInterpreterSetting.setProperty("HADOOP_CONF_DIR", hadoopCluster.getConfigPath());
-    flinkInterpreterSetting.setProperty("FLINK_HOME", flinkHome);
-    flinkInterpreterSetting.setProperty("PATH", hadoopHome + "/bin:" + System.getenv("PATH"));
-    flinkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
-    flinkInterpreterSetting.setProperty("flink.execution.mode", "YARN");
-    testInterpreterBasics();
+        interpreterSettingManager.close();
+    }
 
-    // 1 yarn application launched
-    GetApplicationsRequest request = GetApplicationsRequest.newInstance(EnumSet.of(YarnApplicationState.RUNNING));
-    GetApplicationsResponse response = hadoopCluster.getYarnCluster().getResourceManager().getClientRMService().getApplications(request);
-    assertEquals(1, response.getApplicationList().size());
+    // TODO(zjffdu) enable it when make yarn integration test work
+    @Test
+    public void testYarnMode() throws IOException, InterpreterException, YarnException {
+        InterpreterSetting flinkInterpreterSetting = interpreterSettingManager.getInterpreterSettingByName("flink");
+        flinkInterpreterSetting.setProperty("HADOOP_CONF_DIR", hadoopCluster.getConfigPath());
+        flinkInterpreterSetting.setProperty("FLINK_HOME", flinkHome);
+        flinkInterpreterSetting.setProperty("PATH", hadoopHome + "/bin:" + System.getenv("PATH"));
+        flinkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
+        flinkInterpreterSetting.setProperty("flink.execution.mode", "YARN");
+        testInterpreterBasics();
 
-    interpreterSettingManager.close();
-  }
+        // 1 yarn application launched
+        GetApplicationsRequest request = GetApplicationsRequest.newInstance(EnumSet.of(YarnApplicationState.RUNNING));
+        GetApplicationsResponse response = hadoopCluster.getYarnCluster().getResourceManager().getClientRMService().getApplications(request);
+        assertEquals(1, response.getApplicationList().size());
+
+        interpreterSettingManager.close();
+    }
 }

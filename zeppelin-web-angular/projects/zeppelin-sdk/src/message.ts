@@ -31,9 +31,7 @@ export type SendArgumentsType<K extends keyof MessageSendDataTypeMap> = MessageS
   ? ArgumentsType<(op: K) => void>
   : ArgumentsType<(op: K, data: MessageSendDataTypeMap[K]) => void>;
 
-export type ReceiveArgumentsType<
-  K extends keyof MessageReceiveDataTypeMap
-> = MessageReceiveDataTypeMap[K] extends undefined ? () => void : (data?: MessageReceiveDataTypeMap[K]) => void;
+export type ReceiveArgumentsType<K extends keyof MessageReceiveDataTypeMap> = MessageReceiveDataTypeMap[K] extends undefined ? () => void : (data?: MessageReceiveDataTypeMap[K]) => void;
 
 export class Message {
   public connectedStatus = false;
@@ -167,7 +165,7 @@ export class Message {
 
         if (message.op === OP.PARAGRAPH) {
           if (isResponseForRequestFromThisClient &&
-               this.lastMsgIdSeqSent > msgIdSeqReceived
+            this.lastMsgIdSeqSent > msgIdSeqReceived
           ) {
             console.log('PARAPGRAPH is already updated by shortcircuit');
             return false;
@@ -247,7 +245,7 @@ export class Message {
   }
 
   cloneNote(noteIdToClone, newNoteName): void {
-    this.send<OP.CLONE_NOTE>(OP.CLONE_NOTE, { id: noteIdToClone, name: newNoteName });
+    this.send<OP.CLONE_NOTE>(OP.CLONE_NOTE, {id: noteIdToClone, name: newNoteName});
   }
 
   /**
@@ -262,31 +260,31 @@ export class Message {
   }
 
   getNote(noteId: string): void {
-    this.send<OP.GET_NOTE>(OP.GET_NOTE, { id: noteId });
+    this.send<OP.GET_NOTE>(OP.GET_NOTE, {id: noteId});
   }
 
   updateNote(noteId: string, noteName: string, noteConfig: NoteConfig): void {
-    this.send<OP.NOTE_UPDATE>(OP.NOTE_UPDATE, { id: noteId, name: noteName, config: noteConfig });
+    this.send<OP.NOTE_UPDATE>(OP.NOTE_UPDATE, {id: noteId, name: noteName, config: noteConfig});
   }
 
   updatePersonalizedMode(noteId: string, modeValue: PersonalizedMode): void {
-    this.send<OP.UPDATE_PERSONALIZED_MODE>(OP.UPDATE_PERSONALIZED_MODE, { id: noteId, personalized: modeValue });
+    this.send<OP.UPDATE_PERSONALIZED_MODE>(OP.UPDATE_PERSONALIZED_MODE, {id: noteId, personalized: modeValue});
   }
 
   noteRename(noteId: string, noteName: string, relative: boolean): void {
-    this.send<OP.NOTE_RENAME>(OP.NOTE_RENAME, { id: noteId, name: noteName, relative: relative });
+    this.send<OP.NOTE_RENAME>(OP.NOTE_RENAME, {id: noteId, name: noteName, relative: relative});
   }
 
   folderRename(folderId: string, folderPath: string): void {
-    this.send<OP.FOLDER_RENAME>(OP.FOLDER_RENAME, { id: folderId, name: folderPath });
+    this.send<OP.FOLDER_RENAME>(OP.FOLDER_RENAME, {id: folderId, name: folderPath});
   }
 
   moveParagraph(paragraphId: string, newIndex: number): void {
-    this.send<OP.MOVE_PARAGRAPH>(OP.MOVE_PARAGRAPH, { id: paragraphId, index: newIndex });
+    this.send<OP.MOVE_PARAGRAPH>(OP.MOVE_PARAGRAPH, {id: paragraphId, index: newIndex});
   }
 
   insertParagraph(newIndex: number): void {
-    this.send<OP.INSERT_PARAGRAPH>(OP.INSERT_PARAGRAPH, { index: newIndex });
+    this.send<OP.INSERT_PARAGRAPH>(OP.INSERT_PARAGRAPH, {index: newIndex});
   }
 
   copyParagraph(
@@ -340,7 +338,7 @@ export class Message {
   }
 
   cancelParagraph(paragraphId): void {
-    this.send<OP.CANCEL_PARAGRAPH>(OP.CANCEL_PARAGRAPH, { id: paragraphId });
+    this.send<OP.CANCEL_PARAGRAPH>(OP.CANCEL_PARAGRAPH, {id: paragraphId});
   }
 
   paragraphExecutedBySpell(
@@ -363,7 +361,7 @@ export class Message {
         code: paragraphStatus,
         msg: paragraphResultsMsg.map(dataWithType => {
           const serializedData = dataWithType.data;
-          return { type: dataWithType.type, serializedData };
+          return {type: dataWithType.type, serializedData};
         })
       },
       status: paragraphStatus,
@@ -409,15 +407,15 @@ export class Message {
   }
 
   paragraphRemove(paragraphId: string): void {
-    this.send<OP.PARAGRAPH_REMOVE>(OP.PARAGRAPH_REMOVE, { id: paragraphId });
+    this.send<OP.PARAGRAPH_REMOVE>(OP.PARAGRAPH_REMOVE, {id: paragraphId});
   }
 
   paragraphClearOutput(paragraphId: string): void {
-    this.send<OP.PARAGRAPH_CLEAR_OUTPUT>(OP.PARAGRAPH_CLEAR_OUTPUT, { id: paragraphId });
+    this.send<OP.PARAGRAPH_CLEAR_OUTPUT>(OP.PARAGRAPH_CLEAR_OUTPUT, {id: paragraphId});
   }
 
   paragraphClearAllOutput(noteId: string): void {
-    this.send<OP.PARAGRAPH_CLEAR_ALL_OUTPUT>(OP.PARAGRAPH_CLEAR_ALL_OUTPUT, { id: noteId });
+    this.send<OP.PARAGRAPH_CLEAR_ALL_OUTPUT>(OP.PARAGRAPH_CLEAR_ALL_OUTPUT, {id: noteId});
   }
 
   completion(paragraphId: string, buf: string, cursor: number): void {
@@ -514,7 +512,7 @@ export class Message {
   }
 
   getInterpreterBindings(noteId: string): void {
-    this.send<OP.GET_INTERPRETER_BINDINGS>(OP.GET_INTERPRETER_BINDINGS, { noteId: noteId });
+    this.send<OP.GET_INTERPRETER_BINDINGS>(OP.GET_INTERPRETER_BINDINGS, {noteId: noteId});
   }
 
   saveInterpreterBindings(noteId, selectedSettingIds): void {

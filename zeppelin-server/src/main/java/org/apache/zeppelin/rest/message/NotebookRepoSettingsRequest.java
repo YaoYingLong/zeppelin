@@ -17,46 +17,42 @@
 package org.apache.zeppelin.rest.message;
 
 import com.google.gson.Gson;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.zeppelin.common.JsonSerializable;
 
 import java.util.Collections;
 import java.util.Map;
-
-import org.apache.zeppelin.common.JsonSerializable;
 
 /**
  * Represent payload of a notebook repo settings.
  */
 public class NotebookRepoSettingsRequest implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    public static final NotebookRepoSettingsRequest EMPTY = new NotebookRepoSettingsRequest();
+    private static final Gson gson = new Gson();
+    public String name;
+    public Map<String, String> settings;
 
-  public static final NotebookRepoSettingsRequest EMPTY = new NotebookRepoSettingsRequest();
-
-  public String name;
-  public Map<String, String> settings;
-
-  public NotebookRepoSettingsRequest() {
-    name = StringUtils.EMPTY;
-    settings = Collections.emptyMap();
-  }
-
-  public boolean isEmpty() {
-    return this == EMPTY;
-  }
-
-  public static boolean isEmpty(NotebookRepoSettingsRequest repoSetting) {
-    if (repoSetting == null) {
-      return true;
+    public NotebookRepoSettingsRequest() {
+        name = StringUtils.EMPTY;
+        settings = Collections.emptyMap();
     }
-    return repoSetting.isEmpty();
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public static boolean isEmpty(NotebookRepoSettingsRequest repoSetting) {
+        if (repoSetting == null) {
+            return true;
+        }
+        return repoSetting.isEmpty();
+    }
 
-  public static NotebookRepoSettingsRequest fromJson(String json) {
-    return gson.fromJson(json, NotebookRepoSettingsRequest.class);
-  }
+    public static NotebookRepoSettingsRequest fromJson(String json) {
+        return gson.fromJson(json, NotebookRepoSettingsRequest.class);
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

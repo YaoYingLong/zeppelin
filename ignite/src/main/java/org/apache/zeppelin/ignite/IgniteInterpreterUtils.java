@@ -23,22 +23,23 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
  * Apache Ignite interpreter utils.
  */
 public class IgniteInterpreterUtils {
-  /**
-   * Builds error result from given exception.
-   * @param e Exception.
-   * @return result.
-   */
-  public static InterpreterResult buildErrorResult(Throwable e) {
-    StringBuilder sb = new StringBuilder(e.getMessage());
+    /**
+     * Builds error result from given exception.
+     *
+     * @param e Exception.
+     * @return result.
+     */
+    public static InterpreterResult buildErrorResult(Throwable e) {
+        StringBuilder sb = new StringBuilder(e.getMessage());
 
-    while ((e = e.getCause()) != null) {
-      String errMsg = e.getMessage();
+        while ((e = e.getCause()) != null) {
+            String errMsg = e.getMessage();
 
-      if (errMsg != null) {
-        sb.append('\n').append(errMsg);
-      }
+            if (errMsg != null) {
+                sb.append('\n').append(errMsg);
+            }
+        }
+
+        return new InterpreterResult(InterpreterResult.Code.ERROR, sb.toString());
     }
-
-    return new InterpreterResult(InterpreterResult.Code.ERROR, sb.toString());
-  }
 }

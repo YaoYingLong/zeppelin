@@ -16,22 +16,22 @@
  */
 package org.apache.zeppelin.rest.exception;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import org.apache.zeppelin.utils.ExceptionUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.zeppelin.utils.ExceptionUtils;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 /**
  * UnauthorizedException handler for WebApplicationException.
  */
 public class ForbiddenException extends WebApplicationException {
-  private static Response forbiddenJson(String message) {
-    return ExceptionUtils.jsonResponseContent(FORBIDDEN, message);
-  }
+    public ForbiddenException(String message) {
+        super(forbiddenJson(message));
+    }
 
-  public ForbiddenException(String message) {
-    super(forbiddenJson(message));
-  }
+    private static Response forbiddenJson(String message) {
+        return ExceptionUtils.jsonResponseContent(FORBIDDEN, message);
+    }
 }

@@ -23,15 +23,15 @@ import kotlin.reflect.KFunction;
  * Util class for pretty-printing Kotlin variables and functions.
  */
 public class KotlinReflectUtil {
-  public static String functionSignature(KFunction<?> function) {
-    return function.toString().replaceAll("Line_\\d+\\.", "");
-  }
-
-  public static String shorten(String name) {
-    if (name == null) {
-      return null;
+    public static String functionSignature(KFunction<?> function) {
+        return function.toString().replaceAll("Line_\\d+\\.", "");
     }
-    // kotlin.collections.List<kotlin.Int> -> List<Int>
-    return name.replaceAll("(\\b[_a-zA-Z$][_a-zA-Z0-9$]*\\b\\.)+", "");
-  }
+
+    public static String shorten(String name) {
+        if (name == null) {
+            return null;
+        }
+        // kotlin.collections.List<kotlin.Int> -> List<Int>
+        return name.replaceAll("(\\b[_a-zA-Z$][_a-zA-Z0-9$]*\\b\\.)+", "");
+    }
 }

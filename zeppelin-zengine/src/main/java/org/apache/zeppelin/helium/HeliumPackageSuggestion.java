@@ -25,28 +25,28 @@ import java.util.List;
  * Suggested apps
  */
 public class HeliumPackageSuggestion {
-  private final List<HeliumPackageSearchResult> available = new LinkedList<>();
+    private final List<HeliumPackageSearchResult> available = new LinkedList<>();
 
-  /*
-   * possible future improvement
-   * provides n - 'favorite' list, based on occurrence of apps in notebook
-   */
+    /*
+     * possible future improvement
+     * provides n - 'favorite' list, based on occurrence of apps in notebook
+     */
 
-  public HeliumPackageSuggestion() {
+    public HeliumPackageSuggestion() {
 
-  }
+    }
 
-  public void addAvailablePackage(HeliumPackageSearchResult r) {
-    available.add(r);
+    public void addAvailablePackage(HeliumPackageSearchResult r) {
+        available.add(r);
 
-  }
+    }
 
-  public void sort() {
-    Collections.sort(available, new Comparator<HeliumPackageSearchResult>() {
-      @Override
-      public int compare(HeliumPackageSearchResult o1, HeliumPackageSearchResult o2) {
-        return o1.getPkg().getName().compareTo(o2.getPkg().getName());
-      }
-    });
-  }
+    public void sort() {
+        Collections.sort(available, new Comparator<HeliumPackageSearchResult>() {
+            @Override
+            public int compare(HeliumPackageSearchResult o1, HeliumPackageSearchResult o2) {
+                return o1.getPkg().getName().compareTo(o2.getPkg().getName());
+            }
+        });
+    }
 }

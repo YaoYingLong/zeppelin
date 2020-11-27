@@ -18,18 +18,17 @@
 package org.apache.zeppelin.rest.message;
 
 /**
- *  RenameNoteRequest rest api request message
- *
+ * RenameNoteRequest rest api request message
  */
 
 public class RenameNoteRequest {
-  String name;
+    String name;
 
-  public RenameNoteRequest (){
+    public RenameNoteRequest() {
 
-  }
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 }

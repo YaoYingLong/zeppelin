@@ -45,16 +45,16 @@ export class BarChartVisualizationComponent extends G2VisualizationComponentBase
   pivotSettingComponent: VisualizationPivotSettingComponent;
   stacked = false;
 
+  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {
+    super(visualization);
+  }
+
   viewChange() {
     if (!this.config.setting.multiBarChart) {
       this.config.setting.multiBarChart = new VisualizationMultiBarChart();
     }
     this.config.setting.multiBarChart.stacked = this.stacked;
     this.visualization.configChange$.next(this.config);
-  }
-
-  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {
-    super(visualization);
   }
 
   ngOnInit() {}

@@ -35,95 +35,95 @@ import java.util.Date;
  * Abstract class for interpreter process
  */
 public abstract class RemoteInterpreterProcess implements InterpreterClient {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteInterpreterProcess.class);
-  private static final Gson GSON = new Gson();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoteInterpreterProcess.class);
+    private static final Gson GSON = new Gson();
+    protected String intpEventServerHost;
+    protected int intpEventServerPort;
+    private int connectTimeout;
+    private PooledRemoteClient<Client> remoteClient;
+    private String startTime;
 
-  private int connectTimeout;
-  protected String intpEventServerHost;
-  protected int intpEventServerPort;
-  private PooledRemoteClient<Client> remoteClient;
-  private String startTime;
-
-  public RemoteInterpreterProcess(int connectTimeout,
-                                  int connectionPoolSize,
-                                  String intpEventServerHost,
-                                  int intpEventServerPort) {
-    this.connectTimeout = connectTimeout;
-    this.intpEventServerHost = intpEventServerHost;
-    this.intpEventServerPort = intpEventServerPort;
-    this.startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-    this.remoteClient = new PooledRemoteClient<>(() -> {
-      TSocket transport = new TSocket(getHost(), getPort());
-      try {
-        transport.open();
-      } catch (TTransportException e) {
-        throw new IOException(e);
-      }
-      TProtocol protocol = new  TBinaryProtocol(transport);
-      return new Client(protocol);
-    }, connectionPoolSize);
-  }
-
-  public int getConnectTimeout() {
-    return connectTimeout;
-  }
-
-  public String getStartTime() {
-    return startTime;
-  }
-
-  public void shutdown() {
-    if (remoteClient != null) {
-      remoteClient.shutdown();
+    public RemoteInterpreterProcess(int connectTimeout,
+                                    int connectionPoolSize,
+                                    String intpEventServerHost,
+                                    int intpEventServerPort) {
+        this.connectTimeout = connectTimeout;
+        this.intpEventServerHost = intpEventServerHost;
+        this.intpEventServerPort = intpEventServerPort;
+        this.startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        this.remoteClient = new PooledRemoteClient<>(() -> {
+            TSocket transport = new TSocket(getHost(), getPort());
+            try {
+                transport.open();
+            } catch (TTransportException e) {
+                throw new IOException(e);
+            }
+            TProtocol protocol = new TBinaryProtocol(transport);
+            return new Client(protocol);
+        }, connectionPoolSize);
     }
-  }
 
-  /**
-   * Called when angular object is updated in client side to propagate
-   * change to the remote process
-   * @param name
-   * @param o
-   */
-  public void updateRemoteAngularObject(String name,
-                                        String noteId,
-                                        String paragraphId,
-                                        Object o) {
-    remoteClient.callRemoteFunction(client -> {
-       client.angularObjectUpdate(name, noteId, paragraphId, GSON.toJson(o));
-       return null;
-    });
-  }
-
-  public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, Client> func) {
-    return remoteClient.callRemoteFunction(func);
-  }
-
-  public void init(ZeppelinConfiguration zConf) {
-    callRemoteFunction(client -> {
-      client.init(zConf.getProperties());
-      return null;
-    });
-  }
-
-  @Override
-  public boolean recover() {
-    try {
-      remoteClient.callRemoteFunction(client -> {
-        client.reconnect(intpEventServerHost, intpEventServerPort);
-        return null;
-      });
-      return true;
-    } catch (Exception e) {
-      LOGGER.error("Fail to recover remote interpreter process: {}" , e.getMessage());
-      return false;
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
-  }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void shutdown() {
+        if (remoteClient != null) {
+            remoteClient.shutdown();
+        }
+    }
+
+    /**
+     * Called when angular object is updated in client side to propagate
+     * change to the remote process
+     *
+     * @param name
+     * @param o
+     */
+    public void updateRemoteAngularObject(String name,
+                                          String noteId,
+                                          String paragraphId,
+                                          Object o) {
+        remoteClient.callRemoteFunction(client -> {
+            client.angularObjectUpdate(name, noteId, paragraphId, GSON.toJson(o));
+            return null;
+        });
+    }
+
+    public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, Client> func) {
+        return remoteClient.callRemoteFunction(func);
+    }
+
+    public void init(ZeppelinConfiguration zConf) {
+        callRemoteFunction(client -> {
+            client.init(zConf.getProperties());
+            return null;
+        });
+    }
+
+    @Override
+    public boolean recover() {
+        try {
+            remoteClient.callRemoteFunction(client -> {
+                client.reconnect(intpEventServerHost, intpEventServerPort);
+                return null;
+            });
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Fail to recover remote interpreter process: {}", e.getMessage());
+            return false;
+        }
+    }
 
 
-  /**
-   * called by RemoteInterpreterEventServer to notify that RemoteInterpreter Process is started
-   */
-  public abstract void processStarted(int port, String host);
+    /**
+     * called by RemoteInterpreterEventServer to notify that RemoteInterpreter Process is started
+     */
+    public abstract void processStarted(int port, String host);
 
-  public abstract String getErrorMessage();
+    public abstract String getErrorMessage();
 }

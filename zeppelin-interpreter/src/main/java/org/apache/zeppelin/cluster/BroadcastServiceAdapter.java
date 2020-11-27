@@ -27,18 +27,18 @@ import java.util.function.Consumer;
  * This service provides no guaranteed regarding reliability or order of messages.
  */
 public class BroadcastServiceAdapter implements BroadcastService {
-  @Override
-  public void broadcast(String subject, byte[] message) {
+    @Override
+    public void broadcast(String subject, byte[] message) {
 
-  }
+    }
 
-  @Override
-  public void addListener(String subject, Consumer<byte[]> listener) {
+    @Override
+    public void addListener(String subject, Consumer<byte[]> listener) {
 
-  }
+    }
 
-  @Override
-  public void removeListener(String subject, Consumer<byte[]> listener) {
+    @Override
+    public void removeListener(String subject, Consumer<byte[]> listener) {
 
-  }
+    }
 }

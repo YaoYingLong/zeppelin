@@ -20,36 +20,36 @@ package org.apache.zeppelin.scheduler;
 
 public abstract class JobWithProgressPoller<T> extends Job<T> {
 
-  private transient JobProgressPoller progressPoller;
-  private long progressUpdateIntervalMs;
+    private transient JobProgressPoller progressPoller;
+    private long progressUpdateIntervalMs;
 
 
-  public JobWithProgressPoller(String jobId, String jobName, JobListener listener,
-                               long progressUpdateIntervalMs) {
-    super(jobId, jobName, listener);
-    this.progressUpdateIntervalMs = progressUpdateIntervalMs;
-  }
-
-  public JobWithProgressPoller(String jobId, String jobName, JobListener listener) {
-    this(jobId, jobName, listener, JobProgressPoller.DEFAULT_INTERVAL_MSEC);
-  }
-
-  public JobWithProgressPoller(String jobId, JobListener listener) {
-    this(jobId, jobId, listener);
-  }
-
-  @Override
-  public void onJobStarted() {
-    super.onJobStarted();
-    progressPoller = new JobProgressPoller(this, progressUpdateIntervalMs);
-    progressPoller.start();
-  }
-
-  @Override
-  public void onJobEnded() {
-    super.onJobEnded();
-    if (this.progressPoller != null) {
-      this.progressPoller.interrupt();
+    public JobWithProgressPoller(String jobId, String jobName, JobListener listener,
+                                 long progressUpdateIntervalMs) {
+        super(jobId, jobName, listener);
+        this.progressUpdateIntervalMs = progressUpdateIntervalMs;
     }
-  }
+
+    public JobWithProgressPoller(String jobId, String jobName, JobListener listener) {
+        this(jobId, jobName, listener, JobProgressPoller.DEFAULT_INTERVAL_MSEC);
+    }
+
+    public JobWithProgressPoller(String jobId, JobListener listener) {
+        this(jobId, jobId, listener);
+    }
+
+    @Override
+    public void onJobStarted() {
+        super.onJobStarted();
+        progressPoller = new JobProgressPoller(this, progressUpdateIntervalMs);
+        progressPoller.start();
+    }
+
+    @Override
+    public void onJobEnded() {
+        super.onJobEnded();
+        if (this.progressPoller != null) {
+            this.progressPoller.interrupt();
+        }
+    }
 }

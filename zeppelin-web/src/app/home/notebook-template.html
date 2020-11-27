@@ -14,17 +14,17 @@ limitations under the License.
 
 <div ng-class="note_folder_renderer">
   <!-- note -->
-  <div ng-if="node.children == null && isFilterNote(node)" class="note-folder-item">
-    <a style="text-decoration: none;" href="#/notebook/{{node.id}}">
-      <i style="font-size: 10px;"
-         ng-class="query.q && node.isTrash ? 'fa fa-trash-o' : 'icon-doc'"></i> {{getNoteName(node)}}
+  <div class="note-folder-item" ng-if="node.children == null && isFilterNote(node)">
+    <a href="#/notebook/{{node.id}}" style="text-decoration: none;">
+      <i ng-class="query.q && node.isTrash ? 'fa fa-trash-o' : 'icon-doc'"
+         style="font-size: 10px;"></i> {{getNoteName(node)}}
     </a>
     <span class="note-folder-item-actions">
       <!-- if note is not in trash -->
       <a ng-if="!node.isTrash" style="text-decoration: none;">
-        <i style="margin-left: 10px;"
-           class="fa fa-pencil notebook-list-btn"
+        <i class="fa fa-pencil notebook-list-btn"
            ng-click="node.path ? renameNote(node.id, node.path) : renameNote(node.id, node.name)"
+           style="margin-left: 10px;"
            tooltip-placement="bottom" uib-tooltip="Rename note">
         </i>
       </a>
@@ -55,14 +55,17 @@ limitations under the License.
   <!-- folder -->
   <div ng-if="node.children != null && node.id !== TRASH_FOLDER_ID">
     <div class="note-folder-item">
-      <a style="text-decoration: none; cursor: pointer;" ng-click="toggleFolderNode(node)">
-        <i style="font-size: 10px;" ng-class="node.hidden ? 'fa fa-folder' : 'fa fa-folder-open'"></i> {{getNoteName(node)}}
+      <a ng-click="toggleFolderNode(node)" style="text-decoration: none; cursor: pointer;">
+        <i ng-class="node.hidden ? 'fa fa-folder' : 'fa fa-folder-open'" style="font-size: 10px;"></i>
+        {{getNoteName(node)}}
       </a>
       <span class="note-folder-item-actions">
-        <a ng-if="!node.isTrash" href="" data-toggle="modal" data-target="#noteCreateModal" style="text-decoration: none;"
-           ng-controller="NoteCreateCtrl as noteCreateCtrl" ng-click="noteCreateCtrl.getInterpreterSettings()" data-path="{{node.id}}">
-          <i style="margin-left: 10px;"
-             class="fa fa-plus notebook-list-btn"
+        <a data-path="{{node.id}}" data-target="#noteCreateModal" data-toggle="modal" href=""
+           ng-click="noteCreateCtrl.getInterpreterSettings()"
+           ng-controller="NoteCreateCtrl as noteCreateCtrl" ng-if="!node.isTrash"
+           style="text-decoration: none;">
+          <i class="fa fa-plus notebook-list-btn"
+             style="margin-left: 10px;"
              tooltip-placement="bottom" uib-tooltip="Create new note">
           </i>
         </a>
@@ -92,24 +95,25 @@ limitations under the License.
     </div>
     <div ng-if="!node.hidden">
       <ul style="list-style-type: none; padding-left:15px;">
-        <li ng-repeat="node in node.children | orderBy:node:false:noteComparator" ng-include="'app/home/notebook-template.html'" ng-class="'note_folder_renderer'"></li>
+        <li ng-class="'note_folder_renderer'"
+            ng-include="'app/home/notebook-template.html'" ng-repeat="node in node.children | orderBy:node:false:noteComparator"></li>
       </ul>
     </div>
   </div>
   <!-- trash folder -->
   <div ng-if="node.id === TRASH_FOLDER_ID">
     <div class="note-folder-item">
-      <a style="text-decoration: none; cursor: pointer;" ng-click="toggleFolderNode(node)">
-        <i style="font-size: 14px;" class="fa fa-trash-o"></i> Trash
+      <a ng-click="toggleFolderNode(node)" style="text-decoration: none; cursor: pointer;">
+        <i class="fa fa-trash-o" style="font-size: 14px;"></i> Trash
       </a>
       <span class="note-folder-item-actions">
         <a style="text-decoration: none;">
-          <i style="margin-left: 10px"
-             class="fa fa-undo notebook-list-btn" ng-click="restoreAll()"
+          <i class="fa fa-undo notebook-list-btn"
+             ng-click="restoreAll()" style="margin-left: 10px"
              tooltip-placement="bottom" uib-tooltip="Restore all">
           </i>
-          <i style="font-size: 16px;"
-             class="fa fa-times notebook-list-btn" ng-click="emptyTrash()"
+          <i class="fa fa-times notebook-list-btn"
+             ng-click="emptyTrash()" style="font-size: 16px;"
              tooltip-placement="bottom" uib-tooltip="Empty trash">
           </i>
         </a>
@@ -117,7 +121,8 @@ limitations under the License.
     </div>
     <div ng-if="!node.hidden">
       <ul style="list-style-type: none; padding-left:15px;">
-        <li ng-repeat="node in node.children | orderBy:node:false:noteComparator" ng-include="'app/home/notebook-template.html'" ng-class="'note_folder_renderer'"></li>
+        <li ng-class="'note_folder_renderer'"
+            ng-include="'app/home/notebook-template.html'" ng-repeat="node in node.children | orderBy:node:false:noteComparator"></li>
       </ul>
     </div>
   </div>

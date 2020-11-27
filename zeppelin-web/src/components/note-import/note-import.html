@@ -11,16 +11,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div id="noteImportModal" class="modal fade" role="dialog" tabindex="-1"
-     data-backdrop="static" data-keyboard="false">
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="noteImportModal"
+     role="dialog" tabindex="-1">
 
   <div class="modal-dialog">
     <div class="modal-content" id="NoteImportCtrl" ng-init="NoteImportInit">
 
       <!-- modal-header -->
       <div class="modal-header modal-header-import">
-        <button type="button" class="close" data-dismiss="modal"
-                ng-click="noteImportCtrl.resetFlags()">&times;</button>
+        <button class="close" data-dismiss="modal" ng-click="noteImportCtrl.resetFlags()"
+                type="button">&times;
+        </button>
         <h4 class="modal-title">Import New Note</h4>
       </div>
 
@@ -29,8 +30,8 @@ limitations under the License.
         <div class="form-group">
           <label for="noteImportName">Import As</label>
           <input class="form-control note-name-input" id="noteImportName"
-                 placeholder="Insert Note Name" type="text"
-                 ng-model="note.noteImportName" />
+                 ng-model="note.noteImportName" placeholder="Insert Note Name"
+                 type="text"/>
         </div>
 
         <div class="form-group" ng-show="note.errorText">
@@ -46,12 +47,12 @@ limitations under the License.
             </a>
             <div style="display: none">
               <input class="form-control note-name-input" id="noteImportFile"
-                     placeholder="Note name" type="file"
-                     ng-model="note.importFile" onchange="angular.element(this).scope().importFile(this)" />
+                     ng-model="note.importFile" onchange="angular.element(this).scope().importFile(this)"
+                     placeholder="Note name" type="file"/>
             </div>
           </div>
           <div class="import-btn-image">
-            <a href="javascript:void(0);" ng-click="uploadURL()" class="fa fa-link">
+            <a class="fa fa-link" href="javascript:void(0);" ng-click="uploadURL()">
               <p class="modal-body-import-desc">Add from URL</p>
             </a>
           </div>
@@ -60,19 +61,19 @@ limitations under the License.
         <div class="form-group slide-right" ng-show="note.step2">
 
           <label for="noteImportUrl">URL</label>
-          <input placeholder="Note URL" type="text" class="form-control" id="noteImportUrl"
-                 ng-model="note.importUrl" />
+          <input class="form-control" id="noteImportUrl" ng-model="note.importUrl" placeholder="Note URL"
+                 type="text"/>
         </div>
 
       </div>
       <div class="modal-footer modal-footer-import" ng-show="note.step2">
-        <button type="button" id="importBackButton"
-                class="btn btn-default"
-                ng-click="noteImportCtrl.importBack()">Back
+        <button class="btn btn-default" id="importBackButton"
+                ng-click="noteImportCtrl.importBack()"
+                type="button">Back
         </button>
-        <button type="button" id="importNoteButton"
-                class="btn btn-default"
-                ng-click="noteImportCtrl.importNote()">Import Note
+        <button class="btn btn-default" id="importNoteButton"
+                ng-click="noteImportCtrl.importNote()"
+                type="button">Import Note
         </button>
       </div>
     </div>

@@ -19,11 +19,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SQLContext;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 
 import java.util.List;
@@ -34,40 +30,40 @@ import java.util.List;
  */
 public abstract class AbstractSparkScalaInterpreter {
 
-  public abstract SparkContext getSparkContext();
+    public abstract SparkContext getSparkContext();
 
-  public abstract SQLContext getSqlContext();
+    public abstract SQLContext getSqlContext();
 
-  public abstract Object getSparkSession();
+    public abstract Object getSparkSession();
 
-  public abstract String getSparkUrl();
+    public abstract String getSparkUrl();
 
-  public abstract ZeppelinContext getZeppelinContext();
+    public abstract ZeppelinContext getZeppelinContext();
 
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return getProgress(Utils.buildJobGroupId(context), context);
-  }
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return getProgress(Utils.buildJobGroupId(context), context);
+    }
 
-  public abstract int getProgress(String jobGroup,
-                                  InterpreterContext context) throws InterpreterException;
+    public abstract int getProgress(String jobGroup,
+                                    InterpreterContext context) throws InterpreterException;
 
-  public void cancel(InterpreterContext context) throws InterpreterException {
-    getSparkContext().cancelJobGroup(Utils.buildJobGroupId(context));
-  }
+    public void cancel(InterpreterContext context) throws InterpreterException {
+        getSparkContext().cancelJobGroup(Utils.buildJobGroupId(context));
+    }
 
-  public Interpreter.FormType getFormType() throws InterpreterException {
-    return Interpreter.FormType.SIMPLE;
-  }
+    public Interpreter.FormType getFormType() throws InterpreterException {
+        return Interpreter.FormType.SIMPLE;
+    }
 
-  public abstract void open();
+    public abstract void open();
 
-  public abstract void close();
+    public abstract void close();
 
-  public abstract InterpreterResult interpret(String st, InterpreterContext context);
+    public abstract InterpreterResult interpret(String st, InterpreterContext context);
 
-  public abstract List<InterpreterCompletion> completion(String buf,
-                                                         int cursor,
-                                                         InterpreterContext interpreterContext);
+    public abstract List<InterpreterCompletion> completion(String buf,
+                                                           int cursor,
+                                                           InterpreterContext interpreterContext);
 
-  public abstract ClassLoader getScalaShellClassLoader();
+    public abstract ClassLoader getScalaShellClassLoader();
 }

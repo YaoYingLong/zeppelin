@@ -26,18 +26,18 @@ import org.apache.zeppelin.kotlin.context.KotlinReceiver;
  * Implicit receiver for Kotlin REPL with Spark's context (see KotlinReceiver for more details)
  */
 public class SparkKotlinReceiver extends KotlinReceiver {
-  public final Object _sparkObject;
-  public final JavaSparkContext sc;
-  public final SQLContext sqlContext;
-  public final ZeppelinContext z;
+    public final Object _sparkObject;
+    public final JavaSparkContext sc;
+    public final SQLContext sqlContext;
+    public final ZeppelinContext z;
 
-  public SparkKotlinReceiver(Object spark,
-                             JavaSparkContext sc,
-                             SQLContext sqlContext,
-                             ZeppelinContext z) {
-    this._sparkObject = spark;
-    this.sc = sc;
-    this.sqlContext = sqlContext;
-    this.z = z;
-  }
+    public SparkKotlinReceiver(Object spark,
+                               JavaSparkContext sc,
+                               SQLContext sqlContext,
+                               ZeppelinContext z) {
+        this._sparkObject = spark;
+        this.sc = sc;
+        this.sqlContext = sqlContext;
+        this.z = z;
+    }
 }

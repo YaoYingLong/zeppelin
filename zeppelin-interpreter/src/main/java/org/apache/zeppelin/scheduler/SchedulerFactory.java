@@ -31,88 +31,86 @@ import java.util.concurrent.TimeUnit;
 /**
  * Factory class for creating schedulers except RemoteScheduler as RemoteScheduler runs in
  * zeppelin server process instead of interpreter process.
- *
  */
 public class SchedulerFactory {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerFactory.class);
-  private static final String SCHEDULER_EXECUTOR_NAME = "SchedulerFactory";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerFactory.class);
+    private static final String SCHEDULER_EXECUTOR_NAME = "SchedulerFactory";
 
-  protected ExecutorService executor;
-  protected Map<String, Scheduler> schedulers = new HashMap<>();
+    protected ExecutorService executor;
+    protected Map<String, Scheduler> schedulers = new HashMap<>();
 
-  // Using the Initialization-on-demand holder idiom (https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom)
-  private static final class InstanceHolder {
-    private static final SchedulerFactory INSTANCE = new SchedulerFactory();
-  }
-
-  public static SchedulerFactory singleton() {
-    return InstanceHolder.INSTANCE;
-  }
-
-  private SchedulerFactory() {
-    ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
-    int threadPoolSize =
-        zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_SCHEDULER_POOL_SIZE);
-    LOGGER.info("Scheduler Thread Pool Size: {}", threadPoolSize);
-    executor = ExecutorFactory.singleton().createOrGet(SCHEDULER_EXECUTOR_NAME, threadPoolSize);
-  }
-
-  public void destroy() {
-    LOGGER.info("Destroy all executors");
-    synchronized (schedulers) {
-      // stop all child thread of schedulers
-      for (Entry<String, Scheduler> scheduler : schedulers.entrySet()) {
-        LOGGER.info("Stopping Scheduler {}", scheduler.getKey());
-        scheduler.getValue().stop();
-      }
-      schedulers.clear();
+    private SchedulerFactory() {
+        ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
+        int threadPoolSize =
+                zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_SCHEDULER_POOL_SIZE);
+        LOGGER.info("Scheduler Thread Pool Size: {}", threadPoolSize);
+        executor = ExecutorFactory.singleton().createOrGet(SCHEDULER_EXECUTOR_NAME, threadPoolSize);
     }
-    ExecutorUtil.softShutdown("SchedulerFactoryExecutor", executor, 60, TimeUnit.SECONDS);
-  }
 
-  public Scheduler createOrGetFIFOScheduler(String name) {
-    synchronized (schedulers) {
-      if (!schedulers.containsKey(name)) {
-        FIFOScheduler s = new FIFOScheduler(name);
-        schedulers.put(name, s);
-        executor.execute(s);
-      }
-      return schedulers.get(name);
+    public static SchedulerFactory singleton() {
+        return InstanceHolder.INSTANCE;
     }
-  }
 
-  public Scheduler createOrGetParallelScheduler(String name, int maxConcurrency) {
-    synchronized (schedulers) {
-      if (!schedulers.containsKey(name)) {
-        ParallelScheduler s = new ParallelScheduler(name, maxConcurrency);
-        schedulers.put(name, s);
-        executor.execute(s);
-      }
-      return schedulers.get(name);
+    public void destroy() {
+        LOGGER.info("Destroy all executors");
+        synchronized (schedulers) {
+            // stop all child thread of schedulers
+            for (Entry<String, Scheduler> scheduler : schedulers.entrySet()) {
+                LOGGER.info("Stopping Scheduler {}", scheduler.getKey());
+                scheduler.getValue().stop();
+            }
+            schedulers.clear();
+        }
+        ExecutorUtil.softShutdown("SchedulerFactoryExecutor", executor, 60, TimeUnit.SECONDS);
     }
-  }
 
-
-  public Scheduler createOrGetScheduler(Scheduler scheduler) {
-    synchronized (schedulers) {
-      if (!schedulers.containsKey(scheduler.getName())) {
-        schedulers.put(scheduler.getName(), scheduler);
-        executor.execute(scheduler);
-      }
-      return schedulers.get(scheduler.getName());
+    public Scheduler createOrGetFIFOScheduler(String name) {
+        synchronized (schedulers) {
+            if (!schedulers.containsKey(name)) {
+                FIFOScheduler s = new FIFOScheduler(name);
+                schedulers.put(name, s);
+                executor.execute(s);
+            }
+            return schedulers.get(name);
+        }
     }
-  }
 
-  public void removeScheduler(String name) {
-    synchronized (schedulers) {
-      Scheduler s = schedulers.remove(name);
-      if (s != null) {
-        s.stop();
-      }
+    public Scheduler createOrGetParallelScheduler(String name, int maxConcurrency) {
+        synchronized (schedulers) {
+            if (!schedulers.containsKey(name)) {
+                ParallelScheduler s = new ParallelScheduler(name, maxConcurrency);
+                schedulers.put(name, s);
+                executor.execute(s);
+            }
+            return schedulers.get(name);
+        }
     }
-  }
 
-  public ExecutorService getExecutor() {
-    return executor;
-  }
+    public Scheduler createOrGetScheduler(Scheduler scheduler) {
+        synchronized (schedulers) {
+            if (!schedulers.containsKey(scheduler.getName())) {
+                schedulers.put(scheduler.getName(), scheduler);
+                executor.execute(scheduler);
+            }
+            return schedulers.get(scheduler.getName());
+        }
+    }
+
+    public void removeScheduler(String name) {
+        synchronized (schedulers) {
+            Scheduler s = schedulers.remove(name);
+            if (s != null) {
+                s.stop();
+            }
+        }
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    // Using the Initialization-on-demand holder idiom (https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom)
+    private static final class InstanceHolder {
+        private static final SchedulerFactory INSTANCE = new SchedulerFactory();
+    }
 }

@@ -23,7 +23,7 @@ package org.apache.zeppelin.interpreter;
  */
 public class InvalidHookException extends Exception {
 
-  public InvalidHookException(String message) {
-    super(message);
-  }
+    public InvalidHookException(String message) {
+        super(message);
+    }
 }

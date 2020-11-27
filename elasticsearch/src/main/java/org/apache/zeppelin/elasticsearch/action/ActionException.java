@@ -22,11 +22,11 @@ package org.apache.zeppelin.elasticsearch.action;
  */
 public class ActionException extends RuntimeException {
 
-  public ActionException(String message) {
-    super(message);
-  }
+    public ActionException(String message) {
+        super(message);
+    }
 
-  public ActionException(Throwable cause) {
-    super(cause);
-  }
+    public ActionException(Throwable cause) {
+        super(cause);
+    }
 }

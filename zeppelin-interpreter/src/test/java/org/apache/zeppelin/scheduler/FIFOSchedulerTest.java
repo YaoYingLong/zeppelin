@@ -17,65 +17,65 @@
 
 package org.apache.zeppelin.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class FIFOSchedulerTest {
 
-  private SchedulerFactory schedulerSvc;
+    private SchedulerFactory schedulerSvc;
 
-  @Before
-  public void setUp() {
-    schedulerSvc = SchedulerFactory.singleton();
-  }
+    @Before
+    public void setUp() {
+        schedulerSvc = SchedulerFactory.singleton();
+    }
 
-  @Test
-  public void testRun() throws InterruptedException {
-    Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");
+    @Test
+    public void testRun() throws InterruptedException {
+        Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");
 
-    Job<?> job1 = new SleepingJob("job1", null, 500);
-    Job<?> job2 = new SleepingJob("job2", null, 500);
+        Job<?> job1 = new SleepingJob("job1", null, 500);
+        Job<?> job2 = new SleepingJob("job2", null, 500);
 
-    s.submit(job1);
-    s.submit(job2);
-    Thread.sleep(200);
+        s.submit(job1);
+        s.submit(job2);
+        Thread.sleep(200);
 
-    assertEquals(Status.RUNNING, job1.getStatus());
-    assertEquals(Status.PENDING, job2.getStatus());
+        assertEquals(Status.RUNNING, job1.getStatus());
+        assertEquals(Status.PENDING, job2.getStatus());
 
-    Thread.sleep(500);
-    assertEquals(Status.FINISHED, job1.getStatus());
-    assertEquals(Status.RUNNING, job2.getStatus());
-    assertTrue((500 < (Long) job1.getReturn()));
-    schedulerSvc.removeScheduler(s.getName());
-  }
+        Thread.sleep(500);
+        assertEquals(Status.FINISHED, job1.getStatus());
+        assertEquals(Status.RUNNING, job2.getStatus());
+        assertTrue((500 < (Long) job1.getReturn()));
+        schedulerSvc.removeScheduler(s.getName());
+    }
 
-  @Test
-  public void testAbort() throws InterruptedException {
-    Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");
+    @Test
+    public void testAbort() throws InterruptedException {
+        Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");
 
-    Job<?> job1 = new SleepingJob("job1", null, 500);
-    Job<?> job2 = new SleepingJob("job2", null, 500);
+        Job<?> job1 = new SleepingJob("job1", null, 500);
+        Job<?> job2 = new SleepingJob("job2", null, 500);
 
-    s.submit(job1);
-    s.submit(job2);
+        s.submit(job1);
+        s.submit(job2);
 
-    Thread.sleep(200);
+        Thread.sleep(200);
 
-    job1.abort();
-    job2.abort();
+        job1.abort();
+        job2.abort();
 
-    Thread.sleep(200);
+        Thread.sleep(200);
 
-    assertEquals(Status.ABORT, job1.getStatus());
-    assertEquals(Status.ABORT, job2.getStatus());
+        assertEquals(Status.ABORT, job1.getStatus());
+        assertEquals(Status.ABORT, job2.getStatus());
 
-    assertTrue((500 > (Long) job1.getReturn()));
-    assertEquals(null, job2.getReturn());
-    schedulerSvc.removeScheduler(s.getName());
-  }
+        assertTrue((500 > (Long) job1.getReturn()));
+        assertEquals(null, job2.getReturn());
+        schedulerSvc.removeScheduler(s.getName());
+    }
 }

@@ -22,9 +22,9 @@ limitations under the License.
       </tr>
       </thead>
       <tbody class="commit-rows">
-      <tr ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true"
-          ng-class="{'cursor-hand': !$last, 'selected-revision': revision.message === currentSecondRevisionForCompare}"
-          ng-click="getNoteRevisionForReview($ctrl.noteRevisions[$index + 1], 'first'); getNoteRevisionForReview(revision, 'second')">
+      <tr ng-class="{'cursor-hand': !$last, 'selected-revision': revision.message === currentSecondRevisionForCompare}"
+          ng-click="getNoteRevisionForReview($ctrl.noteRevisions[$index + 1], 'first'); getNoteRevisionForReview(revision, 'second')"
+          ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true">
         <td>{{revision.message}}</td>
         <td>{{formatRevisionDate(revision.time)}}</td>
       </tr>
@@ -34,16 +34,16 @@ limitations under the License.
 
   <div class="revisions-comparator-bar">
     <div class="btn-group">
-      <button type="button" ng-if="$ctrl.noteRevisions.length > 0"
-              class="btn btn-default revisions-comparator-dropdown dropdown-toggle"
-              data-toggle="dropdown" id="firstRevisionDropdown" title="{{currentFirstRevisionForCompare}}">
+      <button class="btn btn-default revisions-comparator-dropdown dropdown-toggle" data-toggle="dropdown"
+              id="firstRevisionDropdown"
+              ng-if="$ctrl.noteRevisions.length > 0" title="{{currentFirstRevisionForCompare}}" type="button">
         <div class="revision-name-for-compare">{{currentFirstRevisionForCompare}}</div>
         <span class="caret revisions-comparator-caret"></span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="firstRevisionDropdown">
+      <ul aria-labelledby="firstRevisionDropdown" class="dropdown-menu dropdown-menu-left">
         <li></li>
-        <li ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true" class="revision">
-          <a style="cursor:pointer" ng-click="getNoteRevisionForReview(revision, 'first')">
+        <li class="revision" ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true">
+          <a ng-click="getNoteRevisionForReview(revision, 'first')" style="cursor:pointer">
           <span style="display: block;">
             <strong>{{revision.message}}</strong>
           </span>
@@ -56,16 +56,16 @@ limitations under the License.
     </div>
     <span>compare with</span>
     <div class="btn-group">
-      <button type="button" ng-if="$ctrl.noteRevisions.length > 0"
-              class="btn btn-default revisions-comparator-dropdown dropdown-toggle"
+      <button class="btn btn-default revisions-comparator-dropdown dropdown-toggle" data-toggle="dropdown"
+              id="secondRevisionDropdown"
               ng-disabled="firstNoteRevisionForCompare === null"
-              data-toggle="dropdown" id="secondRevisionDropdown" title="{{currentSecondRevisionForCompare}}">
+              ng-if="$ctrl.noteRevisions.length > 0" title="{{currentSecondRevisionForCompare}}" type="button">
         <div class="revision-name-for-compare">{{currentSecondRevisionForCompare}}</div>
         <span class="caret revisions-comparator-caret"></span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="secondRevisionDropdown">
-        <li ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true" class="revision">
-          <a style="cursor:pointer" ng-click="getNoteRevisionForReview(revision, 'second')">
+      <ul aria-labelledby="secondRevisionDropdown" class="dropdown-menu dropdown-menu-left">
+        <li class="revision" ng-repeat="revision in $ctrl.noteRevisions | orderBy:'time':true">
+          <a ng-click="getNoteRevisionForReview(revision, 'second')" style="cursor:pointer">
           <span style="display: block;">
             <strong>{{revision.message}}</strong>
           </span>
@@ -81,24 +81,25 @@ limitations under the License.
   <div id="diffPanel">
     <div class="panel-group" style="margin-bottom: 0px">
       <div class="paragraphs-div">
-        <div class="panel revisions-comparator-panel" data-ng-repeat="p in mergeNoteRevisionsForCompare | orderBy:'time':true"
+        <div class="panel revisions-comparator-panel"
+             data-ng-repeat="p in mergeNoteRevisionsForCompare | orderBy:'time':true"
              ng-class="{'revisions-comparator-panel-selected' : currentParagraphDiffDisplay.paragraph.id === p.paragraph.id}">
           <div class="revisions-comparator-panel-heading"
                ng-click="changeCurrentParagraphDiffDisplay(p.paragraph.id)">
             <h4 class="panel-title">
-              {{p.paragraph.id}}<strong style="padding: 5px;" ng-if="p.paragraph.title">({{p.paragraph.title}})</strong>
-              <i ng-if="p.type === 'added'" class="revisions-comparator-status color-green">added</i>
-              <i ng-if="p.type === 'deleted'" class="revisions-comparator-status color-red">deleted</i>
-              <i ng-if="p.type === 'compared' && !(p.identical)" class="revisions-comparator-status color-orange">there
+              {{p.paragraph.id}}<strong ng-if="p.paragraph.title" style="padding: 5px;">({{p.paragraph.title}})</strong>
+              <i class="revisions-comparator-status color-green" ng-if="p.type === 'added'">added</i>
+              <i class="revisions-comparator-status color-red" ng-if="p.type === 'deleted'">deleted</i>
+              <i class="revisions-comparator-status color-orange" ng-if="p.type === 'compared' && !(p.identical)">there
                 are differences</i>
-              <i ng-if="p.type === 'compared' && p.identical" class="revisions-comparator-status">contents are
+              <i class="revisions-comparator-status" ng-if="p.type === 'compared' && p.identical">contents are
                 identical</i>
               <i class="revisions-comparator-first-string">{{p.firstString}}</i>
             </h4>
           </div>
         </div>
-        <div style="display: table; width: 100%; height: 100%"
-             ng-if="currentSecondRevisionForCompare === 'Choose...'">
+        <div ng-if="currentSecondRevisionForCompare === 'Choose...'"
+             style="display: table; width: 100%; height: 100%">
           <div class="empty-paragraph-message">
             Please select a revision
           </div>
@@ -108,17 +109,17 @@ limitations under the License.
   </div>
 </div>
 
-<div id="revisions-comparator-code-panel-id center-block" class="panel col-md-8">
+<div class="panel col-md-8" id="revisions-comparator-code-panel-id center-block">
   <span
     class="revisions-comparator-code-panel-title">Revision: <strong>{{currentFirstRevisionForCompare}} --> {{currentSecondRevisionForCompare}}</strong></span>
-  <pre ng-if="currentParagraphDiffDisplay.type === 'added'"
-       class="revisions-comparator-code-panel color-green-row">{{currentParagraphDiffDisplay.paragraph.text}}</pre>
-  <pre ng-if="currentParagraphDiffDisplay.type === 'deleted'"
-       class="revisions-comparator-code-panel color-red-row">{{currentParagraphDiffDisplay.paragraph.text}}</pre>
-  <pre ng-if="currentParagraphDiffDisplay.type === 'compared'"
-       class="revisions-comparator-code-panel" ng-bind-html="currentParagraphDiffDisplay.diff"></pre>
-  <pre ng-if="currentParagraphDiffDisplay === null"
-       class="revisions-comparator-code-panel empty-code-panel"><div>Nothing to display</div></pre>
+  <pre class="revisions-comparator-code-panel color-green-row"
+       ng-if="currentParagraphDiffDisplay.type === 'added'">{{currentParagraphDiffDisplay.paragraph.text}}</pre>
+  <pre class="revisions-comparator-code-panel color-red-row"
+       ng-if="currentParagraphDiffDisplay.type === 'deleted'">{{currentParagraphDiffDisplay.paragraph.text}}</pre>
+  <pre class="revisions-comparator-code-panel"
+       ng-bind-html="currentParagraphDiffDisplay.diff" ng-if="currentParagraphDiffDisplay.type === 'compared'"></pre>
+  <pre class="revisions-comparator-code-panel empty-code-panel"
+       ng-if="currentParagraphDiffDisplay === null"><div>Nothing to display</div></pre>
 </div>
 
 <div class="clearfix"></div>

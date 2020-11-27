@@ -16,6 +16,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SaveAsService {
+  constructor() {}
+
   saveAs(content: string, filename: string, extension: string) {
     const BOM = '\uFEFF';
     const fileName = `${filename}.${extension}`;
@@ -32,6 +34,4 @@ export class SaveAsService {
     a.click();
     window.URL.revokeObjectURL(url);
   }
-
-  constructor() {}
 }

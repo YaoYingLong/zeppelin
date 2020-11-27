@@ -21,48 +21,48 @@ package org.apache.zeppelin.notebook;
  * Metadata of Note: noteId & note Path
  */
 public class NoteInfo {
-  String id;
-  String path;
+    String id;
+    String path;
 
-  public NoteInfo(String id, String path) {
-    super();
-    this.id = id;
-    this.path = path;
-  }
+    public NoteInfo(String id, String path) {
+        super();
+        this.id = id;
+        this.path = path;
+    }
 
-  public NoteInfo(Note note) {
-    id = note.getId();
-    path = note.getPath();
-  }
+    public NoteInfo(Note note) {
+        id = note.getId();
+        path = note.getPath();
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getPath() {
-    return path;
-  }
+    public String getPath() {
+        return path;
+    }
 
-  public void setPath(String path) {
-    this.path = path;
-  }
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-  public String getNoteName() {
-    int pos = this.path.lastIndexOf("/");
-    return path.substring(pos + 1);
-  }
+    public String getNoteName() {
+        int pos = this.path.lastIndexOf("/");
+        return path.substring(pos + 1);
+    }
 
-  public String getParent() {
-    int pos = this.path.lastIndexOf("/");
-    return path.substring(0, pos);
-  }
+    public String getParent() {
+        int pos = this.path.lastIndexOf("/");
+        return path.substring(0, pos);
+    }
 
-  @Override
-  public String toString() {
-    return path + "_" + id + ".zpln";
-  }
+    @Override
+    public String toString() {
+        return path + "_" + id + ".zpln";
+    }
 }

@@ -28,60 +28,61 @@ import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
  */
 public class OldInput extends Input<Object> {
 
-  ParamOption[] options;
+    ParamOption[] options;
 
-  public OldInput() {}
-
-  public OldInput(String name, Object defaultValue) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = defaultValue;
-  }
-
-  public OldInput(String name, Object defaultValue, ParamOption[] options) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = defaultValue;
-    this.options = options;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return name.equals(((OldInput) o).getName());
-  }
-
-  public ParamOption[] getOptions() {
-    return options;
-  }
-
-  public void setOptions(ParamOption[] options) {
-    this.options = options;
-  }
-
-  /**
-   *
-   */
-  public static class OldTextBox extends OldInput {
-    public OldTextBox(String name, Object defaultValue) {
-      super(name, defaultValue);
+    public OldInput() {
     }
-  }
 
-  /**
-   *
-   */
-  public static class OldSelect extends OldInput {
-    public OldSelect(String name, Object defaultValue, ParamOption[] options) {
-      super(name, defaultValue, options);
+    public OldInput(String name, Object defaultValue) {
+        this.name = name;
+        this.displayName = name;
+        this.defaultValue = defaultValue;
     }
-  }
 
-  /**
-   *
-   */
-  public static class OldCheckBox extends OldInput {
-    public OldCheckBox(String name, Object defaultValue, ParamOption[] options) {
-      super(name, defaultValue, options);
+    public OldInput(String name, Object defaultValue, ParamOption[] options) {
+        this.name = name;
+        this.displayName = name;
+        this.defaultValue = defaultValue;
+        this.options = options;
     }
-  }
+
+    @Override
+    public boolean equals(Object o) {
+        return name.equals(((OldInput) o).getName());
+    }
+
+    public ParamOption[] getOptions() {
+        return options;
+    }
+
+    public void setOptions(ParamOption[] options) {
+        this.options = options;
+    }
+
+    /**
+     *
+     */
+    public static class OldTextBox extends OldInput {
+        public OldTextBox(String name, Object defaultValue) {
+            super(name, defaultValue);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class OldSelect extends OldInput {
+        public OldSelect(String name, Object defaultValue, ParamOption[] options) {
+            super(name, defaultValue, options);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class OldCheckBox extends OldInput {
+        public OldCheckBox(String name, Object defaultValue, ParamOption[] options) {
+            super(name, defaultValue, options);
+        }
+    }
 }

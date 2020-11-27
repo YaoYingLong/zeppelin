@@ -16,8 +16,6 @@
  */
 
 package org.apache.zeppelin.dep;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.common.JsonSerializable;
@@ -25,91 +23,92 @@ import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
- *
  *
  */
 public class Repository implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  private boolean snapshot = false;
-  private String id;
-  private String url;
-  private String username = null;
-  private String password = null;
-  private String proxyProtocol = "HTTP";
-  private String proxyHost = null;
-  private Integer proxyPort = null;
-  private String proxyLogin = null;
-  private String proxyPassword = null;
+    private boolean snapshot = false;
+    private String id;
+    private String url;
+    private String username = null;
+    private String password = null;
+    private String proxyProtocol = "HTTP";
+    private String proxyHost = null;
+    private Integer proxyPort = null;
+    private String proxyLogin = null;
+    private String proxyPassword = null;
 
-  public Repository(String id){
-    this.id = id;
-  }
-
-  public Repository url(String url) {
-    this.url = url;
-    return this;
-  }
-
-  public Repository snapshot() {
-    snapshot = true;
-    return this;
-  }
-
-  public boolean isSnapshot() {
-    return snapshot;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-  
-  public Repository username(String username) {
-    this.username = username;
-    return this;
-  }
-  
-  public Repository password(String password) {
-    this.password = password;
-    return this;
-  }
-  
-  public Repository credentials(String username, String password) {
-    this.username = username;
-    this.password = password;
-    return this;
-  }
-  
-  public Authentication getAuthentication() {
-    Authentication auth = null;
-    if (this.username != null && this.password != null) {
-      auth = new AuthenticationBuilder().addUsername(this.username).addPassword(this.password).build();
+    public Repository(String id) {
+        this.id = id;
     }
-    return auth;
-  }
 
-  public Proxy getProxy() {
-    if (isNotBlank(proxyHost) && proxyPort != null) {
-      if (isNotBlank(proxyLogin)) {
-        return new Proxy(proxyProtocol, proxyHost, proxyPort,
-                new AuthenticationBuilder().addUsername(proxyLogin).addPassword(proxyPassword).build());
-      } else {
-        return new Proxy(proxyProtocol, proxyHost, proxyPort, null);
-      }
+    public static Repository fromJson(String json) {
+        return gson.fromJson(json, Repository.class);
     }
-    return null;
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public Repository url(String url) {
+        this.url = url;
+        return this;
+    }
 
-  public static Repository fromJson(String json) {
-    return gson.fromJson(json, Repository.class);
-  }
+    public Repository snapshot() {
+        snapshot = true;
+        return this;
+    }
+
+    public boolean isSnapshot() {
+        return snapshot;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Repository username(String username) {
+        this.username = username;
+        return this;
+    }
+
+    public Repository password(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public Repository credentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+        return this;
+    }
+
+    public Authentication getAuthentication() {
+        Authentication auth = null;
+        if (this.username != null && this.password != null) {
+            auth = new AuthenticationBuilder().addUsername(this.username).addPassword(this.password).build();
+        }
+        return auth;
+    }
+
+    public Proxy getProxy() {
+        if (isNotBlank(proxyHost) && proxyPort != null) {
+            if (isNotBlank(proxyLogin)) {
+                return new Proxy(proxyProtocol, proxyHost, proxyPort,
+                        new AuthenticationBuilder().addUsername(proxyLogin).addPassword(proxyPassword).build());
+            } else {
+                return new Proxy(proxyProtocol, proxyHost, proxyPort, null);
+            }
+        }
+        return null;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

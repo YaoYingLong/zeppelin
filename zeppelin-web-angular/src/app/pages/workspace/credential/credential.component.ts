@@ -37,10 +37,6 @@ export class CredentialComponent implements OnInit {
   credentialFormArray: FormArray = this.fb.array([]);
   docsLink: string;
 
-  get credentialControls(): FormGroup[] {
-    return this.credentialFormArray.controls as FormGroup[];
-  }
-
   constructor(
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
@@ -50,6 +46,10 @@ export class CredentialComponent implements OnInit {
     private ticketService: TicketService
   ) {
     this.setDocsLink();
+  }
+
+  get credentialControls(): FormGroup[] {
+    return this.credentialFormArray.controls as FormGroup[];
   }
 
   setDocsLink() {

@@ -30,7 +30,12 @@
 #   # with custom check interval
 #   python travis_check.py Leemoonsoo 1f2549a 5,60,60
 
-import os, sys, getopt, traceback, json, requests, time, urllib3, re
+import json
+import re
+import requests
+import sys
+import time
+import urllib3
 
 # disable SNIMissingWarning. see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
 urllib3.disable_warnings()
@@ -44,9 +49,11 @@ check = [5, 60, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 600, 600, 600,
 if len(sys.argv) > 3:
     check = map(lambda x: int(x), sys.argv[3].split(","))
 
+
 def info(msg):
     print("[" + time.strftime("%Y-%m-%d %H:%M:%S") + "] " + msg)
     sys.stdout.flush()
+
 
 info("Author: " + author + ", commit: " + commit)
 
@@ -70,8 +77,10 @@ def getBuildStatus(author, commit):
 
     return build
 
+
 def status(index, msg, jobId):
-    return '{:20}'.format("[" + str(index+1) + "] " + msg) + "https://travis-ci.org/" + author + "/zeppelin/jobs/" + str(jobId)
+    return '{:20}'.format(
+        "[" + str(index + 1) + "] " + msg) + "https://travis-ci.org/" + author + "/zeppelin/jobs/" + str(jobId)
 
 
 # load full build log and summarize
@@ -79,7 +88,8 @@ def logSummary(url):
     # test start pattern "Running org.apache.zeppelin.scheduler.ParallelSchedulerTest"
     testStartPattern = re.compile("^Running[ ](.*)")
     # test end pattern "Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.554 sec - in org.apache.zeppelin.scheduler.JobTest"
-    testEndPattern = re.compile("^Tests [^0-9]*([0-9]+)[^0-9]*([0-9]+)[^0-9]*([0-9]+)[^0-9]*([0-9]+)[^-]*[-][ ]in[ ](.*)")
+    testEndPattern = re.compile(
+        "^Tests [^0-9]*([0-9]+)[^0-9]*([0-9]+)[^0-9]*([0-9]+)[^0-9]*([0-9]+)[^-]*[-][ ]in[ ](.*)")
 
     tests = {}
     resp = requests.get(url=url)
@@ -95,7 +105,7 @@ def logSummary(url):
         if mStart:
             testName = mStart.group(1)
             tests[testName] = {
-              "start": mStart
+                "start": mStart
             }
             continue
 
@@ -107,16 +117,17 @@ def logSummary(url):
 
     for testName, test in tests.items():
         if not "end" in test:
-           print(indent + "Test " + testName + " never finished")
+            print(indent + "Test " + testName + " never finished")
         else:
-           failures = int(test["end"].group(2))
-           errors = int(test["end"].group(3))
-           if failures > 0 or errors > 0:
-               print(indent + test["end"].group(0))
+            failures = int(test["end"].group(2))
+            errors = int(test["end"].group(3))
+            if failures > 0 or errors > 0:
+                print(indent + test["end"].group(0))
 
     if not lastNonEmptyLine.startswith("Done"):
         print(indent + lastNonEmptyLine)
     print(indent + "Please check full log at " + url)
+
 
 def printBuildStatus(build):
     failure = 0

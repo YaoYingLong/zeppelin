@@ -20,19 +20,19 @@ package org.apache.zeppelin.helium;
  * Application exception
  */
 public class ApplicationException extends Exception {
-  public ApplicationException(String s) {
-    super(s);
-  }
+    public ApplicationException(String s) {
+        super(s);
+    }
 
-  public ApplicationException(Exception e) {
-    super(e);
-  }
+    public ApplicationException(Exception e) {
+        super(e);
+    }
 
-  public ApplicationException() {
+    public ApplicationException() {
 
-  }
+    }
 
-  public ApplicationException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public ApplicationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

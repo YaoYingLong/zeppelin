@@ -30,89 +30,89 @@ import java.util.List;
  */
 public class UMLBlockQuote extends Block implements ParagraphContainer {
 
-  private BasedSequence openingMarker = BasedSequence.NULL;
-  private BasedSequence openingTrailing = BasedSequence.NULL;
-  private BasedSequence closingMarker = BasedSequence.NULL;
-  private BasedSequence closingTrailing = BasedSequence.NULL;
+    private BasedSequence openingMarker = BasedSequence.NULL;
+    private BasedSequence openingTrailing = BasedSequence.NULL;
+    private BasedSequence closingMarker = BasedSequence.NULL;
+    private BasedSequence closingTrailing = BasedSequence.NULL;
 
-  @Override
-  public void getAstExtra(StringBuilder out) {
-    segmentSpanChars(out, openingMarker, "open");
-    segmentSpanChars(out, openingTrailing, "openTrail");
-    segmentSpanChars(out, closingMarker, "close");
-    segmentSpanChars(out, closingTrailing, "closeTrail");
-  }
+    public UMLBlockQuote() {
+    }
 
-  @Override
-  public BasedSequence[] getSegments() {
-    return new BasedSequence[]{openingMarker, openingTrailing, closingMarker, closingTrailing};
-  }
+    public UMLBlockQuote(BasedSequence chars) {
+        super(chars);
+    }
 
-  @Override
-  public boolean isParagraphEndWrappingDisabled(final Paragraph node) {
-    return node == getLastChild() || node.getNext() instanceof UMLBlockQuote;
-  }
+    public UMLBlockQuote(BasedSequence chars, List<BasedSequence> segments) {
+        super(chars, segments);
+    }
 
-  @Override
-  public boolean isParagraphStartWrappingDisabled(final Paragraph node) {
-    return node == getFirstChild() || node.getPrevious() instanceof UMLBlockQuote;
-  }
+    public UMLBlockQuote(BlockContent blockContent) {
+        super(blockContent);
+    }
 
-  public UMLBlockQuote() {
-  }
+    @Override
+    public void getAstExtra(StringBuilder out) {
+        segmentSpanChars(out, openingMarker, "open");
+        segmentSpanChars(out, openingTrailing, "openTrail");
+        segmentSpanChars(out, closingMarker, "close");
+        segmentSpanChars(out, closingTrailing, "closeTrail");
+    }
 
-  public UMLBlockQuote(BasedSequence chars) {
-    super(chars);
-  }
+    @Override
+    public BasedSequence[] getSegments() {
+        return new BasedSequence[]{openingMarker, openingTrailing, closingMarker, closingTrailing};
+    }
 
-  public UMLBlockQuote(BasedSequence chars, List<BasedSequence> segments) {
-    super(chars, segments);
-  }
+    @Override
+    public boolean isParagraphEndWrappingDisabled(final Paragraph node) {
+        return node == getLastChild() || node.getNext() instanceof UMLBlockQuote;
+    }
 
-  public UMLBlockQuote(BlockContent blockContent) {
-    super(blockContent);
-  }
+    @Override
+    public boolean isParagraphStartWrappingDisabled(final Paragraph node) {
+        return node == getFirstChild() || node.getPrevious() instanceof UMLBlockQuote;
+    }
 
-  public BasedSequence getOpeningMarker() {
-    return openingMarker;
-  }
+    public BasedSequence getOpeningMarker() {
+        return openingMarker;
+    }
 
-  public void setOpeningMarker(BasedSequence openingMarker) {
-    this.openingMarker = openingMarker;
-  }
+    public void setOpeningMarker(BasedSequence openingMarker) {
+        this.openingMarker = openingMarker;
+    }
 
-  public BasedSequence getClosingMarker() {
-    return closingMarker;
-  }
+    public BasedSequence getClosingMarker() {
+        return closingMarker;
+    }
 
-  public void setClosingMarker(final BasedSequence closingMarker) {
-    this.closingMarker = closingMarker;
-  }
+    public void setClosingMarker(final BasedSequence closingMarker) {
+        this.closingMarker = closingMarker;
+    }
 
-  public BasedSequence getOpeningTrailing() {
-    return openingTrailing;
-  }
+    public BasedSequence getOpeningTrailing() {
+        return openingTrailing;
+    }
 
-  public void setOpeningTrailing(final BasedSequence openingTrailing) {
-    this.openingTrailing = openingTrailing;
-  }
+    public void setOpeningTrailing(final BasedSequence openingTrailing) {
+        this.openingTrailing = openingTrailing;
+    }
 
-  public BasedSequence getClosingTrailing() {
-    return closingTrailing;
-  }
+    public BasedSequence getClosingTrailing() {
+        return closingTrailing;
+    }
 
-  public void setClosingTrailing(final BasedSequence closingTrailing) {
-    this.closingTrailing = closingTrailing;
-  }
+    public void setClosingTrailing(final BasedSequence closingTrailing) {
+        this.closingTrailing = closingTrailing;
+    }
 
-  @Override
-  public String toString() {
-    return "YUMLBlockQuote{" +
-        "openingMarker=" + openingMarker +
-        ", openingTrailing=" + openingTrailing +
-        ", closingMarker=" + closingMarker +
-        ", closingTrailing=" + closingTrailing +
-        ", lineSegments=" + lineSegments +
-        '}';
-  }
+    @Override
+    public String toString() {
+        return "YUMLBlockQuote{" +
+                "openingMarker=" + openingMarker +
+                ", openingTrailing=" + openingTrailing +
+                ", closingMarker=" + closingMarker +
+                ", closingTrailing=" + closingTrailing +
+                ", lineSegments=" + lineSegments +
+                '}';
+    }
 }

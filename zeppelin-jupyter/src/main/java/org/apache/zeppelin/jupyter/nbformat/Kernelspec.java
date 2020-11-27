@@ -23,9 +23,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Kernelspec {
 
-  @SerializedName("name")
-  private String name;
+    @SerializedName("name")
+    private String name;
 
-  @SerializedName("display_name")
-  private String displayName;
+    @SerializedName("display_name")
+    private String displayName;
 }

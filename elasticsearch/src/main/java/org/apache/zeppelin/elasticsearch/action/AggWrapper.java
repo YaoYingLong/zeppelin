@@ -21,24 +21,25 @@ package org.apache.zeppelin.elasticsearch.action;
  * Contains the result of an aggregation.
  */
 public class AggWrapper {
-  /**
-   * Type of an aggregation (to know if there are buckets or not).
-   */
-  public enum AggregationType { SIMPLE, MULTI_BUCKETS };
+    private final AggregationType type;
 
-  private final AggregationType type;
-  private final String result;
+    ;
+    private final String result;
+    public AggWrapper(AggregationType type, String result) {
+        this.type = type;
+        this.result = result;
+    }
 
-  public AggWrapper(AggregationType type, String result) {
-    this.type = type;
-    this.result = result;
-  }
+    public AggregationType getType() {
+        return type;
+    }
 
-  public AggregationType getType() {
-    return type;
-  }
+    public String getResult() {
+        return result;
+    }
 
-  public String getResult() {
-    return result;
-  }
+    /**
+     * Type of an aggregation (to know if there are buckets or not).
+     */
+    public enum AggregationType {SIMPLE, MULTI_BUCKETS}
 }

@@ -23,37 +23,37 @@ import org.apache.shiro.authc.AuthenticationToken;
  * Created for org.apache.zeppelin.server
  */
 public class KerberosToken implements AuthenticationToken {
-  private Object userId;
-  private String token;
+    private Object userId;
+    private String token;
 
-  public KerberosToken(Object userId, String token) {
-    this.userId = userId;
-    this.token = token;
-  }
+    public KerberosToken(Object userId, String token) {
+        this.userId = userId;
+        this.token = token;
+    }
 
-  @Override
-  public Object getPrincipal() {
-    return getUserId();
-  }
+    @Override
+    public Object getPrincipal() {
+        return getUserId();
+    }
 
-  @Override
-  public Object getCredentials() {
-    return getToken();
-  }
+    @Override
+    public Object getCredentials() {
+        return getToken();
+    }
 
-  public Object getUserId() {
-    return userId;
-  }
+    public Object getUserId() {
+        return userId;
+    }
 
-  public void setUserId(long userId) {
-    this.userId = userId;
-  }
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
-  public String getToken() {
-    return token;
-  }
+    public String getToken() {
+        return token;
+    }
 
-  public void setToken(String token) {
-    this.token = token;
-  }
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

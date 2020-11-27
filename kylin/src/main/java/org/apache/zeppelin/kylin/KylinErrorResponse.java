@@ -25,38 +25,38 @@ import org.apache.zeppelin.common.JsonSerializable;
  * class for Kylin Error Response.
  */
 class KylinErrorResponse implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  private String stacktrace;
-  private String exception;
-  private String url;
-  private String code;
-  private Object data;
-  private String msg;
+    private String stacktrace;
+    private String exception;
+    private String url;
+    private String code;
+    private Object data;
+    private String msg;
 
-  KylinErrorResponse(String stacktrace, String exception, String url,
-      String code, Object data, String msg) {
-    this.stacktrace = stacktrace;
-    this.exception = exception;
-    this.url = url;
-    this.code = code;
-    this.data = data;
-    this.msg = msg;
-  }
-
-  public String getException() {
-    return exception;
-  }
-
-  public String toJson() {
-    return gson.toJson(this);
-  }
-
-  public static KylinErrorResponse fromJson(String json) {
-    try {
-      return gson.fromJson(json, KylinErrorResponse.class);
-    } catch (JsonSyntaxException ex) {
-      return null;
+    KylinErrorResponse(String stacktrace, String exception, String url,
+                       String code, Object data, String msg) {
+        this.stacktrace = stacktrace;
+        this.exception = exception;
+        this.url = url;
+        this.code = code;
+        this.data = data;
+        this.msg = msg;
     }
-  }
+
+    public static KylinErrorResponse fromJson(String json) {
+        try {
+            return gson.fromJson(json, KylinErrorResponse.class);
+        } catch (JsonSyntaxException ex) {
+            return null;
+        }
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

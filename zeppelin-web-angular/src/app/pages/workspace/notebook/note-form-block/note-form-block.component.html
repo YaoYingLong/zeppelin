@@ -10,16 +10,16 @@
   ~ limitations under the License.
   -->
 <div class="forms-wrap">
-  <zeppelin-elastic-input [value]="noteTitle"
-                          defaultTitle="Untitled Form"
+  <zeppelin-elastic-input (valueUpdate)="setTitle($event)"
                           [min]="true"
-                          (valueUpdate)="setTitle($event)"></zeppelin-elastic-input>
+                          [value]="noteTitle"
+                          defaultTitle="Untitled Form"></zeppelin-elastic-input>
   <zeppelin-notebook-paragraph-dynamic-forms
-    [runOnChange]="true"
-    [removable]="true"
-    [paramDefs]="paramDefs"
-    [formDefs]="formDefs"
+    (formChange)="onFormChange()"
     (formRemove)="onFormRemove($event)"
-    (formChange)="onFormChange()">
+    [formDefs]="formDefs"
+    [paramDefs]="paramDefs"
+    [removable]="true"
+    [runOnChange]="true">
   </zeppelin-notebook-paragraph-dynamic-forms>
 </div>

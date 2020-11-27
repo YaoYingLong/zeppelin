@@ -22,7 +22,7 @@ function NoteListFactory(arrayOrderingSrv, TRASH_FOLDER_ID) {
     flatList: [],
     flatFolderMap: {},
 
-    setNotes: function(notesList) {
+    setNotes: function (notesList) {
       // a flat list to boost searching
       notes.flatList = _.map(notesList, (note) => {
         let notePath = note.path || note.id;
@@ -37,7 +37,7 @@ function NoteListFactory(arrayOrderingSrv, TRASH_FOLDER_ID) {
       // construct the folder-based tree
       notes.root = {children: []};
       notes.flatFolderMap = {};
-      _.reduce(notesList, function(root, note) {
+      _.reduce(notesList, function (root, note) {
         let notePath = note.path || note.id;
         let nodes = notePath.match(/([^\/][^\/]*)/g);
 
@@ -50,7 +50,7 @@ function NoteListFactory(arrayOrderingSrv, TRASH_FOLDER_ID) {
     },
   };
 
-  const addNode = function(curDir, nodes, noteId) {
+  const addNode = function (curDir, nodes, noteId) {
     if (nodes.length === 1) {  // the leaf
       curDir.children.push({
         name: nodes[0],
@@ -61,7 +61,7 @@ function NoteListFactory(arrayOrderingSrv, TRASH_FOLDER_ID) {
     } else {  // a folder node
       let node = nodes.shift();
       let dir = _.find(curDir.children,
-        function(c) {
+        function (c) {
           return c.name === node && c.children !== undefined;
         });
       if (dir !== undefined) { // found an existing dir

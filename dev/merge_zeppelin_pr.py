@@ -30,7 +30,7 @@ import re
 import subprocess
 import sys
 
-if sys.version_info < (3,0,0):
+if sys.version_info < (3, 0, 0):
     print(__file__ + ' requires Python 3, while Python ' + str(sys.version[0] + ' was detected. Terminating. '))
     sys.exit(1)
 
@@ -38,6 +38,7 @@ import urllib.request
 
 try:
     import jira.client
+
     JIRA_IMPORTED = True
 except ImportError:
     JIRA_IMPORTED = False
@@ -124,14 +125,14 @@ def merge_pr(pr_num, target_ref):
         had_conflicts = True
 
     commit_authors = run_cmd(['git', 'log', 'HEAD..%s' % pr_branch_name,
-                             '--pretty=format:%an <%ae>']).split("\n")
+                              '--pretty=format:%an <%ae>']).split("\n")
     commit_date = run_cmd(['git', 'log', '%s' % pr_branch_name, '-1',
-                             '--pretty=format:%ad'])
+                           '--pretty=format:%ad'])
     distinct_authors = sorted(set(commit_authors),
                               key=lambda x: commit_authors.count(x), reverse=True)
     primary_author = distinct_authors[0]
     commits = run_cmd(['git', 'log', 'HEAD..%s' % pr_branch_name,
-                      '--pretty=format:%h [%an] %s']).split("\n\n")
+                       '--pretty=format:%h [%an] %s']).split("\n\n")
 
     merge_message_flags = []
 
@@ -244,8 +245,8 @@ def resolve_jira_issue(merge_branches, comment, default_jira_id=""):
 
     if cur_status == "Resolved" or cur_status == "Closed":
         fail("JIRA issue %s already has status '%s'" % (jira_id, cur_status))
-    print ("=== JIRA %s ===" % jira_id)
-    print ("summary\t\t%s\nassignee\t%s\nstatus\t\t%s\nurl\t\t%s/%s\n" % (
+    print("=== JIRA %s ===" % jira_id)
+    print("summary\t\t%s\nassignee\t%s\nstatus\t\t%s\nurl\t\t%s/%s\n" % (
         cur_summary, cur_assignee, cur_status, JIRA_BASE, jira_id))
 
     versions = asf_jira.project_versions("ZEPPELIN")
@@ -293,10 +294,10 @@ def resolve_jira_issues(title, merge_branches, comment):
         resolve_jira_issue(merge_branches, comment, jira_id)
 
 
-#branches = get_json("%s/branches" % GITHUB_API_BASE)
-#branch_names = filter(lambda x: x.startswith("branch-"), [x['name'] for x in branches])
+# branches = get_json("%s/branches" % GITHUB_API_BASE)
+# branch_names = filter(lambda x: x.startswith("branch-"), [x['name'] for x in branches])
 # Assumes branch names can be sorted lexicographically
-#latest_branch = sorted(branch_names, reverse=True)[0]
+# latest_branch = sorted(branch_names, reverse=True)[0]
 latest_branch = "master"
 
 pr_num = input("Which pull request would you like to merge? (e.g. 34): ")
@@ -332,11 +333,11 @@ if merge_commits:
 
 if not bool(pr["mergeable"]):
     msg = "Pull request %s is not mergeable in its current form.\n" % pr_num + \
-        "Continue? (experts only!)"
+          "Continue? (experts only!)"
     continue_maybe(msg)
 
-print ("\n=== Pull Request #%s ===" % pr_num)
-print ("title\t%s\nsource\t%s\ntarget\t%s\nurl\t%s" % (
+print("\n=== Pull Request #%s ===" % pr_num)
+print("title\t%s\nsource\t%s\ntarget\t%s\nurl\t%s" % (
     title, pr_repo_desc, target_ref, url))
 continue_maybe("Proceed with merging pull request #%s?" % pr_num)
 

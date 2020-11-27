@@ -32,65 +32,65 @@ import java.util.Properties;
 
 public class PythonUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PythonUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PythonUtils.class);
 
-  public static GatewayServer createGatewayServer(Object entryPoint,
-                                                  String serverAddress,
-                                                  int port,
-                                                  String secretKey,
-                                                  boolean useAuth) throws IOException {
-    LOGGER.info("Launching GatewayServer at " + serverAddress + ":" + port +
-        ", useAuth: " + useAuth);
-    if (useAuth) {
-      try {
-        Class clz = Class.forName("py4j.GatewayServer$GatewayServerBuilder", true,
-            Thread.currentThread().getContextClassLoader());
-        Object builder = clz.getConstructor(Object.class).newInstance(entryPoint);
-        builder.getClass().getMethod("authToken", String.class).invoke(builder, secretKey);
-        builder.getClass().getMethod("javaPort", int.class).invoke(builder, port);
-        builder.getClass().getMethod("javaAddress", InetAddress.class).invoke(builder,
-            InetAddress.getByName(serverAddress));
-        builder.getClass()
-            .getMethod("callbackClient", int.class, InetAddress.class, String.class)
-            .invoke(builder, port, InetAddress.getByName(serverAddress), secretKey);
-        return (GatewayServer) builder.getClass().getMethod("build").invoke(builder);
-      } catch (Exception e) {
-        throw new IOException(e);
-      }
-    } else {
-      return new GatewayServer(entryPoint,
-          port,
-          GatewayServer.DEFAULT_PYTHON_PORT,
-          InetAddress.getByName(serverAddress),
-          InetAddress.getByName(serverAddress),
-          GatewayServer.DEFAULT_CONNECT_TIMEOUT,
-          GatewayServer.DEFAULT_READ_TIMEOUT,
-          (List) null);
-    }
-  }
-
-  public static String getLocalIP(Properties properties) {
-    // zeppelin.python.gatewayserver_address is only for unit test on travis.
-    // Because the FQDN would fail unit test on travis ci.
-    String gatewayserver_address =
-        properties.getProperty("zeppelin.python.gatewayserver_address");
-    if (gatewayserver_address != null) {
-      return gatewayserver_address;
+    public static GatewayServer createGatewayServer(Object entryPoint,
+                                                    String serverAddress,
+                                                    int port,
+                                                    String secretKey,
+                                                    boolean useAuth) throws IOException {
+        LOGGER.info("Launching GatewayServer at " + serverAddress + ":" + port +
+                ", useAuth: " + useAuth);
+        if (useAuth) {
+            try {
+                Class clz = Class.forName("py4j.GatewayServer$GatewayServerBuilder", true,
+                        Thread.currentThread().getContextClassLoader());
+                Object builder = clz.getConstructor(Object.class).newInstance(entryPoint);
+                builder.getClass().getMethod("authToken", String.class).invoke(builder, secretKey);
+                builder.getClass().getMethod("javaPort", int.class).invoke(builder, port);
+                builder.getClass().getMethod("javaAddress", InetAddress.class).invoke(builder,
+                        InetAddress.getByName(serverAddress));
+                builder.getClass()
+                        .getMethod("callbackClient", int.class, InetAddress.class, String.class)
+                        .invoke(builder, port, InetAddress.getByName(serverAddress), secretKey);
+                return (GatewayServer) builder.getClass().getMethod("build").invoke(builder);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+        } else {
+            return new GatewayServer(entryPoint,
+                    port,
+                    GatewayServer.DEFAULT_PYTHON_PORT,
+                    InetAddress.getByName(serverAddress),
+                    InetAddress.getByName(serverAddress),
+                    GatewayServer.DEFAULT_CONNECT_TIMEOUT,
+                    GatewayServer.DEFAULT_READ_TIMEOUT,
+                    (List) null);
+        }
     }
 
-    try {
-      return Inet4Address.getLocalHost().getHostAddress();
-    } catch (UnknownHostException e) {
-      LOGGER.warn("can't get local IP", e);
-    }
-    // fall back to loopback addreess
-    return "127.0.0.1";
-  }
+    public static String getLocalIP(Properties properties) {
+        // zeppelin.python.gatewayserver_address is only for unit test on travis.
+        // Because the FQDN would fail unit test on travis ci.
+        String gatewayserver_address =
+                properties.getProperty("zeppelin.python.gatewayserver_address");
+        if (gatewayserver_address != null) {
+            return gatewayserver_address;
+        }
 
-  public static String createSecret(int secretBitLength) {
-    SecureRandom rnd = new SecureRandom();
-    byte[] secretBytes = new byte[secretBitLength / java.lang.Byte.SIZE];
-    rnd.nextBytes(secretBytes);
-    return Base64.encodeBase64String(secretBytes);
-  }
+        try {
+            return Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            LOGGER.warn("can't get local IP", e);
+        }
+        // fall back to loopback addreess
+        return "127.0.0.1";
+    }
+
+    public static String createSecret(int secretBitLength) {
+        SecureRandom rnd = new SecureRandom();
+        byte[] secretBytes = new byte[secretBitLength / java.lang.Byte.SIZE];
+        rnd.nextBytes(secretBytes);
+        return Base64.encodeBase64String(secretBytes);
+    }
 }

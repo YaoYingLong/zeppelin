@@ -29,58 +29,59 @@ import org.apache.zeppelin.spark.SparkZeppelinContext;
 
 /**
  * RStatics provides static class methods that can be accessed through the SparkR bridge
- *
  */
 public class RStatics {
-  private static SparkContext sc = null;
-  private static SparkZeppelinContext z = null;
-  private static SQLContext sql = null;
-  private static RContext rCon = null;
+    private static SparkContext sc = null;
+    private static SparkZeppelinContext z = null;
+    private static SQLContext sql = null;
+    private static RContext rCon = null;
 
-  public static SparkContext setSC(SparkContext newSC) {
-    sc = newSC;
-    return sc;
-  }
+    public static SparkContext setSC(SparkContext newSC) {
+        sc = newSC;
+        return sc;
+    }
 
-  public static SparkZeppelinContext setZ(SparkZeppelinContext newZ) {
-    z = newZ;
-    return z;
-  }
+    public static SparkZeppelinContext setZ(SparkZeppelinContext newZ) {
+        z = newZ;
+        return z;
+    }
 
-  public static SQLContext setSQL(SQLContext newSQL) {
-    sql = newSQL;
-    return sql;
-  }
+    public static SQLContext setSQL(SQLContext newSQL) {
+        sql = newSQL;
+        return sql;
+    }
 
-  public static JavaSparkContext getJSC() {
-    return new JavaSparkContext(sc);
-  }
+    public static JavaSparkContext getJSC() {
+        return new JavaSparkContext(sc);
+    }
 
-  public static SparkContext getSC() {
-    return sc;
-  }
+    public static SparkContext getSC() {
+        return sc;
+    }
 
-  public static SQLContext getSQL() {
-    return sql;
-  }
+    public static SQLContext getSQL() {
+        return sql;
+    }
 
-  public static Object getZ(String name) {
-    return z.get(name);
-  }
+    public static Object getZ(String name) {
+        return z.get(name);
+    }
 
-  public static void putZ(String name, Object obj) {
-    z.put(name, obj);
-  }
+    public static void putZ(String name, Object obj) {
+        z.put(name, obj);
+    }
 
-  public static RContext getRCon() {
-    return rCon;
-  }
-  public static RContext setrCon(RContext newrCon) {
-    rCon = newrCon;
-    return rCon;
-  }
-  public static Boolean testRDD(String name) {
-    Object x = z.get(name);
-    return (x instanceof org.apache.spark.api.java.JavaRDD);
-  }
+    public static RContext getRCon() {
+        return rCon;
+    }
+
+    public static RContext setrCon(RContext newrCon) {
+        rCon = newrCon;
+        return rCon;
+    }
+
+    public static Boolean testRDD(String name) {
+        Object x = z.get(name);
+        return (x instanceof org.apache.spark.api.java.JavaRDD);
+    }
 }

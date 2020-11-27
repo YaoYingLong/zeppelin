@@ -26,15 +26,15 @@ import java.util.Map;
  * Helper class to save credentials
  */
 public class CredentialsInfoSaving implements JsonSerializable {
-  private static final Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
 
-  public Map<String, UserCredentials> credentialsMap;
+    public Map<String, UserCredentials> credentialsMap;
 
-  public String toJson() {
-    return GSON.toJson(this);
-  }
+    public static CredentialsInfoSaving fromJson(String json) {
+        return GSON.fromJson(json, CredentialsInfoSaving.class);
+    }
 
-  public static CredentialsInfoSaving fromJson(String json) {
-    return GSON.fromJson(json, CredentialsInfoSaving.class);
-  }
+    public String toJson() {
+        return GSON.toJson(this);
+    }
 }

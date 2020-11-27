@@ -21,54 +21,53 @@ import java.util.Map;
 
 /**
  * The base network entity
- *
  */
 public abstract class GraphEntity {
 
-  private long id;
+    private long id;
 
-  /**
-   * The data of the entity
-   * 
-   */
-  private Map<String, Object> data;
+    /**
+     * The data of the entity
+     */
+    private Map<String, Object> data;
 
-  /**
-   * The primary type of the entity
-   */
-  private String label;
-  
-  public GraphEntity() {}
+    /**
+     * The primary type of the entity
+     */
+    private String label;
 
-  public GraphEntity(long id, Map<String, Object> data, String label) {
-    super();
-    this.setId(id);
-    this.setData(data);
-    this.setLabel(label);
-  }
+    public GraphEntity() {
+    }
 
-  public long getId() {
-    return id;
-  }
+    public GraphEntity(long id, Map<String, Object> data, String label) {
+        super();
+        this.setId(id);
+        this.setData(data);
+        this.setLabel(label);
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public Map<String, Object> getData() {
-    return data;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public void setData(Map<String, Object> data) {
-    this.data = data;
-  }
+    public Map<String, Object> getData() {
+        return data;
+    }
 
-  public String getLabel() {
-    return label;
-  }
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
 }

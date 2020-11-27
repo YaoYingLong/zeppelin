@@ -18,41 +18,41 @@
 package org.apache.zeppelin.rest;
 
 import com.google.common.collect.Sets;
-import java.io.IOException;
-import java.util.Set;
-import javax.ws.rs.WebApplicationException;
-
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.service.SimpleServiceCallback;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
+import javax.ws.rs.WebApplicationException;
+import java.io.IOException;
+import java.util.Set;
+
 public class AbstractRestApi {
 
-  protected AuthenticationService authenticationService;
+    protected AuthenticationService authenticationService;
 
-  protected AbstractRestApi(AuthenticationService authenticationService) {
-    this.authenticationService = authenticationService;
-  }
-
-  protected ServiceContext getServiceContext() {
-    AuthenticationInfo authInfo = new AuthenticationInfo(authenticationService.getPrincipal());
-    Set<String> userAndRoles = Sets.newHashSet();
-    userAndRoles.add(authenticationService.getPrincipal());
-    userAndRoles.addAll(authenticationService.getAssociatedRoles());
-    return new ServiceContext(authInfo, userAndRoles);
-  }
-
-  public static class RestServiceCallback<T> extends SimpleServiceCallback<T> {
-
-    @Override
-    public void onFailure(Exception ex, ServiceContext context) throws IOException {
-      super.onFailure(ex, context);
-      if (ex instanceof WebApplicationException) {
-        throw (WebApplicationException) ex;
-      } else {
-        throw new IOException(ex);
-      }
+    protected AbstractRestApi(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
-  }
+
+    protected ServiceContext getServiceContext() {
+        AuthenticationInfo authInfo = new AuthenticationInfo(authenticationService.getPrincipal());
+        Set<String> userAndRoles = Sets.newHashSet();
+        userAndRoles.add(authenticationService.getPrincipal());
+        userAndRoles.addAll(authenticationService.getAssociatedRoles());
+        return new ServiceContext(authInfo, userAndRoles);
+    }
+
+    public static class RestServiceCallback<T> extends SimpleServiceCallback<T> {
+
+        @Override
+        public void onFailure(Exception ex, ServiceContext context) throws IOException {
+            super.onFailure(ex, context);
+            if (ex instanceof WebApplicationException) {
+                throw (WebApplicationException) ex;
+            } else {
+                throw new IOException(ex);
+            }
+        }
+    }
 }

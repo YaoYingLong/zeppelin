@@ -24,17 +24,17 @@ import static org.junit.Assert.assertNull;
 
 public class InterpreterContextTest {
 
-  @Test
-  public void testThreadLocal() {
-    InterpreterContext.remove();
-    assertNull(InterpreterContext.get());
+    @Test
+    public void testThreadLocal() {
+        InterpreterContext.remove();
+        assertNull(InterpreterContext.get());
 
-    InterpreterContext.set(InterpreterContext.builder()
-        .build());
-    assertNotNull(InterpreterContext.get());
+        InterpreterContext.set(InterpreterContext.builder()
+                .build());
+        assertNotNull(InterpreterContext.get());
 
-    InterpreterContext.remove();
-    assertNull(InterpreterContext.get());
-  }
+        InterpreterContext.remove();
+        assertNull(InterpreterContext.get());
+    }
 
 }

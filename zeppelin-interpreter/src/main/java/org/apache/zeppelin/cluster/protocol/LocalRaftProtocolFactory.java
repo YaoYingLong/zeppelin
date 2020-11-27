@@ -27,31 +27,31 @@ import java.util.Map;
  * Cluster Raft protocol factory.
  */
 public class LocalRaftProtocolFactory {
-  private final Serializer serializer;
-  private final Map<MemberId, LocalRaftServerProtocol> servers = Maps.newConcurrentMap();
-  private final Map<MemberId, LocalRaftClientProtocol> clients = Maps.newConcurrentMap();
+    private final Serializer serializer;
+    private final Map<MemberId, LocalRaftServerProtocol> servers = Maps.newConcurrentMap();
+    private final Map<MemberId, LocalRaftClientProtocol> clients = Maps.newConcurrentMap();
 
-  public LocalRaftProtocolFactory(Serializer serializer) {
-    this.serializer = serializer;
-  }
+    public LocalRaftProtocolFactory(Serializer serializer) {
+        this.serializer = serializer;
+    }
 
-  /**
-   * Returns a new test client protocol.
-   *
-   * @param memberId the client member identifier
-   * @return a new test client protocol
-   */
-  public RaftClientProtocol newClientProtocol(MemberId memberId) {
-    return new LocalRaftClientProtocol(memberId, serializer, servers, clients);
-  }
+    /**
+     * Returns a new test client protocol.
+     *
+     * @param memberId the client member identifier
+     * @return a new test client protocol
+     */
+    public RaftClientProtocol newClientProtocol(MemberId memberId) {
+        return new LocalRaftClientProtocol(memberId, serializer, servers, clients);
+    }
 
-  /**
-   * Returns a new test server protocol.
-   *
-   * @param memberId the server member identifier
-   * @return a new test server protocol
-   */
-  public RaftServerProtocol newServerProtocol(MemberId memberId) {
-    return new LocalRaftServerProtocol(memberId, serializer, servers, clients);
-  }
+    /**
+     * Returns a new test server protocol.
+     *
+     * @param memberId the server member identifier
+     * @return a new test server protocol
+     */
+    public RaftServerProtocol newServerProtocol(MemberId memberId) {
+        return new LocalRaftServerProtocol(memberId, serializer, servers, clients);
+    }
 }

@@ -46,6 +46,16 @@ export class JobManagerComponent extends MessageListenersManager implements OnIn
   jobs: JobsItem[] = [];
   loading = true;
 
+  constructor(
+    public messageService: MessageService,
+    private jobManagerService: JobManagerService,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private nzModalService: NzModalService
+  ) {
+    super(messageService);
+  }
+
   @MessageListener(OP.LIST_NOTE_JOBS)
   setJobs(data: ListNoteJobs) {
     this.jobs = data.noteJobs.jobs.filter(j => typeof j.interpreter !== 'undefined');
@@ -107,16 +117,6 @@ export class JobManagerComponent extends MessageListenersManager implements OnIn
         this.jobManagerService.stopJob(noteId).subscribe();
       }
     });
-  }
-
-  constructor(
-    public messageService: MessageService,
-    private jobManagerService: JobManagerService,
-    private fb: FormBuilder,
-    private cdr: ChangeDetectorRef,
-    private nzModalService: NzModalService
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {

@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { AuthInfo, ConfigurationsInfo, ErrorInfo } from './message-common.interface';
+import {AuthInfo, ConfigurationsInfo, ErrorInfo} from './message-common.interface';
 import {
   CheckpointNote,
   CloneNote,
@@ -27,11 +27,11 @@ import {
   MoveNoteToTrash,
   NewNote,
   Note,
-  NotesInfo,
   NoteRename,
   NoteRevision,
   NoteRevisionForCompare,
   NoteRunningStatus,
+  NotesInfo,
   NoteUpdate,
   NoteUpdated,
   ParagraphAdded,
@@ -73,10 +73,10 @@ import {
   RunParagraph
 } from './message-paragraph.interface';
 
-import { ListNoteJobs, ListUpdateNoteJobs } from './message-job.interface';
+import {ListNoteJobs, ListUpdateNoteJobs} from './message-job.interface';
 
-import { InterpreterBindings, InterpreterSetting } from './message-interpreter.interface';
-import { OP } from './message-operator.interface';
+import {InterpreterBindings, InterpreterSetting} from './message-interpreter.interface';
+import {OP} from './message-operator.interface';
 
 export type MixMessageDataTypeMap = MessageSendDataTypeMap & MessageReceiveDataTypeMap;
 

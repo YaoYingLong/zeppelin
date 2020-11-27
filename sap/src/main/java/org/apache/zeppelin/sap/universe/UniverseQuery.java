@@ -25,44 +25,44 @@ import java.util.OptionalInt;
  * Data of universe query
  */
 public class UniverseQuery {
-  private String select;
-  private String where;
-  private UniverseInfo universeInfo;
-  private boolean duplicatedRows = false;
-  private OptionalInt maxRowsRetrieved;
+    private String select;
+    private String where;
+    private UniverseInfo universeInfo;
+    private boolean duplicatedRows = false;
+    private OptionalInt maxRowsRetrieved;
 
-  public UniverseQuery(String select, String where, UniverseInfo universeInfo,
-                       boolean duplicatedRows, OptionalInt maxRowsRetrieved) {
-    this.select = select;
-    this.where = where;
-    this.universeInfo = universeInfo;
-    this.duplicatedRows = duplicatedRows;
-    this.maxRowsRetrieved = maxRowsRetrieved;
-  }
+    public UniverseQuery(String select, String where, UniverseInfo universeInfo,
+                         boolean duplicatedRows, OptionalInt maxRowsRetrieved) {
+        this.select = select;
+        this.where = where;
+        this.universeInfo = universeInfo;
+        this.duplicatedRows = duplicatedRows;
+        this.maxRowsRetrieved = maxRowsRetrieved;
+    }
 
-  public boolean isCorrect() {
-    return StringUtils.isNotBlank(select) && universeInfo != null &&
-        StringUtils.isNotBlank(universeInfo.getId())
-        && StringUtils.isNotBlank(universeInfo.getName());
-  }
+    public boolean isCorrect() {
+        return StringUtils.isNotBlank(select) && universeInfo != null &&
+                StringUtils.isNotBlank(universeInfo.getId())
+                && StringUtils.isNotBlank(universeInfo.getName());
+    }
 
-  public String getSelect() {
-    return select;
-  }
+    public String getSelect() {
+        return select;
+    }
 
-  public String getWhere() {
-    return where;
-  }
+    public String getWhere() {
+        return where;
+    }
 
-  public UniverseInfo getUniverseInfo() {
-    return universeInfo;
-  }
+    public UniverseInfo getUniverseInfo() {
+        return universeInfo;
+    }
 
-  public boolean getDuplicatedRows() {
-    return duplicatedRows;
-  }
+    public boolean getDuplicatedRows() {
+        return duplicatedRows;
+    }
 
-  public OptionalInt getMaxRowsRetrieved() {
-    return maxRowsRetrieved;
-  }
+    public OptionalInt getMaxRowsRetrieved() {
+        return maxRowsRetrieved;
+    }
 }

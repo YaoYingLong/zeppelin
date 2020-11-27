@@ -24,22 +24,22 @@ import static org.junit.Assert.assertEquals;
 
 public class TableDataUtilsTest {
 
-  @Test
-  public void testColumn() {
-    assertEquals("hello world", TableDataUtils.normalizeColumn("hello\tworld"));
-    assertEquals("hello world", TableDataUtils.normalizeColumn("hello\nworld"));
-    assertEquals("hello world", TableDataUtils.normalizeColumn("hello\r\nworld"));
-    assertEquals("hello  world", TableDataUtils.normalizeColumn("hello\t\nworld"));
+    @Test
+    public void testColumn() {
+        assertEquals("hello world", TableDataUtils.normalizeColumn("hello\tworld"));
+        assertEquals("hello world", TableDataUtils.normalizeColumn("hello\nworld"));
+        assertEquals("hello world", TableDataUtils.normalizeColumn("hello\r\nworld"));
+        assertEquals("hello  world", TableDataUtils.normalizeColumn("hello\t\nworld"));
 
-    assertEquals("null", TableDataUtils.normalizeColumn(null));
-  }
+        assertEquals("null", TableDataUtils.normalizeColumn(null));
+    }
 
-  @Test
-  public void testColumns() {
-    assertEquals(Lists.newArrayList("hello world", "hello world"),
-            TableDataUtils.normalizeColumns(new Object[]{"hello\tworld", "hello\nworld"}));
+    @Test
+    public void testColumns() {
+        assertEquals(Lists.newArrayList("hello world", "hello world"),
+                TableDataUtils.normalizeColumns(new Object[]{"hello\tworld", "hello\nworld"}));
 
-    assertEquals(Lists.newArrayList("hello world", "null"),
-            TableDataUtils.normalizeColumns(new String[]{"hello\tworld", null}));
-  }
+        assertEquals(Lists.newArrayList("hello world", "null"),
+                TableDataUtils.normalizeColumns(new String[]{"hello\tworld", null}));
+    }
 }

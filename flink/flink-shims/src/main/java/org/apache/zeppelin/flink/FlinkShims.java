@@ -40,101 +40,100 @@ import java.util.Properties;
  */
 public abstract class FlinkShims {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FlinkShims.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlinkShims.class);
 
-  private static FlinkShims flinkShims;
+    private static FlinkShims flinkShims;
 
-  protected Properties properties;
+    protected Properties properties;
 
-  public FlinkShims(Properties properties) {
-    this.properties = properties;
-  }
-
-  private static FlinkShims loadShims(FlinkVersion flinkVersion, Properties properties)
-      throws Exception {
-    Class<?> flinkShimsClass;
-    if (flinkVersion.getMajorVersion() == 1 && flinkVersion.getMinorVersion() == 10) {
-      LOGGER.info("Initializing shims for Flink 1.10");
-      flinkShimsClass = Class.forName("org.apache.zeppelin.flink.Flink110Shims");
-    } else if (flinkVersion.getMajorVersion() == 1 && flinkVersion.getMinorVersion() >= 11) {
-      LOGGER.info("Initializing shims for Flink 1.11");
-      flinkShimsClass = Class.forName("org.apache.zeppelin.flink.Flink111Shims");
-    } else {
-      throw new Exception("Flink version: '" + flinkVersion + "' is not supported yet");
+    public FlinkShims(Properties properties) {
+        this.properties = properties;
     }
 
-    Constructor c = flinkShimsClass.getConstructor(Properties.class);
-    return (FlinkShims) c.newInstance(properties);
-  }
+    private static FlinkShims loadShims(FlinkVersion flinkVersion, Properties properties)
+            throws Exception {
+        Class<?> flinkShimsClass;
+        if (flinkVersion.getMajorVersion() == 1 && flinkVersion.getMinorVersion() == 10) {
+            LOGGER.info("Initializing shims for Flink 1.10");
+            flinkShimsClass = Class.forName("org.apache.zeppelin.flink.Flink110Shims");
+        } else if (flinkVersion.getMajorVersion() == 1 && flinkVersion.getMinorVersion() >= 11) {
+            LOGGER.info("Initializing shims for Flink 1.11");
+            flinkShimsClass = Class.forName("org.apache.zeppelin.flink.Flink111Shims");
+        } else {
+            throw new Exception("Flink version: '" + flinkVersion + "' is not supported yet");
+        }
 
-  /**
-   *
-   * @param flinkVersion
-   * @param properties
-   * @return
-   */
-  public static FlinkShims getInstance(FlinkVersion flinkVersion,
-                                       Properties properties) throws Exception {
-    if (flinkShims == null) {
-      flinkShims = loadShims(flinkVersion, properties);
+        Constructor c = flinkShimsClass.getConstructor(Properties.class);
+        return (FlinkShims) c.newInstance(properties);
     }
-    return flinkShims;
-  }
 
-  protected static AttributedString formatCommand(SqlCommandParser.SqlCommand cmd, String description) {
-    return new AttributedStringBuilder()
-            .style(AttributedStyle.DEFAULT.bold())
-            .append(cmd.toString())
-            .append("\t\t")
-            .style(AttributedStyle.DEFAULT)
-            .append(description)
-            .append('\n')
-            .toAttributedString();
-  }
+    /**
+     * @param flinkVersion
+     * @param properties
+     * @return
+     */
+    public static FlinkShims getInstance(FlinkVersion flinkVersion,
+                                         Properties properties) throws Exception {
+        if (flinkShims == null) {
+            flinkShims = loadShims(flinkVersion, properties);
+        }
+        return flinkShims;
+    }
 
-  public abstract Object createCatalogManager(Object config);
+    protected static AttributedString formatCommand(SqlCommandParser.SqlCommand cmd, String description) {
+        return new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.bold())
+                .append(cmd.toString())
+                .append("\t\t")
+                .style(AttributedStyle.DEFAULT)
+                .append(description)
+                .append('\n')
+                .toAttributedString();
+    }
 
-  public abstract String getPyFlinkPythonPath(Properties properties) throws IOException;
+    public abstract Object createCatalogManager(Object config);
 
-  public abstract Object getCollectStreamTableSink(InetAddress targetAddress,
-                                                   int targetPort,
-                                                   Object serializer);
+    public abstract String getPyFlinkPythonPath(Properties properties) throws IOException;
 
-  public abstract List collectToList(Object table) throws Exception;
+    public abstract Object getCollectStreamTableSink(InetAddress targetAddress,
+                                                     int targetPort,
+                                                     Object serializer);
 
-  public abstract void startMultipleInsert(Object tblEnv, InterpreterContext context) throws Exception;
+    public abstract List collectToList(Object table) throws Exception;
 
-  public abstract void addInsertStatement(String sql, Object tblEnv, InterpreterContext context) throws Exception;
+    public abstract void startMultipleInsert(Object tblEnv, InterpreterContext context) throws Exception;
 
-  public abstract boolean executeMultipleInsertInto(String jobName, Object tblEnv, InterpreterContext context) throws Exception;
+    public abstract void addInsertStatement(String sql, Object tblEnv, InterpreterContext context) throws Exception;
 
-  public abstract boolean rowEquals(Object row1, Object row2);
+    public abstract boolean executeMultipleInsertInto(String jobName, Object tblEnv, InterpreterContext context) throws Exception;
 
-  public abstract Object fromDataSet(Object btenv, Object ds);
+    public abstract boolean rowEquals(Object row1, Object row2);
 
-  public abstract Object toDataSet(Object btenv, Object table);
+    public abstract Object fromDataSet(Object btenv, Object ds);
 
-  public abstract void registerTableFunction(Object btenv, String name, Object tableFunction);
+    public abstract Object toDataSet(Object btenv, Object table);
 
-  public abstract void registerAggregateFunction(Object btenv, String name, Object aggregateFunction);
+    public abstract void registerTableFunction(Object btenv, String name, Object tableFunction);
 
-  public abstract void registerTableAggregateFunction(Object btenv, String name, Object tableAggregateFunction);
+    public abstract void registerAggregateFunction(Object btenv, String name, Object aggregateFunction);
 
-  public abstract void registerTableSink(Object stenv, String tableName, Object collectTableSink);
+    public abstract void registerTableAggregateFunction(Object btenv, String name, Object tableAggregateFunction);
 
-  public abstract Optional<SqlCommandParser.SqlCommandCall> parseSql(Object tableEnv, String stmt);
+    public abstract void registerTableSink(Object stenv, String tableName, Object collectTableSink);
 
-  public abstract void executeSql(Object tableEnv, String sql);
+    public abstract Optional<SqlCommandParser.SqlCommandCall> parseSql(Object tableEnv, String stmt);
 
-  public abstract String explain(Object tableEnv, String sql);
+    public abstract void executeSql(Object tableEnv, String sql);
 
-  public abstract String sqlHelp();
+    public abstract String explain(Object tableEnv, String sql);
 
-  public abstract void setCatalogManagerSchemaResolver(Object catalogManager,
-                                                       Object parser,
-                                                       Object environmentSetting);
+    public abstract String sqlHelp();
 
-  public abstract Object getCustomCli(Object cliFrontend, Object commandLine);
+    public abstract void setCatalogManagerSchemaResolver(Object catalogManager,
+                                                         Object parser,
+                                                         Object environmentSetting);
 
-  public abstract Map extractTableConfigOptions();
+    public abstract Object getCustomCli(Object cliFrontend, Object commandLine);
+
+    public abstract Map extractTableConfigOptions();
 }

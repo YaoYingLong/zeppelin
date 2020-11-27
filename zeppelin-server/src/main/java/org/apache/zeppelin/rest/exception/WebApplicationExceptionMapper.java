@@ -19,30 +19,30 @@ package org.apache.zeppelin.rest.exception;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.zeppelin.rest.message.gson.ExceptionSerializer;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.zeppelin.rest.message.gson.ExceptionSerializer;
-
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<Throwable> {
-  private final Gson gson;
+    private final Gson gson;
 
-  public WebApplicationExceptionMapper() {
-    GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
-    gsonBuilder.registerTypeHierarchyAdapter(
-        Exception.class, new ExceptionSerializer());
-    this.gson = gsonBuilder.create();
-  }
-
-  @Override
-  public Response toResponse(Throwable exception) {
-    if (exception instanceof WebApplicationException) {
-      return ((WebApplicationException) exception).getResponse();
-    } else {
-      return Response.status(500).entity(gson.toJson(exception)).build();
+    public WebApplicationExceptionMapper() {
+        GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
+        gsonBuilder.registerTypeHierarchyAdapter(
+                Exception.class, new ExceptionSerializer());
+        this.gson = gsonBuilder.create();
     }
-  }
+
+    @Override
+    public Response toResponse(Throwable exception) {
+        if (exception instanceof WebApplicationException) {
+            return ((WebApplicationException) exception).getResponse();
+        } else {
+            return Response.status(500).entity(gson.toJson(exception)).build();
+        }
+    }
 }

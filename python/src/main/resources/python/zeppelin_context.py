@@ -15,16 +15,17 @@
 # limitations under the License.
 #
 
-import os, sys
-import warnings
 import base64
-
+import os
+import sys
+import warnings
 from io import BytesIO
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
 
 class PyZeppelinContext(object):
     """ A context impl that uses Py4j to communicate to JVM
@@ -69,7 +70,7 @@ class PyZeppelinContext(object):
     def remove(self, key):
         self.z.remove(key)
 
-    def angular(self, key, noteId = None, paragraphId = None):
+    def angular(self, key, noteId=None, paragraphId=None):
         return self.z.angular(key, noteId, paragraphId)
 
     def contains(self, key):
@@ -112,7 +113,7 @@ class PyZeppelinContext(object):
         return self.z.run(paragraphId)
 
     def run(self, noteId, paragraphId):
-        return self .z.run(noteId, paragraphId)
+        return self.z.run(noteId, paragraphId)
 
     def runNote(self, noteId):
         return self.z.runNote(noteId)
@@ -120,19 +121,19 @@ class PyZeppelinContext(object):
     def runAll(self):
         return self.z.runAll()
 
-    def angular(self, name, noteId = None, paragraphId = None):
+    def angular(self, name, noteId=None, paragraphId=None):
         if noteId == None:
             return self.z.angular(name, self.z.getInterpreterContext().getNoteId(), paragraphId)
         else:
             return self.z.angular(name, noteId, paragraphId)
 
-    def angularBind(self, name, value, noteId = None, paragraphId = None):
+    def angularBind(self, name, value, noteId=None, paragraphId=None):
         if noteId == None:
             return self.z.angularBind(name, value, noteId, paragraphId)
         else:
             return self.z.angularBind(name, value, self.z.getInterpreterContext().getNoteId(), paragraphId)
 
-    def angularUnbind(self, name, noteId = None):
+    def angularUnbind(self, name, noteId=None):
         if noteId == None:
             self.z.angularUnbind(name, self.z.getInterpreterContext().getNoteId())
         else:
@@ -179,7 +180,7 @@ class PyZeppelinContext(object):
     def show(self, p, **kwargs):
         if hasattr(p, '__name__') and p.__name__ == "matplotlib.pyplot":
             self.show_matplotlib(p, **kwargs)
-        elif type(p).__name__ == "DataFrame": # does not play well with sub-classes
+        elif type(p).__name__ == "DataFrame":  # does not play well with sub-classes
             # `isinstance(p, DataFrame)` would req `import pandas.core.frame.DataFrame`
             # and so a dependency on pandas
             self.show_dataframe(p, **kwargs)

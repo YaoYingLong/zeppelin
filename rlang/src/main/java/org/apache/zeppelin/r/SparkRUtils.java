@@ -23,29 +23,29 @@ import java.io.File;
 
 public class SparkRUtils {
 
-  public static String getSparkRLib(boolean isSparkSupported) throws InterpreterException {
-    String sparkRLibPath;
+    public static String getSparkRLib(boolean isSparkSupported) throws InterpreterException {
+        String sparkRLibPath;
 
-    if (System.getenv("SPARK_HOME") != null) {
-      // local or yarn-client mode when SPARK_HOME is specified
-      sparkRLibPath = System.getenv("SPARK_HOME") + "/R/lib";
-    } else if (System.getenv("ZEPPELIN_HOME") != null){
-      // embedded mode when SPARK_HOME is not specified or for native R support
-      String interpreter = "r";
-      if (isSparkSupported) {
-        interpreter = "spark";
-      }
-      sparkRLibPath = System.getenv("ZEPPELIN_HOME") + "/interpreter/" + interpreter + "/R/lib";
-      // workaround to make sparkr work without SPARK_HOME
-      System.setProperty("spark.test.home", System.getenv("ZEPPELIN_HOME") + "/interpreter/" + interpreter);
-    } else {
-      // yarn-cluster mode
-      sparkRLibPath = "sparkr";
-    }
-    if (!new File(sparkRLibPath).exists()) {
-      throw new InterpreterException(String.format("sparkRLib '%s' doesn't exist", sparkRLibPath));
-    }
+        if (System.getenv("SPARK_HOME") != null) {
+            // local or yarn-client mode when SPARK_HOME is specified
+            sparkRLibPath = System.getenv("SPARK_HOME") + "/R/lib";
+        } else if (System.getenv("ZEPPELIN_HOME") != null) {
+            // embedded mode when SPARK_HOME is not specified or for native R support
+            String interpreter = "r";
+            if (isSparkSupported) {
+                interpreter = "spark";
+            }
+            sparkRLibPath = System.getenv("ZEPPELIN_HOME") + "/interpreter/" + interpreter + "/R/lib";
+            // workaround to make sparkr work without SPARK_HOME
+            System.setProperty("spark.test.home", System.getenv("ZEPPELIN_HOME") + "/interpreter/" + interpreter);
+        } else {
+            // yarn-cluster mode
+            sparkRLibPath = "sparkr";
+        }
+        if (!new File(sparkRLibPath).exists()) {
+            throw new InterpreterException(String.format("sparkRLib '%s' doesn't exist", sparkRLibPath));
+        }
 
-    return sparkRLibPath;
-  }
+        return sparkRLibPath;
+    }
 }

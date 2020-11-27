@@ -56,7 +56,6 @@ import { NotebookParagraphComponent } from './paragraph/paragraph.component';
 })
 export class NotebookComponent extends MessageListenersManager implements OnInit, OnDestroy {
   @ViewChildren(NotebookParagraphComponent) listOfNotebookParagraphComponent: QueryList<NotebookParagraphComponent>;
-  private destroy$ = new Subject();
   note: Note['note'];
   permissions: Permissions;
   selectId: string | null = null;
@@ -75,6 +74,25 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
   sidebarWidth = 370;
   sidebarAnimationFrame = -1;
   isSidebarOpen = false;
+  private destroy$ = new Subject();
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    public messageService: MessageService,
+    private cdr: ChangeDetectorRef,
+    private noteStatusService: NoteStatusService,
+    private noteVarShareService: NoteVarShareService,
+    private ticketService: TicketService,
+    private securityService: SecurityService,
+    private router: Router,
+    protected ngZService: NgZService
+  ) {
+    super(messageService);
+  }
+
+  get viewOnly(): boolean {
+    return this.noteStatusService.viewOnly(this.note);
+  }
 
   @MessageListener(OP.NOTE)
   getNote(data: MessageReceiveDataTypeMap[OP.NOTE]) {
@@ -289,10 +307,6 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
     });
   }
 
-  get viewOnly(): boolean {
-    return this.noteStatusService.viewOnly(this.note);
-  }
-
   initializeLookAndFeel() {
     this.note.config.looknfeel = this.note.config.looknfeel || 'default';
     if (this.note.paragraphs && this.note.paragraphs[0]) {
@@ -349,20 +363,6 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
     this.sidebarAnimationFrame = requestAnimationFrame(() => {
       this.sidebarWidth = width!;
     });
-  }
-
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    public messageService: MessageService,
-    private cdr: ChangeDetectorRef,
-    private noteStatusService: NoteStatusService,
-    private noteVarShareService: NoteVarShareService,
-    private ticketService: TicketService,
-    private securityService: SecurityService,
-    private router: Router,
-    protected ngZService: NgZService
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {

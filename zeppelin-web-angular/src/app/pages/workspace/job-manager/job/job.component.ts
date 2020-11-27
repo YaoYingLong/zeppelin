@@ -41,6 +41,8 @@ export class JobManagerJobComponent implements OnInit, OnChanges {
   relativeTime = '';
   progress = 0;
 
+  constructor() {}
+
   setIcon(): void {
     const noteType = this.note.noteType;
     if (noteType === 'normal') {
@@ -70,8 +72,6 @@ export class JobManagerJobComponent implements OnInit, OnChanges {
   onStopClick(): void {
     this.stop.emit(this.note.noteId);
   }
-
-  constructor() {}
 
   ngOnInit() {}
 

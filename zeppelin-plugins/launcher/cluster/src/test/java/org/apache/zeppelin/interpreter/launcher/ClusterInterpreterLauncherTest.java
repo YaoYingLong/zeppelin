@@ -33,111 +33,111 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ClusterInterpreterLauncherTest extends ClusterMockTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterInterpreterLauncherTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterInterpreterLauncherTest.class);
 
-  @BeforeClass
-  public static void startTest() throws IOException, InterruptedException {
-    ClusterMockTest.startCluster();
-  }
-
-  @AfterClass
-  public static void stopTest() throws IOException, InterruptedException {
-    ClusterMockTest.stopCluster();
-  }
-
-  @Before
-  public void setUp() {
-    for (final ZeppelinConfiguration.ConfVars confVar : ZeppelinConfiguration.ConfVars.values()) {
-      System.clearProperty(confVar.getVarName());
+    @BeforeClass
+    public static void startTest() throws IOException, InterruptedException {
+        ClusterMockTest.startCluster();
     }
-  }
 
-  @Test
-  public void testConnectExistOnlineIntpProcess() throws IOException {
-    mockIntpProcessMeta("intpGroupId", true);
+    @AfterClass
+    public static void stopTest() throws IOException, InterruptedException {
+        ClusterMockTest.stopCluster();
+    }
 
-    ClusterInterpreterLauncher launcher
-        = new ClusterInterpreterLauncher(ClusterMockTest.zconf, null);
-    Properties properties = new Properties();
-    properties.setProperty(
-        ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "5000");
-    InterpreterOption option = new InterpreterOption();
-    option.setUserImpersonate(true);
-    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
-        "user1", "intpGroupId", "groupId",
-        "groupName", "name", 0, "host");
+    @Before
+    public void setUp() {
+        for (final ZeppelinConfiguration.ConfVars confVar : ZeppelinConfiguration.ConfVars.values()) {
+            System.clearProperty(confVar.getVarName());
+        }
+    }
 
-    InterpreterClient client = launcher.launch(context);
+    @Test
+    public void testConnectExistOnlineIntpProcess() throws IOException {
+        mockIntpProcessMeta("intpGroupId", true);
 
-    assertTrue(client instanceof RemoteInterpreterRunningProcess);
-    RemoteInterpreterRunningProcess interpreterProcess = (RemoteInterpreterRunningProcess) client;
-    assertEquals("127.0.0.1", interpreterProcess.getHost());
-    assertEquals("name", interpreterProcess.getInterpreterSettingName());
-    assertEquals(5000, interpreterProcess.getConnectTimeout());
-  }
+        ClusterInterpreterLauncher launcher
+                = new ClusterInterpreterLauncher(ClusterMockTest.zconf, null);
+        Properties properties = new Properties();
+        properties.setProperty(
+                ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "5000");
+        InterpreterOption option = new InterpreterOption();
+        option.setUserImpersonate(true);
+        InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
+                "user1", "intpGroupId", "groupId",
+                "groupName", "name", 0, "host");
 
-  @Test
-  public void testConnectExistOfflineIntpProcess() throws IOException {
-    mockIntpProcessMeta("intpGroupId2", false);
+        InterpreterClient client = launcher.launch(context);
 
-    ClusterInterpreterLauncher launcher
-        = new ClusterInterpreterLauncher(ClusterMockTest.zconf, null);
-    Properties properties = new Properties();
-    properties.setProperty(
-        ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "5000");
-    InterpreterOption option = new InterpreterOption();
-    option.setUserImpersonate(true);
-    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
-        "user1", "intpGroupId2", "groupId",
-        "groupName", "name", 0, "host");
-    InterpreterClient client = launcher.launch(context);
+        assertTrue(client instanceof RemoteInterpreterRunningProcess);
+        RemoteInterpreterRunningProcess interpreterProcess = (RemoteInterpreterRunningProcess) client;
+        assertEquals("127.0.0.1", interpreterProcess.getHost());
+        assertEquals("name", interpreterProcess.getInterpreterSettingName());
+        assertEquals(5000, interpreterProcess.getConnectTimeout());
+    }
 
-    assertTrue(client instanceof ClusterInterpreterProcess);
-    ClusterInterpreterProcess interpreterProcess = (ClusterInterpreterProcess) client;
-    assertEquals("name", interpreterProcess.getInterpreterSettingName());
-    assertEquals(".//interpreter/groupName", interpreterProcess.getInterpreterDir());
-    assertEquals(".//local-repo/groupId", interpreterProcess.getLocalRepoDir());
-    assertEquals(5000, interpreterProcess.getConnectTimeout());
-    assertEquals(zconf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
-    assertTrue(interpreterProcess.getEnv().size() >= 1);
-    assertEquals(true, interpreterProcess.isUserImpersonated());
-  }
+    @Test
+    public void testConnectExistOfflineIntpProcess() throws IOException {
+        mockIntpProcessMeta("intpGroupId2", false);
 
-  @Test
-  public void testCreateIntpProcessDockerMode() throws IOException {
-    zconf.setRunMode(ZeppelinConfiguration.RUN_MODE.DOCKER);
+        ClusterInterpreterLauncher launcher
+                = new ClusterInterpreterLauncher(ClusterMockTest.zconf, null);
+        Properties properties = new Properties();
+        properties.setProperty(
+                ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "5000");
+        InterpreterOption option = new InterpreterOption();
+        option.setUserImpersonate(true);
+        InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
+                "user1", "intpGroupId2", "groupId",
+                "groupName", "name", 0, "host");
+        InterpreterClient client = launcher.launch(context);
 
-    ClusterInterpreterLauncher launcher
-        = new ClusterInterpreterLauncher(zconf, null);
-    Properties properties = new Properties();
-    properties.setProperty(
-        ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "1000");
-    InterpreterOption option = new InterpreterOption();
-    option.setUserImpersonate(true);
-    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
-        "user1", "intpGroupId3", "groupId3",
-        "groupName", "name", 0, "host");
-    InterpreterClient client = launcher.launch(context);
+        assertTrue(client instanceof ClusterInterpreterProcess);
+        ClusterInterpreterProcess interpreterProcess = (ClusterInterpreterProcess) client;
+        assertEquals("name", interpreterProcess.getInterpreterSettingName());
+        assertEquals(".//interpreter/groupName", interpreterProcess.getInterpreterDir());
+        assertEquals(".//local-repo/groupId", interpreterProcess.getLocalRepoDir());
+        assertEquals(5000, interpreterProcess.getConnectTimeout());
+        assertEquals(zconf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
+        assertTrue(interpreterProcess.getEnv().size() >= 1);
+        assertEquals(true, interpreterProcess.isUserImpersonated());
+    }
 
-    assertTrue(client instanceof DockerInterpreterProcess);
-  }
+    @Test
+    public void testCreateIntpProcessDockerMode() throws IOException {
+        zconf.setRunMode(ZeppelinConfiguration.RUN_MODE.DOCKER);
 
-  @Test
-  public void testCreateIntpProcessLocalMode() throws IOException {
-    zconf.setRunMode(ZeppelinConfiguration.RUN_MODE.LOCAL);
+        ClusterInterpreterLauncher launcher
+                = new ClusterInterpreterLauncher(zconf, null);
+        Properties properties = new Properties();
+        properties.setProperty(
+                ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "1000");
+        InterpreterOption option = new InterpreterOption();
+        option.setUserImpersonate(true);
+        InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
+                "user1", "intpGroupId3", "groupId3",
+                "groupName", "name", 0, "host");
+        InterpreterClient client = launcher.launch(context);
 
-    ClusterInterpreterLauncher launcher
-        = new ClusterInterpreterLauncher(zconf, null);
-    Properties properties = new Properties();
-    properties.setProperty(
-        ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "1000");
-    InterpreterOption option = new InterpreterOption();
-    option.setUserImpersonate(true);
-    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
-        "user1", "intpGroupId4", "groupId4",
-        "groupName", "name", 0, "host");
-    InterpreterClient client = launcher.launch(context);
+        assertTrue(client instanceof DockerInterpreterProcess);
+    }
 
-    assertTrue(client instanceof ClusterInterpreterProcess);
-  }
+    @Test
+    public void testCreateIntpProcessLocalMode() throws IOException {
+        zconf.setRunMode(ZeppelinConfiguration.RUN_MODE.LOCAL);
+
+        ClusterInterpreterLauncher launcher
+                = new ClusterInterpreterLauncher(zconf, null);
+        Properties properties = new Properties();
+        properties.setProperty(
+                ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "1000");
+        InterpreterOption option = new InterpreterOption();
+        option.setUserImpersonate(true);
+        InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null,
+                "user1", "intpGroupId4", "groupId4",
+                "groupName", "name", 0, "host");
+        InterpreterClient client = launcher.launch(context);
+
+        assertTrue(client instanceof ClusterInterpreterProcess);
+    }
 }

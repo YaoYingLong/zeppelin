@@ -33,47 +33,47 @@ import java.util.List;
  * Simple Helium registry on local filesystem
  */
 public class HeliumLocalRegistry extends HeliumRegistry {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HeliumLocalRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HeliumLocalRegistry.class);
 
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  public HeliumLocalRegistry(String name, String uri) {
-    super(name, uri);
-  }
-
-  @Override
-  public synchronized List<HeliumPackage> getAll() throws IOException {
-    List<HeliumPackage> result = new LinkedList<>();
-
-    File file = new File(uri());
-    File [] files = file.listFiles();
-    if (files == null) {
-      return result;
+    public HeliumLocalRegistry(String name, String uri) {
+        super(name, uri);
     }
 
-    for (File f : files) {
-      if (f.getName().startsWith(".")) {
-        continue;
-      }
+    @Override
+    public synchronized List<HeliumPackage> getAll() throws IOException {
+        List<HeliumPackage> result = new LinkedList<>();
 
-      HeliumPackage pkgInfo = readPackageInfo(f);
-      if (pkgInfo != null) {
-        result.add(pkgInfo);
-      }
+        File file = new File(uri());
+        File[] files = file.listFiles();
+        if (files == null) {
+            return result;
+        }
+
+        for (File f : files) {
+            if (f.getName().startsWith(".")) {
+                continue;
+            }
+
+            HeliumPackage pkgInfo = readPackageInfo(f);
+            if (pkgInfo != null) {
+                result.add(pkgInfo);
+            }
+        }
+        return result;
     }
-    return result;
-  }
 
-  private HeliumPackage readPackageInfo(File f) {
-    try {
-      JsonReader reader = new JsonReader(new StringReader(FileUtils.readFileToString(f, StandardCharsets.UTF_8)));
-      reader.setLenient(true);
+    private HeliumPackage readPackageInfo(File f) {
+        try {
+            JsonReader reader = new JsonReader(new StringReader(FileUtils.readFileToString(f, StandardCharsets.UTF_8)));
+            reader.setLenient(true);
 
-      return gson.fromJson(reader, HeliumPackage.class);
-    } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
-      return null;
+            return gson.fromJson(reader, HeliumPackage.class);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
     }
-  }
 
 }

@@ -18,24 +18,24 @@ import java.util.Map;
  */
 public class StopInterpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(StopInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StopInterpreter.class);
 
-  public static void main(String[] args) throws IOException {
-    ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
-    InterpreterSettingManager interpreterSettingManager =
-            new InterpreterSettingManager(zConf, null, null, null);
+    public static void main(String[] args) throws IOException {
+        ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
+        InterpreterSettingManager interpreterSettingManager =
+                new InterpreterSettingManager(zConf, null, null, null);
 
-    RecoveryStorage recoveryStorage  = ReflectionUtils.createClazzInstance(zConf.getRecoveryStorageClass(),
-        new Class[] {ZeppelinConfiguration.class, InterpreterSettingManager.class},
-        new Object[] {zConf, interpreterSettingManager});
+        RecoveryStorage recoveryStorage = ReflectionUtils.createClazzInstance(zConf.getRecoveryStorageClass(),
+                new Class[]{ZeppelinConfiguration.class, InterpreterSettingManager.class},
+                new Object[]{zConf, interpreterSettingManager});
 
-    LOGGER.info("Using RecoveryStorage: {}", recoveryStorage.getClass().getName());
-    Map<String, InterpreterClient> restoredClients = recoveryStorage.restore();
-    if (restoredClients != null) {
-      for (InterpreterClient client : restoredClients.values()) {
-        LOGGER.info("Stop Interpreter Process: {}:{}", client.getHost(), client.getPort());
-        client.stop();
-      }
+        LOGGER.info("Using RecoveryStorage: {}", recoveryStorage.getClass().getName());
+        Map<String, InterpreterClient> restoredClients = recoveryStorage.restore();
+        if (restoredClients != null) {
+            for (InterpreterClient client : restoredClients.values()) {
+                LOGGER.info("Stop Interpreter Process: {}:{}", client.getHost(), client.getPort());
+                client.stop();
+            }
+        }
     }
-  }
 }

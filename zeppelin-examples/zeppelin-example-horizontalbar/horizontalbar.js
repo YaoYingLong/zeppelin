@@ -21,57 +21,59 @@ import PivotTransformation from 'zeppelin-tabledata/pivot';
  * Base class for visualization
  */
 export default class horizontalbar extends Nvd3ChartVisualization {
-  constructor(targetEl, config) {
-    super(targetEl, config)
-    this.pivot = new PivotTransformation(config);
-  }
+    constructor(targetEl, config) {
+        super(targetEl, config)
+        this.pivot = new PivotTransformation(config);
+    }
 
-  type() {
-    return 'multiBarHorizontalChart';
-  };
+    type() {
+        return 'multiBarHorizontalChart';
+    };
 
-  render(pivot) {
-    var d3Data = this.d3DataFromPivot(
-      pivot.schema,
-      pivot.rows,
-      pivot.keys,
-      pivot.groups,
-      pivot.values,
-      true,
-      false,
-      true);
+    render(pivot) {
+        var d3Data = this.d3DataFromPivot(
+            pivot.schema,
+            pivot.rows,
+            pivot.keys,
+            pivot.groups,
+            pivot.values,
+            true,
+            false,
+            true);
 
-    super.render(d3Data);
-  }
+        super.render(d3Data);
+    }
 
-  getTransformation() {
-    return this.pivot;
-  }
-  
-  /**
-   * Set new config
-   */
-  setConfig(config) {
-    super.setConfig(config);
-    this.pivot.setConfig(config);
-  };
+    getTransformation() {
+        return this.pivot;
+    }
 
-  configureChart(chart) {
-    var self = this;
-    chart.yAxis.axisLabelDistance(50);
-    chart.yAxis.tickFormat(function(d) {return self.yAxisTickFormat(d);});
+    /**
+     * Set new config
+     */
+    setConfig(config) {
+        super.setConfig(config);
+        this.pivot.setConfig(config);
+    };
 
-    this.chart.stacked(this.config.stacked);
+    configureChart(chart) {
+        var self = this;
+        chart.yAxis.axisLabelDistance(50);
+        chart.yAxis.tickFormat(function (d) {
+            return self.yAxisTickFormat(d);
+        });
 
-    var self = this;
-    this.chart.dispatch.on('stateChange', function(s) {
-      self.config.stacked = s.stacked;
+        this.chart.stacked(this.config.stacked);
 
-      // give some time to animation finish
-      setTimeout(function() {
-        self.emitConfig(self.config);
-      }, 500);
-    });
-  };
+        var self = this;
+        this.chart.dispatch.on('stateChange', function (s) {
+            self.config.stacked = s.stacked;
+
+            // give some time to animation finish
+            setTimeout(function () {
+                self.emitConfig(self.config);
+            }, 500);
+        });
+    };
 }
 

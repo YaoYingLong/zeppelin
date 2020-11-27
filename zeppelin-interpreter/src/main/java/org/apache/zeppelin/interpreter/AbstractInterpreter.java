@@ -25,42 +25,42 @@ import java.util.Properties;
 
 public abstract class AbstractInterpreter extends Interpreter {
 
-  public AbstractInterpreter(Properties properties) {
-    super(properties);
-  }
-
-  @Override
-  public InterpreterResult interpret(String st,
-                                     InterpreterContext context) throws InterpreterException {
-    InterpreterContext.set(context);
-    ZeppelinContext z = getZeppelinContext();
-    if (z != null) {
-      z.setGui(context.getGui());
-      z.setNoteGui(context.getNoteGui());
-      z.setInterpreterContext(context);
+    public AbstractInterpreter(Properties properties) {
+        super(properties);
     }
-    boolean interpolate = isInterpolate() ||
-            Boolean.parseBoolean(context.getLocalProperties().getOrDefault("interpolate", "false"));
-    if (interpolate) {
-      st = interpolate(st, context.getResourcePool());
+
+    @Override
+    public InterpreterResult interpret(String st,
+                                       InterpreterContext context) throws InterpreterException {
+        InterpreterContext.set(context);
+        ZeppelinContext z = getZeppelinContext();
+        if (z != null) {
+            z.setGui(context.getGui());
+            z.setNoteGui(context.getNoteGui());
+            z.setInterpreterContext(context);
+        }
+        boolean interpolate = isInterpolate() ||
+                Boolean.parseBoolean(context.getLocalProperties().getOrDefault("interpolate", "false"));
+        if (interpolate) {
+            st = interpolate(st, context.getResourcePool());
+        }
+        return internalInterpret(st, context);
     }
-    return internalInterpret(st, context);
-  }
 
-  public abstract ZeppelinContext getZeppelinContext();
+    public abstract ZeppelinContext getZeppelinContext();
 
-  protected boolean isInterpolate() {
-    return false;
-  }
+    protected boolean isInterpolate() {
+        return false;
+    }
 
-  protected abstract InterpreterResult internalInterpret(
-          String st,
-          InterpreterContext context) throws InterpreterException;
+    protected abstract InterpreterResult internalInterpret(
+            String st,
+            InterpreterContext context) throws InterpreterException;
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf,
-                                                int cursor,
-                                                InterpreterContext interpreterContext) throws InterpreterException {
-    return new ArrayList<>();
-  }
+    @Override
+    public List<InterpreterCompletion> completion(String buf,
+                                                  int cursor,
+                                                  InterpreterContext interpreterContext) throws InterpreterException {
+        return new ArrayList<>();
+    }
 }

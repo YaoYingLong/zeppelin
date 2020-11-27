@@ -52,5 +52,6 @@ export function JobManagerFilter() {
 
     return filteredJobs;
   }
+
   return filterContext;
 }

@@ -16,72 +16,70 @@
  */
 package org.apache.zeppelin.server;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.utils.CorsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 /**
  * Cors filter.
  */
 public class CorsFilter implements Filter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CorsFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorsFilter.class);
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-      throws IOException, ServletException {
-    String sourceHost = ((HttpServletRequest) request).getHeader("Origin");
-    String origin = "";
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        String sourceHost = ((HttpServletRequest) request).getHeader("Origin");
+        String origin = "";
 
-    try {
-      if (CorsUtils.isValidOrigin(sourceHost, ZeppelinConfiguration.create())) {
-        origin = sourceHost;
-      }
-    } catch (URISyntaxException e) {
-      LOGGER.error("Exception in WebDriverManager while getWebDriver ", e);
+        try {
+            if (CorsUtils.isValidOrigin(sourceHost, ZeppelinConfiguration.create())) {
+                origin = sourceHost;
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.error("Exception in WebDriverManager while getWebDriver ", e);
+        }
+
+        if (((HttpServletRequest) request).getMethod().equals("OPTIONS")) {
+            HttpServletResponse resp = ((HttpServletResponse) response);
+            addCorsHeaders(resp, origin);
+            return;
+        }
+
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse alteredResponse = ((HttpServletResponse) response);
+            addCorsHeaders(alteredResponse, origin);
+        }
+        filterChain.doFilter(request, response);
     }
 
-    if (((HttpServletRequest) request).getMethod().equals("OPTIONS")) {
-      HttpServletResponse resp = ((HttpServletResponse) response);
-      addCorsHeaders(resp, origin);
-      return;
+    private void addCorsHeaders(HttpServletResponse response, String origin) {
+        response.setHeader("Access-Control-Allow-Origin", origin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "authorization,Content-Type");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, HEAD, DELETE");
+
+        ZeppelinConfiguration zeppelinConfiguration = ZeppelinConfiguration.create();
+        response.setHeader("X-FRAME-OPTIONS", zeppelinConfiguration.getXFrameOptions());
+        if (zeppelinConfiguration.useSsl()) {
+            response.setHeader("Strict-Transport-Security", zeppelinConfiguration.getStrictTransport());
+        }
+        response.setHeader("X-XSS-Protection", zeppelinConfiguration.getXxssProtection());
+        response.setHeader("X-Content-Type-Options", zeppelinConfiguration.getXContentTypeOptions());
     }
 
-    if (response instanceof HttpServletResponse) {
-      HttpServletResponse alteredResponse = ((HttpServletResponse) response);
-      addCorsHeaders(alteredResponse, origin);
+    @Override
+    public void destroy() {
     }
-    filterChain.doFilter(request, response);
-  }
 
-  private void addCorsHeaders(HttpServletResponse response, String origin) {
-    response.setHeader("Access-Control-Allow-Origin", origin);
-    response.setHeader("Access-Control-Allow-Credentials", "true");
-    response.setHeader("Access-Control-Allow-Headers", "authorization,Content-Type");
-    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, HEAD, DELETE");
-
-    ZeppelinConfiguration zeppelinConfiguration = ZeppelinConfiguration.create();
-    response.setHeader("X-FRAME-OPTIONS", zeppelinConfiguration.getXFrameOptions());
-    if (zeppelinConfiguration.useSsl()) {
-      response.setHeader("Strict-Transport-Security", zeppelinConfiguration.getStrictTransport());
+    @Override
+    public void init(FilterConfig filterConfig) {
     }
-    response.setHeader("X-XSS-Protection", zeppelinConfiguration.getXxssProtection());
-    response.setHeader("X-Content-Type-Options", zeppelinConfiguration.getXContentTypeOptions());
-  }
-
-  @Override
-  public void destroy() {}
-
-  @Override
-  public void init(FilterConfig filterConfig) {}
 }

@@ -36,62 +36,62 @@ import java.util.Map;
  */
 public class LocalRecoveryStorage extends RecoveryStorage {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LocalRecoveryStorage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalRecoveryStorage.class);
 
-  private InterpreterSettingManager interpreterSettingManager;
-  private File recoveryDir;
+    private InterpreterSettingManager interpreterSettingManager;
+    private File recoveryDir;
 
-  public LocalRecoveryStorage(ZeppelinConfiguration zConf) {
-    super(zConf);
-  }
-
-  public LocalRecoveryStorage(ZeppelinConfiguration zConf,
-                              InterpreterSettingManager interpreterSettingManager)
-          throws IOException {
-    super(zConf);
-    this.recoveryDir = new File(zConf.getRecoveryDir());
-    LOGGER.info("Using folder {} to store recovery data", recoveryDir);
-    if (!this.recoveryDir.exists()) {
-      FileUtils.forceMkdir(this.recoveryDir);
-    }
-    if (!this.recoveryDir.isDirectory()) {
-      throw new IOException("Recovery dir " + this.recoveryDir.getAbsolutePath() + " is not a directory");
-    }
-    this.interpreterSettingManager = interpreterSettingManager;
-  }
-
-  @Override
-  public void onInterpreterClientStart(InterpreterClient client) throws IOException {
-    save(client.getInterpreterSettingName());
-  }
-
-  @Override
-  public void onInterpreterClientStop(InterpreterClient client) throws IOException {
-    save(client.getInterpreterSettingName());
-  }
-
-  @Override
-  public Map<String, InterpreterClient> restore() throws IOException {
-    Map<String, InterpreterClient> clients = new HashMap<>();
-    File[] recoveryFiles = recoveryDir.listFiles(file -> file.getName().endsWith(".recovery"));
-    for (File recoveryFile : recoveryFiles) {
-      String fileName = recoveryFile.getName();
-      String interpreterSettingName = fileName.substring(0,
-              fileName.length() - ".recovery".length());
-      String recoveryData = org.apache.zeppelin.util.FileUtils.readFromFile(recoveryFile);
-      clients.putAll(RecoveryUtils.restoreFromRecoveryData(
-              recoveryData, interpreterSettingName, interpreterSettingManager, zConf));
+    public LocalRecoveryStorage(ZeppelinConfiguration zConf) {
+        super(zConf);
     }
 
-    return clients;
-  }
+    public LocalRecoveryStorage(ZeppelinConfiguration zConf,
+                                InterpreterSettingManager interpreterSettingManager)
+            throws IOException {
+        super(zConf);
+        this.recoveryDir = new File(zConf.getRecoveryDir());
+        LOGGER.info("Using folder {} to store recovery data", recoveryDir);
+        if (!this.recoveryDir.exists()) {
+            FileUtils.forceMkdir(this.recoveryDir);
+        }
+        if (!this.recoveryDir.isDirectory()) {
+            throw new IOException("Recovery dir " + this.recoveryDir.getAbsolutePath() + " is not a directory");
+        }
+        this.interpreterSettingManager = interpreterSettingManager;
+    }
 
-  private void save(String interpreterSettingName) throws IOException {
-    InterpreterSetting interpreterSetting =
-            interpreterSettingManager.getInterpreterSettingByName(interpreterSettingName);
-    String recoveryData = RecoveryUtils.getRecoveryData(interpreterSetting);
-    LOGGER.debug("Updating recovery data of {}: {}", interpreterSettingName, recoveryData);
-    File recoveryFile = new File(recoveryDir, interpreterSettingName + ".recovery");
-    org.apache.zeppelin.util.FileUtils.atomicWriteToFile(recoveryData, recoveryFile);
-  }
+    @Override
+    public void onInterpreterClientStart(InterpreterClient client) throws IOException {
+        save(client.getInterpreterSettingName());
+    }
+
+    @Override
+    public void onInterpreterClientStop(InterpreterClient client) throws IOException {
+        save(client.getInterpreterSettingName());
+    }
+
+    @Override
+    public Map<String, InterpreterClient> restore() throws IOException {
+        Map<String, InterpreterClient> clients = new HashMap<>();
+        File[] recoveryFiles = recoveryDir.listFiles(file -> file.getName().endsWith(".recovery"));
+        for (File recoveryFile : recoveryFiles) {
+            String fileName = recoveryFile.getName();
+            String interpreterSettingName = fileName.substring(0,
+                    fileName.length() - ".recovery".length());
+            String recoveryData = org.apache.zeppelin.util.FileUtils.readFromFile(recoveryFile);
+            clients.putAll(RecoveryUtils.restoreFromRecoveryData(
+                    recoveryData, interpreterSettingName, interpreterSettingManager, zConf));
+        }
+
+        return clients;
+    }
+
+    private void save(String interpreterSettingName) throws IOException {
+        InterpreterSetting interpreterSetting =
+                interpreterSettingManager.getInterpreterSettingByName(interpreterSettingName);
+        String recoveryData = RecoveryUtils.getRecoveryData(interpreterSetting);
+        LOGGER.debug("Updating recovery data of {}: {}", interpreterSettingName, recoveryData);
+        File recoveryFile = new File(recoveryDir, interpreterSettingName + ".recovery");
+        org.apache.zeppelin.util.FileUtils.atomicWriteToFile(recoveryData, recoveryFile);
+    }
 }

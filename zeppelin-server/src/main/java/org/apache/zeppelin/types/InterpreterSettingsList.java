@@ -21,19 +21,21 @@ import org.apache.zeppelin.interpreter.InterpreterInfo;
 import java.util.List;
 
 /**
+ * 维护了interpreter相关的元信息
+ * <p>
  * InterpreterSetting information for binding.
  */
 public class InterpreterSettingsList {
-  private String id;
-  private String name;
-  private List<InterpreterInfo> interpreters;
-  private boolean selected;
+    private String id;
+    private String name;
+    private List<InterpreterInfo> interpreters;
+    private boolean selected;
 
-  public InterpreterSettingsList(String id, String name,
-                                 List<InterpreterInfo> interpreters, boolean selected) {
-    this.id = id;
-    this.name = name;
-    this.interpreters = interpreters;
-    this.selected = selected;
-  }
+    public InterpreterSettingsList(String id, String name,
+                                   List<InterpreterInfo> interpreters, boolean selected) {
+        this.id = id;
+        this.name = name;
+        this.interpreters = interpreters;
+        this.selected = selected;
+    }
 }

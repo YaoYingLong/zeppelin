@@ -22,6 +22,6 @@ import java.io.File;
  * InterpreterOutputChangeListener
  */
 public interface InterpreterOutputChangeListener {
-  void fileChanged(File file);
+    void fileChanged(File file);
 
 }

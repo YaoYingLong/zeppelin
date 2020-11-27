@@ -32,68 +32,68 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ZeppelinClientWithAuthIntegrationTest extends AbstractTestRestApi {
-  private static Notebook notebook;
+    private static Notebook notebook;
 
-  private static ClientConfig clientConfig;
-  private static ZeppelinClient zeppelinClient;
+    private static ClientConfig clientConfig;
+    private static ZeppelinClient zeppelinClient;
 
-  @BeforeClass
-  public static void setUp() throws Exception {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
-            "helium");
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ALLOWED_ORIGINS.getVarName(), "*");
+    @BeforeClass
+    public static void setUp() throws Exception {
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
+                "helium");
+        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ALLOWED_ORIGINS.getVarName(), "*");
 
-    AbstractTestRestApi.startUpWithAuthenticationEnable(ZeppelinClientWithAuthIntegrationTest.class.getSimpleName());
-    notebook = TestUtils.getInstance(Notebook.class);
+        AbstractTestRestApi.startUpWithAuthenticationEnable(ZeppelinClientWithAuthIntegrationTest.class.getSimpleName());
+        notebook = TestUtils.getInstance(Notebook.class);
 
-    clientConfig = new ClientConfig("http://localhost:8080");
-    zeppelinClient = new ZeppelinClient(clientConfig);
-  }
-
-  @AfterClass
-  public static void destroy() throws Exception {
-    AbstractTestRestApi.shutDown();
-  }
-
-  @Test
-  public void testZeppelinVersion() throws Exception {
-    String version = zeppelinClient.getVersion();
-    LOG.info("Zeppelin version: " + version);
-  }
-
-  @Test
-  public void testCreateNoteWithoutLogin() throws Exception {
-    try {
-      zeppelinClient.createNote("/note_1");
-      fail("Should fail due to not login");
-    } catch (Exception e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("login first"));
-    }
-  }
-
-  @Test
-  public void testCreateNoteAfterLogin() throws Exception {
-    zeppelinClient.login("admin", "password1");
-    zeppelinClient.createNote("/note_2");
-  }
-
-  @Test
-  public void testLoginFailed() throws Exception {
-    // wrong password
-    try {
-      zeppelinClient.login("admin", "invalid_password");
-      fail("Should fail to login");
-    } catch (Exception e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Forbidden"));
+        clientConfig = new ClientConfig("http://localhost:8080");
+        zeppelinClient = new ZeppelinClient(clientConfig);
     }
 
-    // wrong username
-    try {
-      zeppelinClient.login("invalid_user", "password1");
-      fail("Should fail to login");
-    } catch (Exception e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Forbidden"));
+    @AfterClass
+    public static void destroy() throws Exception {
+        AbstractTestRestApi.shutDown();
     }
-  }
+
+    @Test
+    public void testZeppelinVersion() throws Exception {
+        String version = zeppelinClient.getVersion();
+        LOG.info("Zeppelin version: " + version);
+    }
+
+    @Test
+    public void testCreateNoteWithoutLogin() throws Exception {
+        try {
+            zeppelinClient.createNote("/note_1");
+            fail("Should fail due to not login");
+        } catch (Exception e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("login first"));
+        }
+    }
+
+    @Test
+    public void testCreateNoteAfterLogin() throws Exception {
+        zeppelinClient.login("admin", "password1");
+        zeppelinClient.createNote("/note_2");
+    }
+
+    @Test
+    public void testLoginFailed() throws Exception {
+        // wrong password
+        try {
+            zeppelinClient.login("admin", "invalid_password");
+            fail("Should fail to login");
+        } catch (Exception e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Forbidden"));
+        }
+
+        // wrong username
+        try {
+            zeppelinClient.login("invalid_user", "password1");
+            fail("Should fail to login");
+        } catch (Exception e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Forbidden"));
+        }
+    }
 }
 

@@ -17,37 +17,36 @@
 package org.apache.zeppelin.rest.message;
 
 import com.google.gson.Gson;
-
 import org.apache.zeppelin.common.JsonSerializable;
 
 /**
- *  CronRequest rest api request message.
+ * CronRequest rest api request message.
  */
 public class CronRequest implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  private String cron;
-  private Boolean releaseResource;
+    private String cron;
+    private Boolean releaseResource;
 
-  public CronRequest (){
-  }
-
-  public String getCronString() {
-    return cron;
-  }
-
-  public Boolean getReleaseResource() {
-    if (releaseResource == null) {
-      return Boolean.FALSE;
+    public CronRequest() {
     }
-    return releaseResource;
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public static CronRequest fromJson(String json) {
+        return gson.fromJson(json, CronRequest.class);
+    }
 
-  public static CronRequest fromJson(String json) {
-    return gson.fromJson(json, CronRequest.class);
-  }
+    public String getCronString() {
+        return cron;
+    }
+
+    public Boolean getReleaseResource() {
+        if (releaseResource == null) {
+            return Boolean.FALSE;
+        }
+        return releaseResource;
+    }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

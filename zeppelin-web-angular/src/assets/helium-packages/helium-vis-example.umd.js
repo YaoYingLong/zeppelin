@@ -61,9 +61,11 @@
 
   function __extends(d, b) {
     extendStatics(d, b);
+
     function __() {
       this.constructor = d;
     }
+
     d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
   }
 
@@ -122,6 +124,7 @@
           reject(e);
         }
       }
+
       function rejected(value) {
         try {
           step(generator['throw'](value));
@@ -129,6 +132,7 @@
           reject(e);
         }
       }
+
       function step(result) {
         result.done
           ? resolve(result.value)
@@ -136,6 +140,7 @@
               resolve(result.value);
             }).then(fulfilled, rejected);
       }
+
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   }
@@ -162,11 +167,13 @@
         }),
       g
     );
+
     function verb(n) {
       return function(v) {
         return step([n, v]);
       };
     }
+
     function step(op) {
       if (f) throw new TypeError('Generator is already executing.');
       while (_)
@@ -299,6 +306,7 @@
       }),
       i
     );
+
     function verb(n) {
       if (g[n])
         i[n] = function(v) {
@@ -307,6 +315,7 @@
           });
         };
     }
+
     function resume(n, v) {
       try {
         step(g[n](v));
@@ -314,15 +323,19 @@
         settle(q[0][3], e);
       }
     }
+
     function step(r) {
       r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
     }
+
     function fulfill(value) {
       resume('next', value);
     }
+
     function reject(value) {
       resume('throw', value);
     }
+
     function settle(f, v) {
       if ((f(v), q.shift(), q.length)) resume(q[0][0], q[0][1]);
     }
@@ -342,6 +355,7 @@
       }),
       i
     );
+
     function verb(n, f) {
       i[n] = o[n]
         ? function(v) {
@@ -366,6 +380,7 @@
           return this;
         }),
         i);
+
     function verb(n) {
       i[n] =
         o[n] &&
@@ -375,6 +390,7 @@
           });
         };
     }
+
     function settle(resolve, reject, d, v) {
       Promise.resolve(v).then(function(v) {
         resolve({ value: v, done: d });
@@ -412,6 +428,7 @@
       this.visualization = visualization;
       this.cdr = cdr;
     }
+
     /**
      * @return {?}
      */
@@ -468,6 +485,7 @@
    */
   var JsonVisModule = /** @class */ (function() {
     function JsonVisModule() {}
+
     JsonVisModule.decorators = [
       {
         type: core.NgModule,
@@ -490,6 +508,7 @@
    */
   var JsonVisualization = /** @class */ (function(_super) {
     __extends(JsonVisualization, _super);
+
     function JsonVisualization(config, portalOutlet, viewContainerRef, componentFactoryResolver) {
       var _this = _super.call(this, config) || this;
       _this.portalOutlet = portalOutlet;
@@ -505,6 +524,7 @@
       );
       return _this;
     }
+
     /**
      * @return {?}
      */

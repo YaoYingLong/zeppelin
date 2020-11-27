@@ -17,10 +17,10 @@
 
 package org.apache.zeppelin.dep;
 
-import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
@@ -31,23 +31,21 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
  * Get maven repository instance.
  */
 public class RepositorySystemFactory {
-  public static RepositorySystem newRepositorySystem() {
-    DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-    locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class );
-    locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-    locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-    locator.setErrorHandler( new DefaultServiceLocator.ErrorHandler()
-    {
-        @Override
-        public void serviceCreationFailed( Class<?> type, Class<?> impl, Throwable exception )
-        {
-            exception.printStackTrace();
+    public static RepositorySystem newRepositorySystem() {
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
+            @Override
+            public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
+                exception.printStackTrace();
+            }
+        });
+        RepositorySystem system = locator.getService(RepositorySystem.class);
+        if (system == null) {
+            throw new RuntimeException();
         }
-    } );
-    RepositorySystem system = locator.getService(RepositorySystem.class);
-    if (system == null) {
-        throw new RuntimeException();
+        return system;
     }
-    return system;
-  }
 }

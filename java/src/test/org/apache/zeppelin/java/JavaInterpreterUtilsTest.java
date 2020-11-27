@@ -58,8 +58,8 @@ public class JavaInterpreterUtilsTest {
     public void testDisplayTableFromSimpleMapUtil() {
 
         Map<String, Long> counts = new HashMap<>();
-        counts.put("hello",4L);
-        counts.put("world",5L);
+        counts.put("hello", 4L);
+        counts.put("world", 5L);
 
         assertEquals(
                 TABLE_RESULT_1,

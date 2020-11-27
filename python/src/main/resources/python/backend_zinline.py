@@ -18,11 +18,12 @@
 
 from __future__ import print_function
 
+import base64
 import sys
 import uuid
 import warnings
-import base64
 from io import BytesIO
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -31,9 +32,10 @@ except ImportError:
 import mpl_config
 import matplotlib
 from matplotlib._pylab_helpers import Gcf
-from matplotlib.backends.backend_agg import new_figure_manager, FigureCanvasAgg
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.backend_bases import ShowBase, FigureManagerBase
 from matplotlib.figure import Figure
+
 
 ########################################################################
 #
@@ -50,6 +52,7 @@ class Show(ShowBase):
     interactive mode is enabled, currently unused) and close (Implicitly call
     matplotlib.pyplot.close('all') with each call to show()).
     """
+
     def __call__(self, close=None, block=None, **kwargs):
         if close is None:
             close = mpl_config.get('close')
@@ -81,6 +84,7 @@ class FigureCanvasZInline(FigureCanvasAgg):
     The canvas the figure renders into. Calls the draw and print fig
     methods, creates the renderers, etc...
     """
+
     def get_bytes(self, **kwargs):
         """
         Get the byte representation of the figure.
@@ -90,17 +94,17 @@ class FigureCanvasZInline(FigureCanvasAgg):
         fmt = kwargs.get('format', mpl_config.get('format'))
         if fmt == 'svg':
             raise ValueError("get_bytes() does not support svg, use png or jpg")
-        
+
         # Express the image as bytes
         buf = BytesIO()
         self.print_figure(buf, **kwargs)
         fmt = fmt.encode()
         if sys.version_info >= (3, 4) and sys.version_info < (3, 5):
-            byte_str = bytes("data:image/%s;base64," %fmt, "utf-8")
+            byte_str = bytes("data:image/%s;base64," % fmt, "utf-8")
         else:
-            byte_str = b"data:image/%s;base64," %fmt
+            byte_str = b"data:image/%s;base64," % fmt
         byte_str += base64.b64encode(buf.getvalue())
-            
+
         # Python3 forces all strings to default to unicode, but for raster image
         # formats (eg png, jpg), we want to work with bytes. Thus this step is
         # needed to ensure compatability for all python versions.
@@ -117,14 +121,14 @@ class FigureCanvasZInline(FigureCanvasAgg):
         fmt = kwargs.get('format', mpl_config.get('format'))
         if fmt != 'svg':
             raise ValueError("get_svg() does not support png or jpg, use svg")
-        
+
         # For SVG the data string has to be unicode, not bytes
         buf = StringIO()
         self.print_figure(buf, **kwargs)
         svg_str = buf.getvalue()
         buf.close()
         return svg_str
-    
+
     def draw_idle(self, *args, **kwargs):
         """
         Called when the figure gets updated (eg through a plotting command).
@@ -135,12 +139,13 @@ class FigureCanvasZInline(FigureCanvasAgg):
             with self._idle_draw_cntx():
                 self.draw(*args, **kwargs)
                 draw_if_interactive()
-                
+
 
 class FigureManagerZInline(FigureManagerBase):
     """
     Wrap everything up into a window for the pylab interface
     """
+
     def __init__(self, canvas, num):
         FigureManagerBase.__init__(self, canvas, num)
         self.fig_id = "figure_{0}".format(uuid.uuid4().hex)
@@ -157,21 +162,21 @@ class FigureManagerZInline(FigureManagerBase):
         fmt = kwargs.get('format', mpl_config.get('format'))
         if fmt == 'svg':
             return
-        
+
         # Get the figure data as a byte array
         src = self.canvas.get_bytes(**kwargs)
-        
+
         # Flag to determine whether or not to use
         # zeppelin's angular display system
         angular = mpl_config.get('angular')
-        
+
         # ZeppelinContext instance (requires PY4J)
         context = mpl_config.get('context')
-        
+
         # Finally we must ensure that automatic closing is set to False,
         # as otherwise using the angular display system is pointless
         close = mpl_config.get('close')
-        
+
         # If above conditions are met, bind the figure data to
         # the Angular Object Registry.
         if not close and angular:
@@ -179,15 +184,15 @@ class FigureManagerZInline(FigureManagerBase):
                 # Binding is performed through figure ID to ensure this works
                 # if multiple figures are open
                 context.angularBind(self.fig_id, src)
-                
+
                 # Zeppelin will automatically replace this value even if it
                 # is updated from another pargraph thanks to the {{}} notation
-                src = "{{%s}}" %self.fig_id
+                src = "{{%s}}" % self.fig_id
             else:
                 warnings.warn("Cannot bind figure to Angular Object Registry. "
                               "Check if PY4J is installed.")
         return src
-    
+
     def angular_unbind(self):
         """
         Unbind figure from angular display system.
@@ -195,7 +200,7 @@ class FigureManagerZInline(FigureManagerBase):
         context = mpl_config.get('context')
         if hasattr(context, 'angularUnbind'):
             context.angularUnbind(self.fig_id)
-                
+
     def destroy(self):
         """
         Called when close=True or implicitly by pyplot.close().
@@ -209,7 +214,7 @@ class FigureManagerZInline(FigureManagerBase):
         else:
             self.canvas.draw_idle()
             self.angular_bind(**kwargs)
-            
+
         self._shown = True
 
 
@@ -221,18 +226,18 @@ def draw_if_interactive():
     manager = Gcf.get_active()
     interactive = matplotlib.is_interactive()
     angular = mpl_config.get('angular')
-    
+
     # Don't bother continuing if we aren't in interactive mode
     # or if there are no active figures. Also pointless to continue
     # in angular mode as we don't want to reshow the figure.
     if not interactive or angular or manager is None:
         return
-        
+
     # Allow for figure to be reshown if close is false since
     # this function call implies that it has been updated
     if not mpl_config.get('close'):
         manager._shown = False
-        
+
 
 def new_figure_manager(num, *args, **kwargs):
     """
@@ -262,7 +267,7 @@ def new_figure_manager_given_figure(num, figure):
 # Backend specific functions
 #
 ########################################################################
-            
+
 def zdisplay(fig, **kwargs):
     """
     Publishes a matplotlib figure to the notebook paragraph output.
@@ -275,12 +280,12 @@ def zdisplay(fig, **kwargs):
     # Check if format is supported
     supported_formats = mpl_config.get('supported_formats')
     if fmt not in supported_formats:
-        raise ValueError("Unsupported format %s" %fmt)
-    
+        raise ValueError("Unsupported format %s" % fmt)
+
     # For SVG the data string has to be unicode, not bytes
     if fmt == 'svg':
         img = fig.canvas.get_svg(**kwargs)
-        
+
         # This is needed to ensure the SVG image is the correct size.
         # We should find a better way to do this...
         width = '{}px'.format(mpl_config.get('width'))
@@ -290,10 +295,11 @@ def zdisplay(fig, **kwargs):
         src = fig.canvas.manager.angular_bind(**kwargs)
         img = "<img src={src} style='width={width};height:{height}'>"
         img = img.format(src=src, width=width, height=height)
-    
+
     # Print the image to the notebook paragraph via the %html magic
     html = "<div style='width:{width};height:{height}'>{img}<div>"
     print(html.format(width=width, height=height, img=img))
+
 
 def displayhook():
     """
@@ -301,6 +307,7 @@ def displayhook():
     """
     if matplotlib.is_interactive():
         show()
+
 
 ########################################################################
 #

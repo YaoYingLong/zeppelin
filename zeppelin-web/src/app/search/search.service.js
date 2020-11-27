@@ -17,7 +17,7 @@ angular.module('zeppelinWebApp').service('searchService', SearchService);
 function SearchService($resource, baseUrlSrv) {
   'ngInject';
 
-  this.search = function(term) {
+  this.search = function (term) {
     this.searchTerm = term.q;
     console.log('Searching for: %o', term.q);
     if (!term.q) { // TODO(bzz): empty string check

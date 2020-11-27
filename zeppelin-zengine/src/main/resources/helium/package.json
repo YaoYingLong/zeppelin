@@ -5,7 +5,7 @@
     "bundle": "webpack --display-error-details --json"
   },
   "dependencies": {
-DEPENDENCIES
+    DEPENDENCIES
   },
   "devDependencies": {
     "webpack": "^1.12.2",

@@ -10,11 +10,11 @@
  * limitations under the License.
  */
 
-import { DataSet } from '@antv/data-set';
-import { get } from 'lodash';
+import {DataSet} from '@antv/data-set';
+import {get} from 'lodash';
 
-import { TableData } from './table-data';
-import { Transformation } from './transformation';
+import {TableData} from './table-data';
+import {Transformation} from './transformation';
 
 export class PivotTransformation extends Transformation {
   constructor(config) {

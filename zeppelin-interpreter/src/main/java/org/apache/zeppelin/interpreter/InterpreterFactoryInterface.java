@@ -27,6 +27,6 @@ package org.apache.zeppelin.interpreter;
  */
 public interface InterpreterFactoryInterface {
 
-  Interpreter getInterpreter(String replName, ExecutionContext executionContext)
-          throws InterpreterNotFoundException;
+    Interpreter getInterpreter(String replName, ExecutionContext executionContext)
+            throws InterpreterNotFoundException;
 }

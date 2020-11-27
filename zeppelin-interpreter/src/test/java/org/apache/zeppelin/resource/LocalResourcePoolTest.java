@@ -18,34 +18,31 @@ package org.apache.zeppelin.resource;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Unittest for LocalResourcePool
  */
 public class LocalResourcePoolTest {
 
-  @Test
-  public void testGetPutResourcePool() {
+    @Test
+    public void testGetPutResourcePool() {
 
-    LocalResourcePool pool = new LocalResourcePool("pool1");
-    assertEquals("pool1", pool.id());
+        LocalResourcePool pool = new LocalResourcePool("pool1");
+        assertEquals("pool1", pool.id());
 
-    assertNull(pool.get("notExists"));
-    pool.put("item1", "value1");
-    Resource resource = pool.get("item1");
-    assertNotNull(resource);
-    assertEquals(pool.id(), resource.getResourceId().getResourcePoolId());
-    assertEquals("value1", resource.get());
-    assertTrue(resource.isLocal());
-    assertTrue(resource.isSerializable());
+        assertNull(pool.get("notExists"));
+        pool.put("item1", "value1");
+        Resource resource = pool.get("item1");
+        assertNotNull(resource);
+        assertEquals(pool.id(), resource.getResourceId().getResourcePoolId());
+        assertEquals("value1", resource.get());
+        assertTrue(resource.isLocal());
+        assertTrue(resource.isSerializable());
 
-    assertEquals(1, pool.getAll().size());
+        assertEquals(1, pool.getAll().size());
 
-    assertNotNull(pool.remove("item1"));
-    assertNull(pool.remove("item1"));
-  }
+        assertNotNull(pool.remove("item1"));
+        assertNull(pool.remove("item1"));
+    }
 }

@@ -14,10 +14,10 @@
 # limitations under the License.
 
 
-import grpc
-
 import kernel_pb2
 import kernel_pb2_grpc
+
+import grpc
 
 
 def run():

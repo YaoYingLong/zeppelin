@@ -28,39 +28,39 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class TableDataProxyTest {
-  private LocalResourcePool pool;
+    private LocalResourcePool pool;
 
-  @Before
-  public void setUp() {
-    pool = new LocalResourcePool("p1");
-  }
+    @Before
+    public void setUp() {
+        pool = new LocalResourcePool("p1");
+    }
 
-  @Test
-  public void testProxyTable() {
-    InterpreterResultMessage msg = new InterpreterResultMessage(
-        InterpreterResult.Type.TABLE,
-        "key\tvalue\nsun\t100\nmoon\t200\n");
-    InterpreterResultTableData table = new InterpreterResultTableData(msg);
+    @Test
+    public void testProxyTable() {
+        InterpreterResultMessage msg = new InterpreterResultMessage(
+                InterpreterResult.Type.TABLE,
+                "key\tvalue\nsun\t100\nmoon\t200\n");
+        InterpreterResultTableData table = new InterpreterResultTableData(msg);
 
-    pool.put("table", table);
-    TableDataProxy proxy = new TableDataProxy(pool.get("table"));
+        pool.put("table", table);
+        TableDataProxy proxy = new TableDataProxy(pool.get("table"));
 
-    ColumnDef[] cols = proxy.columns();
-    assertEquals(2, cols.length);
+        ColumnDef[] cols = proxy.columns();
+        assertEquals(2, cols.length);
 
-    assertEquals("key", cols[0].name());
-    assertEquals("value", cols[1].name());
+        assertEquals("key", cols[0].name());
+        assertEquals("value", cols[1].name());
 
-    Iterator<Row> it = proxy.rows();
-    Row row = it.next();
-    assertEquals(2, row.get().length);
-    assertEquals("sun", row.get()[0]);
-    assertEquals("100", row.get()[1]);
+        Iterator<Row> it = proxy.rows();
+        Row row = it.next();
+        assertEquals(2, row.get().length);
+        assertEquals("sun", row.get()[0]);
+        assertEquals("100", row.get()[1]);
 
-    row = it.next();
-    assertEquals("moon", row.get()[0]);
-    assertEquals("200", row.get()[1]);
+        row = it.next();
+        assertEquals("moon", row.get()[0]);
+        assertEquals("200", row.get()[1]);
 
-    assertFalse(it.hasNext());
-  }
+        assertFalse(it.hasNext());
+    }
 }

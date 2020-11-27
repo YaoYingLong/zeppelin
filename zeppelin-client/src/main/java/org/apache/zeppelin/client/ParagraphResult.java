@@ -28,95 +28,94 @@ import java.util.List;
 
 /**
  * Represent the paragraph execution result.
- *
  */
 public class ParagraphResult {
-  private String paragraphId;
-  private Status status;
-  // if there's any job in the statement, then it will also contain a progress
-  // range from 0 to 100. e.g. spark job progress.
-  private int progress;
-  // each paragraph may return multiple results
-  private List<Result> results;
-  // if there's any job in the statement, then it will also contain job urls.
-  // e.g. spark job url
-  private List<String> jobUrls;
+    private String paragraphId;
+    private Status status;
+    // if there's any job in the statement, then it will also contain a progress
+    // range from 0 to 100. e.g. spark job progress.
+    private int progress;
+    // each paragraph may return multiple results
+    private List<Result> results;
+    // if there's any job in the statement, then it will also contain job urls.
+    // e.g. spark job url
+    private List<String> jobUrls;
 
-  public ParagraphResult(JSONObject paragraphJson) {
-    this.paragraphId = paragraphJson.getString("id");
-    this.status = Status.valueOf(paragraphJson.getString("status"));
-    this.progress = paragraphJson.getInt("progress");
-    this.results = new ArrayList<>();
-    if (paragraphJson.has("results")) {
-      JSONObject resultJson = paragraphJson.getJSONObject("results");
-      JSONArray msgArray = resultJson.getJSONArray("msg");
-      for (int i = 0; i < msgArray.length(); ++i) {
-        JSONObject resultObject = msgArray.getJSONObject(i);
-        results.add(new Result(resultObject));
-      }
-    }
-
-    this.jobUrls = new ArrayList<>();
-    if (paragraphJson.has("runtimeInfos")) {
-      JSONObject runtimeInfosJson = paragraphJson.getJSONObject("runtimeInfos");
-      if (runtimeInfosJson.has("jobUrl")) {
-        JSONObject jobUrlJson = runtimeInfosJson.getJSONObject("jobUrl");
-        if (jobUrlJson.has("values")) {
-          JSONArray valuesArray = jobUrlJson.getJSONArray("values");
-          for (int i=0;i< valuesArray.length(); ++i) {
-            JSONObject object = valuesArray.getJSONObject(i);
-            if (object.has("jobUrl")) {
-              jobUrls.add(object.getString("jobUrl"));
+    public ParagraphResult(JSONObject paragraphJson) {
+        this.paragraphId = paragraphJson.getString("id");
+        this.status = Status.valueOf(paragraphJson.getString("status"));
+        this.progress = paragraphJson.getInt("progress");
+        this.results = new ArrayList<>();
+        if (paragraphJson.has("results")) {
+            JSONObject resultJson = paragraphJson.getJSONObject("results");
+            JSONArray msgArray = resultJson.getJSONArray("msg");
+            for (int i = 0; i < msgArray.length(); ++i) {
+                JSONObject resultObject = msgArray.getJSONObject(i);
+                results.add(new Result(resultObject));
             }
-          }
         }
-      }
+
+        this.jobUrls = new ArrayList<>();
+        if (paragraphJson.has("runtimeInfos")) {
+            JSONObject runtimeInfosJson = paragraphJson.getJSONObject("runtimeInfos");
+            if (runtimeInfosJson.has("jobUrl")) {
+                JSONObject jobUrlJson = runtimeInfosJson.getJSONObject("jobUrl");
+                if (jobUrlJson.has("values")) {
+                    JSONArray valuesArray = jobUrlJson.getJSONArray("values");
+                    for (int i = 0; i < valuesArray.length(); ++i) {
+                        JSONObject object = valuesArray.getJSONObject(i);
+                        if (object.has("jobUrl")) {
+                            jobUrls.add(object.getString("jobUrl"));
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 
-  public String getParagraphId() {
-    return paragraphId;
-  }
-
-  public Status getStatus() {
-    return status;
-  }
-
-  public int getProgress() {
-    return progress;
-  }
-
-  public List<Result> getResults() {
-    return results;
-  }
-
-  public List<String> getJobUrls() {
-    return jobUrls;
-  }
-
-  /**
-   * Get results in text format.
-   *
-   * @return
-   */
-  public String getResultInText() {
-    StringBuilder builder = new StringBuilder();
-    if (results != null) {
-      for (Result result : results) {
-        builder.append(result.getData() + "\n");
-      }
+    public String getParagraphId() {
+        return paragraphId;
     }
-    return builder.toString();
-  }
 
-  @Override
-  public String toString() {
-    return "ParagraphResult{" +
-            "paragraphId='" + paragraphId + '\'' +
-            ", status=" + status +
-            ", results=" + StringUtils.join(results, ", ") +
-            ", progress=" + progress +
-            '}';
-  }
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public List<String> getJobUrls() {
+        return jobUrls;
+    }
+
+    /**
+     * Get results in text format.
+     *
+     * @return
+     */
+    public String getResultInText() {
+        StringBuilder builder = new StringBuilder();
+        if (results != null) {
+            for (Result result : results) {
+                builder.append(result.getData() + "\n");
+            }
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "ParagraphResult{" +
+                "paragraphId='" + paragraphId + '\'' +
+                ", status=" + status +
+                ", results=" + StringUtils.join(results, ", ") +
+                ", progress=" + progress +
+                '}';
+    }
 
 }

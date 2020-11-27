@@ -20,14 +20,15 @@ package org.apache.zeppelin.interpreter;
  * InterpreterResultMessage update events
  */
 public interface InterpreterResultMessageOutputListener {
-  /**
-   * called when newline is detected
-   * @param line
-   */
-  void onAppend(InterpreterResultMessageOutput out, byte[] line);
+    /**
+     * called when newline is detected
+     *
+     * @param line
+     */
+    void onAppend(InterpreterResultMessageOutput out, byte[] line);
 
-  /**
-   * when entire output is updated. eg) after detecting new display system
-   */
-  void onUpdate(InterpreterResultMessageOutput out);
+    /**
+     * when entire output is updated. eg) after detecting new display system
+     */
+    void onUpdate(InterpreterResultMessageOutput out);
 }

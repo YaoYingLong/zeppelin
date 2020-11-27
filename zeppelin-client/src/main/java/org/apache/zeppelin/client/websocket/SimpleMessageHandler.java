@@ -25,15 +25,15 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleMessageHandler extends AbstractMessageHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMessageHandler.class);
 
-  @Override
-  public void onStatementAppendOutput(String statementId, int index, String output) {
-    LOGGER.info("Append output, data: {}", output);
-  }
+    @Override
+    public void onStatementAppendOutput(String statementId, int index, String output) {
+        LOGGER.info("Append output, data: {}", output);
+    }
 
-  @Override
-  public void onStatementUpdateOutput(String statementId, int index, String type, String output) {
-    LOGGER.info("Update output, type: {}, data: {}", type, output);
-  }
+    @Override
+    public void onStatementUpdateOutput(String statementId, int index, String type, String output) {
+        LOGGER.info("Update output, type: {}, data: {}", type, output);
+    }
 }

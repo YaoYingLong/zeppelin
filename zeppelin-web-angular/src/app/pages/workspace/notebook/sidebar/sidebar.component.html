@@ -10,26 +10,26 @@
   ~ limitations under the License.
   -->
 
-<div class="sidebar" [class.simple]="note.config.looknfeel !== 'default'">
+<div [class.simple]="note.config.looknfeel !== 'default'" class="sidebar">
   <div class="sidebar-nav">
-    <button [class.sidebar-button-active]="sidebarState === SidebarState.TOC"
-            class="sidebar-button"
-            (click)="setOrToggleSidebarState(SidebarState.TOC)">
-      <i nz-icon nzType="unordered-list" nzTheme="outline"></i>
+    <button (click)="setOrToggleSidebarState(SidebarState.TOC)"
+            [class.sidebar-button-active]="sidebarState === SidebarState.TOC"
+            class="sidebar-button">
+      <i nz-icon nzTheme="outline" nzType="unordered-list"></i>
     </button>
-    <button [class.sidebar-button-active]="sidebarState === SidebarState.FILE_TREE"
-            class="sidebar-button"
-            (click)="setOrToggleSidebarState(SidebarState.FILE_TREE)">
-      <i nz-icon nzType="folder" nzTheme="outline"></i>
+    <button (click)="setOrToggleSidebarState(SidebarState.FILE_TREE)"
+            [class.sidebar-button-active]="sidebarState === SidebarState.FILE_TREE"
+            class="sidebar-button">
+      <i nz-icon nzTheme="outline" nzType="folder"></i>
     </button>
   </div>
-  <button class="sidebar-button sidebar-close" (click)="setOrToggleSidebarState(SidebarState.CLOSED)">
-    <i *ngIf="sidebarState !== SidebarState.CLOSED" nz-icon nzType="close" nzTheme="outline"></i>
+  <button (click)="setOrToggleSidebarState(SidebarState.CLOSED)" class="sidebar-button sidebar-close">
+    <i *ngIf="sidebarState !== SidebarState.CLOSED" nz-icon nzTheme="outline" nzType="close"></i>
   </button>
-  <div class="sidebar-main" *ngIf="sidebarState !== SidebarState.CLOSED">
+  <div *ngIf="sidebarState !== SidebarState.CLOSED" class="sidebar-main">
     <zeppelin-node-list *ngIf="sidebarState === SidebarState.FILE_TREE"></zeppelin-node-list>
-    <zeppelin-note-toc *ngIf="sidebarState === SidebarState.TOC"
-                      [note]="note"
-                      (scrollToParagraph)="onScrollToParagraph($event)"></zeppelin-note-toc>
+    <zeppelin-note-toc (scrollToParagraph)="onScrollToParagraph($event)"
+                       *ngIf="sidebarState === SidebarState.TOC"
+                       [note]="note"></zeppelin-note-toc>
   </div>
-<div>
+  <div>

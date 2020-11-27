@@ -22,28 +22,27 @@ import java.io.Serializable;
  * Column definition
  */
 public class ColumnDef implements Serializable {
-  /**
-   * Type
-   */
-  public enum TYPE {
-    STRING,
-    LONG,
-    INT
-  }
+    private String name;
+    private TYPE type;
+    public ColumnDef(String name, TYPE type) {
+        this.name = name;
+        this.type = type;
+    }
 
-  private String name;
-  private TYPE type;
+    public String name() {
+        return name;
+    }
 
-  public ColumnDef(String name, TYPE type) {
-    this.name = name;
-    this.type = type;
-  }
+    public TYPE type() {
+        return type;
+    }
 
-  public String name() {
-    return name;
-  }
-
-  public TYPE type() {
-    return type;
-  }
+    /**
+     * Type
+     */
+    public enum TYPE {
+        STRING,
+        LONG,
+        INT
+    }
 }

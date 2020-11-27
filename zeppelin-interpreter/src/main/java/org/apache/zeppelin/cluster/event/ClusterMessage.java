@@ -24,50 +24,49 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClusterMessage {
-  public ClusterEvent clusterEvent;
-  private Map<String, String> data = new HashMap<>();
-  private String msgId;
+    private static Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .setPrettyPrinting()
+            .registerTypeAdapterFactory(Input.TypeAdapterFactory).create();
+    public ClusterEvent clusterEvent;
+    private Map<String, String> data = new HashMap<>();
+    private String msgId;
 
-  private static Gson gson = new GsonBuilder()
-      .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-      .setPrettyPrinting()
-      .registerTypeAdapterFactory(Input.TypeAdapterFactory).create();
+    public ClusterMessage(ClusterEvent event) {
+        this.clusterEvent = event;
+    }
 
-  public ClusterMessage(ClusterEvent event) {
-    this.clusterEvent = event;
-  }
+    public static ClusterMessage deserializeMessage(String msg) {
+        return gson.fromJson(msg, ClusterMessage.class);
+    }
 
-  public ClusterMessage put(String k, String v) {
-    data.put(k, v);
-    return this;
-  }
+    public static String serializeMessage(ClusterMessage m) {
+        return gson.toJson(m);
+    }
 
-  public ClusterMessage put(Map<String, String> params) {
-    data.putAll(params);
-    return this;
-  }
+    public ClusterMessage put(String k, String v) {
+        data.put(k, v);
+        return this;
+    }
 
-  public String get(String k) {
-    return data.get(k);
-  }
+    public ClusterMessage put(Map<String, String> params) {
+        data.putAll(params);
+        return this;
+    }
 
-  public Map<String, String> getData() {
-    return data;
-  }
+    public String get(String k) {
+        return data.get(k);
+    }
 
-  public String getMsgId() {
-    return msgId;
-  }
+    public Map<String, String> getData() {
+        return data;
+    }
 
-  public void setMsgId(String msgId) {
-    this.msgId = msgId;
-  }
+    public String getMsgId() {
+        return msgId;
+    }
 
-  public static ClusterMessage deserializeMessage(String msg) {
-    return gson.fromJson(msg, ClusterMessage.class);
-  }
-
-  public static String serializeMessage(ClusterMessage m) {
-    return gson.toJson(m);
-  }
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+    }
 }

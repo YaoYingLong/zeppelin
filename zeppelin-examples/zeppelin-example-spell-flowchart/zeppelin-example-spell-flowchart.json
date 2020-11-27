@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 {
-  "type" : "SPELL",
-  "name" : "flowchart-spell",
-  "description" : "Draw flowchart using http://flowchart.js.org (example)",
-  "artifact" : "./zeppelin-examples/zeppelin-example-spell-flowchart",
-  "license" : "Apache-2.0",
-  "icon" : "<i class='fa fa-random'></i>",
+  "type": "SPELL",
+  "name": "flowchart-spell",
+  "description": "Draw flowchart using http://flowchart.js.org (example)",
+  "artifact": "./zeppelin-examples/zeppelin-example-spell-flowchart",
+  "license": "Apache-2.0",
+  "icon": "<i class='fa fa-random'></i>",
   "spell": {
     "magic": "%flowchart",
     "usage": "%flowchart <TEXT>"

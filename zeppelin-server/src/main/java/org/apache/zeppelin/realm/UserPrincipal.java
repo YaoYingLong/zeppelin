@@ -24,23 +24,23 @@ import java.security.Principal;
  * A {@code java.security.Principal} implememtation for use with Shiro {@code PamRealm}.
  */
 public class UserPrincipal implements Principal {
-  private final UnixUser userName;
+    private final UnixUser userName;
 
-  public UserPrincipal(UnixUser userName) {
-    this.userName = userName;
-  }
+    public UserPrincipal(UnixUser userName) {
+        this.userName = userName;
+    }
 
-  @Override
-  public String getName() {
-    return userName.getUserName();
-  }
+    @Override
+    public String getName() {
+        return userName.getUserName();
+    }
 
-  public UnixUser getUnixUser() {
-    return userName;
-  }
+    public UnixUser getUnixUser() {
+        return userName;
+    }
 
-  @Override
-  public String toString() {
-    return String.valueOf(userName.getUserName());
-  }
+    @Override
+    public String toString() {
+        return String.valueOf(userName.getUserName());
+    }
 }

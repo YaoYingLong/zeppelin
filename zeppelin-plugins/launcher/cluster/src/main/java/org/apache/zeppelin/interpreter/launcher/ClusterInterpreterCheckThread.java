@@ -31,53 +31,53 @@ import static org.apache.zeppelin.cluster.meta.ClusterMeta.INTP_TSERVER_PORT;
 // Metadata registered in the cluster by the interpreter process,
 // Keep the interpreter process started
 public class ClusterInterpreterCheckThread extends Thread {
-  private static final Logger LOGGER
-      = LoggerFactory.getLogger(ClusterInterpreterCheckThread.class);
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(ClusterInterpreterCheckThread.class);
 
-  private InterpreterClient intpProcess;
-  private String intpGroupId;
-  private int connectTimeout;
+    private InterpreterClient intpProcess;
+    private String intpGroupId;
+    private int connectTimeout;
 
-  ClusterInterpreterCheckThread(InterpreterClient intpProcess,
-                                String intpGroupId,
-                                int connectTimeout) {
-    this.intpProcess = intpProcess;
-    this.intpGroupId = intpGroupId;
-    this.connectTimeout = connectTimeout;
-  }
+    ClusterInterpreterCheckThread(InterpreterClient intpProcess,
+                                  String intpGroupId,
+                                  int connectTimeout) {
+        this.intpProcess = intpProcess;
+        this.intpGroupId = intpGroupId;
+        this.connectTimeout = connectTimeout;
+    }
 
-  @Override
-  public void run() {
-    LOGGER.info("ClusterInterpreterCheckThread run() >>>");
+    @Override
+    public void run() {
+        LOGGER.info("ClusterInterpreterCheckThread run() >>>");
 
-    ClusterManagerServer clusterServer = ClusterManagerServer.getInstance(
-            ZeppelinConfiguration.create());
+        ClusterManagerServer clusterServer = ClusterManagerServer.getInstance(
+                ZeppelinConfiguration.create());
 
-    clusterServer.getIntpProcessStatus(intpGroupId, connectTimeout,
-        new ClusterCallback<HashMap<String, Object>>() {
-          @Override
-          public InterpreterClient online(HashMap<String, Object> result) {
-            String intpTSrvHost = (String) result.get(INTP_TSERVER_HOST);
-            int intpTSrvPort = (int) result.get(INTP_TSERVER_PORT);
-            LOGGER.info("Found cluster interpreter {}:{}", intpTSrvHost, intpTSrvPort);
+        clusterServer.getIntpProcessStatus(intpGroupId, connectTimeout,
+                new ClusterCallback<HashMap<String, Object>>() {
+                    @Override
+                    public InterpreterClient online(HashMap<String, Object> result) {
+                        String intpTSrvHost = (String) result.get(INTP_TSERVER_HOST);
+                        int intpTSrvPort = (int) result.get(INTP_TSERVER_PORT);
+                        LOGGER.info("Found cluster interpreter {}:{}", intpTSrvHost, intpTSrvPort);
 
-            if (intpProcess instanceof DockerInterpreterProcess) {
-              ((DockerInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
-            } else if (intpProcess instanceof ClusterInterpreterProcess) {
-              ((ClusterInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
-            } else {
-              LOGGER.error("Unknown type !");
-            }
+                        if (intpProcess instanceof DockerInterpreterProcess) {
+                            ((DockerInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
+                        } else if (intpProcess instanceof ClusterInterpreterProcess) {
+                            ((ClusterInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
+                        } else {
+                            LOGGER.error("Unknown type !");
+                        }
 
-            return null;
-          }
+                        return null;
+                    }
 
-          @Override
-          public void offline() {
-            LOGGER.error("Can not found cluster interpreter!");
-          }
-        });
+                    @Override
+                    public void offline() {
+                        LOGGER.error("Can not found cluster interpreter!");
+                    }
+                });
 
-    LOGGER.info("ClusterInterpreterCheckThread run() <<<");
-  }
+        LOGGER.info("ClusterInterpreterCheckThread run() <<<");
+    }
 }

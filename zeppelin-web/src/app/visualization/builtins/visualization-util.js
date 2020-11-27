@@ -42,15 +42,19 @@ export const DefaultTableColumnType = TableColumnType.STRING;
 export function isInputWidget(spec) {
   return spec.widget === Widget.INPUT;
 }
+
 export function isOptionWidget(spec) {
   return spec.widget === Widget.OPTION;
 }
+
 export function isCheckboxWidget(spec) {
   return spec.widget === Widget.CHECKBOX;
 }
+
 export function isTextareaWidget(spec) {
   return spec.widget === Widget.TEXTAREA;
 }
+
 export function isBtnGroupWidget(spec) {
   return spec.widget === Widget.BTN_GROUP;
 }

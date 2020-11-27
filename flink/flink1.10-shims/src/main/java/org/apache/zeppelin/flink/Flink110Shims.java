@@ -57,11 +57,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 
 
@@ -70,214 +66,214 @@ import java.util.regex.Matcher;
  */
 public class Flink110Shims extends FlinkShims {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Flink110Shims.class);
-  public static final AttributedString MESSAGE_HELP = new AttributedStringBuilder()
-          .append("The following commands are available:\n\n")
-          .append(formatCommand(SqlCommandParser.SqlCommand.CREATE_TABLE, "Create table under current catalog and database."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.DROP_TABLE, "Drop table with optional catalog and database. Syntax: 'DROP TABLE [IF EXISTS] <name>;'"))
-          .append(formatCommand(SqlCommandParser.SqlCommand.CREATE_VIEW, "Creates a virtual table from a SQL query. Syntax: 'CREATE VIEW <name> AS <query>;'"))
-          .append(formatCommand(SqlCommandParser.SqlCommand.DESCRIBE, "Describes the schema of a table with the given name."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.DROP_VIEW, "Deletes a previously created virtual table. Syntax: 'DROP VIEW <name>;'"))
-          .append(formatCommand(SqlCommandParser.SqlCommand.EXPLAIN, "Describes the execution plan of a query or table with the given name."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.HELP, "Prints the available commands."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.INSERT_INTO, "Inserts the results of a SQL SELECT query into a declared table sink."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.INSERT_OVERWRITE, "Inserts the results of a SQL SELECT query into a declared table sink and overwrite existing data."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.SELECT, "Executes a SQL SELECT query on the Flink cluster."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.SET, "Sets a session configuration property. Syntax: 'SET <key>=<value>;'. Use 'SET;' for listing all properties."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.SHOW_FUNCTIONS, "Shows all user-defined and built-in functions."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.SHOW_TABLES, "Shows all registered tables."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.SOURCE, "Reads a SQL SELECT query from a file and executes it on the Flink cluster."))
-          .append(formatCommand(SqlCommandParser.SqlCommand.USE_CATALOG, "Sets the current catalog. The current database is set to the catalog's default one. Experimental! Syntax: 'USE CATALOG <name>;'"))
-          .append(formatCommand(SqlCommandParser.SqlCommand.USE, "Sets the current default database. Experimental! Syntax: 'USE <name>;'"))
-          .style(AttributedStyle.DEFAULT.underline())
-          .append("\nHint")
-          .style(AttributedStyle.DEFAULT)
-          .append(": Make sure that a statement ends with ';' for finalizing (multi-line) statements.")
-          .toAttributedString();
+    public static final AttributedString MESSAGE_HELP = new AttributedStringBuilder()
+            .append("The following commands are available:\n\n")
+            .append(formatCommand(SqlCommandParser.SqlCommand.CREATE_TABLE, "Create table under current catalog and database."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.DROP_TABLE, "Drop table with optional catalog and database. Syntax: 'DROP TABLE [IF EXISTS] <name>;'"))
+            .append(formatCommand(SqlCommandParser.SqlCommand.CREATE_VIEW, "Creates a virtual table from a SQL query. Syntax: 'CREATE VIEW <name> AS <query>;'"))
+            .append(formatCommand(SqlCommandParser.SqlCommand.DESCRIBE, "Describes the schema of a table with the given name."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.DROP_VIEW, "Deletes a previously created virtual table. Syntax: 'DROP VIEW <name>;'"))
+            .append(formatCommand(SqlCommandParser.SqlCommand.EXPLAIN, "Describes the execution plan of a query or table with the given name."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.HELP, "Prints the available commands."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.INSERT_INTO, "Inserts the results of a SQL SELECT query into a declared table sink."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.INSERT_OVERWRITE, "Inserts the results of a SQL SELECT query into a declared table sink and overwrite existing data."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.SELECT, "Executes a SQL SELECT query on the Flink cluster."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.SET, "Sets a session configuration property. Syntax: 'SET <key>=<value>;'. Use 'SET;' for listing all properties."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.SHOW_FUNCTIONS, "Shows all user-defined and built-in functions."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.SHOW_TABLES, "Shows all registered tables."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.SOURCE, "Reads a SQL SELECT query from a file and executes it on the Flink cluster."))
+            .append(formatCommand(SqlCommandParser.SqlCommand.USE_CATALOG, "Sets the current catalog. The current database is set to the catalog's default one. Experimental! Syntax: 'USE CATALOG <name>;'"))
+            .append(formatCommand(SqlCommandParser.SqlCommand.USE, "Sets the current default database. Experimental! Syntax: 'USE <name>;'"))
+            .style(AttributedStyle.DEFAULT.underline())
+            .append("\nHint")
+            .style(AttributedStyle.DEFAULT)
+            .append(": Make sure that a statement ends with ';' for finalizing (multi-line) statements.")
+            .toAttributedString();
+    private static final Logger LOGGER = LoggerFactory.getLogger(Flink110Shims.class);
 
-  public Flink110Shims(Properties properties) {
-    super(properties);
-  }
-
-  @Override
-  public Object createCatalogManager(Object config) {
-    return new CatalogManager("default_catalog",
-            new GenericInMemoryCatalog("default_catalog", "default_database"));
-  }
-
-  @Override
-  public String getPyFlinkPythonPath(Properties properties) throws IOException {
-    String flinkHome = System.getenv("FLINK_HOME");
-    if (flinkHome != null) {
-      File tmpDir = Files.createTempDirectory("zeppelin").toFile();
-      List<File> depFiles = null;
-      try {
-        depFiles = ResourceUtil.extractBuiltInDependencies(tmpDir.getAbsolutePath(), "pyflink", true);
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      }
-      StringBuilder builder = new StringBuilder();
-      for (File file : depFiles) {
-        LOGGER.info("Adding extracted file to PYTHONPATH: " + file.getAbsolutePath());
-        builder.append(file.getAbsolutePath() + ":");
-      }
-      return builder.toString();
-    } else {
-      throw new IOException("No FLINK_HOME is specified");
+    public Flink110Shims(Properties properties) {
+        super(properties);
     }
-  }
 
-  @Override
-  public Object getCollectStreamTableSink(InetAddress targetAddress, int targetPort, Object serializer) {
-    return new CollectStreamTableSink(targetAddress, targetPort, (TypeSerializer<Tuple2<Boolean, Row >>) serializer);
-  }
+    @Override
+    public Object createCatalogManager(Object config) {
+        return new CatalogManager("default_catalog",
+                new GenericInMemoryCatalog("default_catalog", "default_database"));
+    }
 
-  @Override
-  public List collectToList(Object table) throws Exception {
-    return TableUtils.collectToList((Table) table);
-  }
-
-  @Override
-  public void startMultipleInsert(Object tblEnv, InterpreterContext context) throws Exception {
-
-  }
-
-  @Override
-  public void addInsertStatement(String sql, Object tblEnv, InterpreterContext context) throws Exception {
-    ((TableEnvironment) tblEnv).sqlUpdate(sql);
-  }
-
-  @Override
-  public boolean executeMultipleInsertInto(String jobName, Object tblEnv, InterpreterContext context) throws Exception {
-    ((TableEnvironment) tblEnv).execute(jobName);
-    return true;
-  }
-
-  @Override
-  public boolean rowEquals(Object row1, Object row2) {
-    return ((Row)row1).equals((Row) row2);
-  }
-
-  public Object fromDataSet(Object btenv, Object ds) {
-    return Flink110ScalaShims.fromDataSet((BatchTableEnvironment) btenv, (DataSet) ds);
-  }
-
-  @Override
-  public Object toDataSet(Object btenv, Object table) {
-    return Flink110ScalaShims.toDataSet((BatchTableEnvironment) btenv, (Table) table);
-  }
-
-  @Override
-  public void registerTableSink(Object stenv, String tableName, Object collectTableSink) {
-    ((TableEnvironment) stenv).registerTableSink(tableName, (TableSink) collectTableSink);
-  }
-
-  @Override
-  public void registerTableFunction(Object btenv, String name, Object tableFunction) {
-    ((StreamTableEnvironmentImpl)(btenv)).registerFunction(name, (TableFunction) tableFunction);
-  }
-
-  @Override
-  public void registerAggregateFunction(Object btenv, String name, Object aggregateFunction) {
-    ((StreamTableEnvironmentImpl)(btenv)).registerFunction(name, (AggregateFunction) aggregateFunction);
-  }
-
-  @Override
-  public void registerTableAggregateFunction(Object btenv, String name, Object tableAggregateFunction) {
-    ((StreamTableEnvironmentImpl)(btenv)).registerFunction(name, (TableAggregateFunction) tableAggregateFunction);
-  }
-
-  @Override
-  public Optional<SqlCommandParser.SqlCommandCall> parseSql(Object tableEnv, String stmt) {
-    // parse
-    for (SqlCommandParser.SqlCommand cmd : SqlCommandParser.SqlCommand.values()) {
-      if (cmd.pattern == null){
-        continue;
-      }
-      final Matcher matcher = cmd.pattern.matcher(stmt);
-      if (matcher.matches()) {
-        final String[] groups = new String[matcher.groupCount()];
-        for (int i = 0; i < groups.length; i++) {
-          groups[i] = matcher.group(i + 1);
-        }
-        if (cmd == SqlCommandParser.SqlCommand.EXPLAIN) {
-          String[] operands = cmd.operandConverter.apply(groups).get();
-          if (operands[0].equalsIgnoreCase("select")) {
-            // flink 1.10 only suppports explain select statement.
-            String[] newOperands = new String[]{operands[0] + " " + operands[1]};
-            return Optional.of(new SqlCommandParser.SqlCommandCall(cmd, newOperands, stmt));
-          } else {
-            return Optional.empty();
-          }
+    @Override
+    public String getPyFlinkPythonPath(Properties properties) throws IOException {
+        String flinkHome = System.getenv("FLINK_HOME");
+        if (flinkHome != null) {
+            File tmpDir = Files.createTempDirectory("zeppelin").toFile();
+            List<File> depFiles = null;
+            try {
+                depFiles = ResourceUtil.extractBuiltInDependencies(tmpDir.getAbsolutePath(), "pyflink", true);
+            } catch (InterruptedException e) {
+                throw new IOException(e);
+            }
+            StringBuilder builder = new StringBuilder();
+            for (File file : depFiles) {
+                LOGGER.info("Adding extracted file to PYTHONPATH: " + file.getAbsolutePath());
+                builder.append(file.getAbsolutePath() + ":");
+            }
+            return builder.toString();
         } else {
-          return cmd.operandConverter.apply(groups)
-                  .map((operands) -> new SqlCommandParser.SqlCommandCall(cmd, operands, stmt));
+            throw new IOException("No FLINK_HOME is specified");
         }
-      }
     }
-    return Optional.empty();
-  }
 
-  @Override
-  public void executeSql(Object tableEnv, String sql) {
-    throw new RuntimeException("Should not be called for flink 1.10");
-  }
-
-  @Override
-  public String explain(Object tableEnv, String sql) {
-    Table table = ((TableEnvironment) tableEnv).sqlQuery(sql);
-    return ((TableEnvironment) tableEnv).explain(table);
-  }
-
-  @Override
-  public String sqlHelp() {
-    return MESSAGE_HELP.toString();
-  }
-
-  @Override
-  public void setCatalogManagerSchemaResolver(Object catalogManager,
-                                              Object parser,
-                                              Object environmentSetting) {
-    // do nothing for flink 1.10
-  }
-
-  @Override
-  public Object getCustomCli(Object cliFrontend, Object commandLine) {
-    try {
-      return ((CliFrontend) cliFrontend).validateAndGetActiveCommandLine((CommandLine) commandLine);
-    } catch (NoSuchMethodError e) {
-      try {
-        Method method = CliFrontend.class.getMethod("getActiveCustomCommandLine", CommandLine.class);
-        return method.invoke((CliFrontend) cliFrontend, commandLine);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-        LOGGER.error("Fail to call getCustomCli", ex);
-        throw new RuntimeException("Fail to call getCustomCli", ex);
-      }
+    @Override
+    public Object getCollectStreamTableSink(InetAddress targetAddress, int targetPort, Object serializer) {
+        return new CollectStreamTableSink(targetAddress, targetPort, (TypeSerializer<Tuple2<Boolean, Row>>) serializer);
     }
-  }
 
-  @Override
-  public Map extractTableConfigOptions() {
-    Map<String, ConfigOption> configOptions = new HashMap<>();
-    configOptions.putAll(extractConfigOptions(ExecutionConfigOptions.class));
-    configOptions.putAll(extractConfigOptions(OptimizerConfigOptions.class));
-    configOptions.putAll(extractConfigOptions(PythonOptions.class));
-    return configOptions;
-  }
+    @Override
+    public List collectToList(Object table) throws Exception {
+        return TableUtils.collectToList((Table) table);
+    }
 
-  private Map<String, ConfigOption> extractConfigOptions(Class clazz) {
-    Map<String, ConfigOption> configOptions = new HashMap();
-    Field[] fields = clazz.getDeclaredFields();
-    for (Field field : fields) {
-      if (field.getType().isAssignableFrom(ConfigOption.class)) {
+    @Override
+    public void startMultipleInsert(Object tblEnv, InterpreterContext context) throws Exception {
+
+    }
+
+    @Override
+    public void addInsertStatement(String sql, Object tblEnv, InterpreterContext context) throws Exception {
+        ((TableEnvironment) tblEnv).sqlUpdate(sql);
+    }
+
+    @Override
+    public boolean executeMultipleInsertInto(String jobName, Object tblEnv, InterpreterContext context) throws Exception {
+        ((TableEnvironment) tblEnv).execute(jobName);
+        return true;
+    }
+
+    @Override
+    public boolean rowEquals(Object row1, Object row2) {
+        return ((Row) row1).equals((Row) row2);
+    }
+
+    public Object fromDataSet(Object btenv, Object ds) {
+        return Flink110ScalaShims.fromDataSet((BatchTableEnvironment) btenv, (DataSet) ds);
+    }
+
+    @Override
+    public Object toDataSet(Object btenv, Object table) {
+        return Flink110ScalaShims.toDataSet((BatchTableEnvironment) btenv, (Table) table);
+    }
+
+    @Override
+    public void registerTableSink(Object stenv, String tableName, Object collectTableSink) {
+        ((TableEnvironment) stenv).registerTableSink(tableName, (TableSink) collectTableSink);
+    }
+
+    @Override
+    public void registerTableFunction(Object btenv, String name, Object tableFunction) {
+        ((StreamTableEnvironmentImpl) (btenv)).registerFunction(name, (TableFunction) tableFunction);
+    }
+
+    @Override
+    public void registerAggregateFunction(Object btenv, String name, Object aggregateFunction) {
+        ((StreamTableEnvironmentImpl) (btenv)).registerFunction(name, (AggregateFunction) aggregateFunction);
+    }
+
+    @Override
+    public void registerTableAggregateFunction(Object btenv, String name, Object tableAggregateFunction) {
+        ((StreamTableEnvironmentImpl) (btenv)).registerFunction(name, (TableAggregateFunction) tableAggregateFunction);
+    }
+
+    @Override
+    public Optional<SqlCommandParser.SqlCommandCall> parseSql(Object tableEnv, String stmt) {
+        // parse
+        for (SqlCommandParser.SqlCommand cmd : SqlCommandParser.SqlCommand.values()) {
+            if (cmd.pattern == null) {
+                continue;
+            }
+            final Matcher matcher = cmd.pattern.matcher(stmt);
+            if (matcher.matches()) {
+                final String[] groups = new String[matcher.groupCount()];
+                for (int i = 0; i < groups.length; i++) {
+                    groups[i] = matcher.group(i + 1);
+                }
+                if (cmd == SqlCommandParser.SqlCommand.EXPLAIN) {
+                    String[] operands = cmd.operandConverter.apply(groups).get();
+                    if (operands[0].equalsIgnoreCase("select")) {
+                        // flink 1.10 only suppports explain select statement.
+                        String[] newOperands = new String[]{operands[0] + " " + operands[1]};
+                        return Optional.of(new SqlCommandParser.SqlCommandCall(cmd, newOperands, stmt));
+                    } else {
+                        return Optional.empty();
+                    }
+                } else {
+                    return cmd.operandConverter.apply(groups)
+                            .map((operands) -> new SqlCommandParser.SqlCommandCall(cmd, operands, stmt));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void executeSql(Object tableEnv, String sql) {
+        throw new RuntimeException("Should not be called for flink 1.10");
+    }
+
+    @Override
+    public String explain(Object tableEnv, String sql) {
+        Table table = ((TableEnvironment) tableEnv).sqlQuery(sql);
+        return ((TableEnvironment) tableEnv).explain(table);
+    }
+
+    @Override
+    public String sqlHelp() {
+        return MESSAGE_HELP.toString();
+    }
+
+    @Override
+    public void setCatalogManagerSchemaResolver(Object catalogManager,
+                                                Object parser,
+                                                Object environmentSetting) {
+        // do nothing for flink 1.10
+    }
+
+    @Override
+    public Object getCustomCli(Object cliFrontend, Object commandLine) {
         try {
-          ConfigOption configOption = (ConfigOption) field.get(ConfigOption.class);
-          configOptions.put(configOption.key(), configOption);
-        } catch (Throwable e) {
-          LOGGER.warn("Fail to get ConfigOption", e);
+            return ((CliFrontend) cliFrontend).validateAndGetActiveCommandLine((CommandLine) commandLine);
+        } catch (NoSuchMethodError e) {
+            try {
+                Method method = CliFrontend.class.getMethod("getActiveCustomCommandLine", CommandLine.class);
+                return method.invoke((CliFrontend) cliFrontend, commandLine);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                LOGGER.error("Fail to call getCustomCli", ex);
+                throw new RuntimeException("Fail to call getCustomCli", ex);
+            }
         }
-      }
     }
-    return configOptions;
-  }
+
+    @Override
+    public Map extractTableConfigOptions() {
+        Map<String, ConfigOption> configOptions = new HashMap<>();
+        configOptions.putAll(extractConfigOptions(ExecutionConfigOptions.class));
+        configOptions.putAll(extractConfigOptions(OptimizerConfigOptions.class));
+        configOptions.putAll(extractConfigOptions(PythonOptions.class));
+        return configOptions;
+    }
+
+    private Map<String, ConfigOption> extractConfigOptions(Class clazz) {
+        Map<String, ConfigOption> configOptions = new HashMap();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().isAssignableFrom(ConfigOption.class)) {
+                try {
+                    ConfigOption configOption = (ConfigOption) field.get(ConfigOption.class);
+                    configOptions.put(configOption.key(), configOption);
+                } catch (Throwable e) {
+                    LOGGER.warn("Fail to get ConfigOption", e);
+                }
+            }
+        }
+        return configOptions;
+    }
 }

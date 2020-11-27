@@ -16,8 +16,8 @@
 #
 
 
-from py4j.java_gateway import java_import, JavaGateway, GatewayClient
-
+import pyflink
+from py4j.java_gateway import JavaGateway, GatewayClient
 from pyflink.common import *
 from pyflink.dataset import *
 from pyflink.datastream import *
@@ -27,51 +27,54 @@ from pyflink.table.descriptors import *
 from pyflink.table.udf import *
 from pyflink.table.window import *
 
-import pyflink
-
 # start JVM gateway
 if "PY4J_GATEWAY_SECRET" in os.environ:
     from py4j.java_gateway import GatewayParameters
+
     gateway_secret = os.environ["PY4J_GATEWAY_SECRET"]
     gateway = JavaGateway(gateway_parameters=GatewayParameters(address="${JVM_GATEWAY_ADDRESS}",
-        port=${JVM_GATEWAY_PORT}, auth_token=gateway_secret, auto_convert=True))
-else:
-    gateway = JavaGateway(GatewayClient(address="${JVM_GATEWAY_ADDRESS}", port=${JVM_GATEWAY_PORT}), auto_convert=True)
+                                                               port=${
+                                                                         JVM_GATEWAY_PORT}, auth_token = gateway_secret, auto_convert = True))
+    else:
+    gateway = JavaGateway(GatewayClient(address="${JVM_GATEWAY_ADDRESS}", port=${
+        JVM_GATEWAY_PORT}), auto_convert = True)
 
 
-intp = gateway.entry_point
+    intp = gateway.entry_point
 
-pyflink.java_gateway._gateway = gateway
-pyflink.java_gateway.import_flink_view(gateway)
-pyflink.java_gateway.install_exception_handler()
+    pyflink.java_gateway._gateway = gateway
+    pyflink.java_gateway.import_flink_view(gateway)
+    pyflink.java_gateway.install_exception_handler()
 
-b_env = pyflink.dataset.ExecutionEnvironment(intp.getJavaExecutionEnvironment())
-s_env = StreamExecutionEnvironment(intp.getJavaStreamExecutionEnvironment())
+    b_env = pyflink.dataset.ExecutionEnvironment(intp.getJavaExecutionEnvironment())
+    s_env = StreamExecutionEnvironment(intp.getJavaStreamExecutionEnvironment())
 
-if intp.isFlink110():
-    bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"), True)
-    bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"), False)
-    st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"), True)
-    st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"), False)
-else:
-    bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"))
-    bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"))
-    st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"))
-    st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"))
+    if intp.isFlink110():
+        bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"), True)
+        bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"), False)
+        st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"), True)
+        st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"), False)
+    else:
+        bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"))
+        bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"))
+        st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"))
+        st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"))
 
-class IPyFlinkZeppelinContext(PyZeppelinContext):
 
-    def __init__(self, z, gateway):
-        super(IPyFlinkZeppelinContext, self).__init__(z, gateway)
+    class IPyFlinkZeppelinContext(PyZeppelinContext):
 
-    def show(self, obj, **kwargs):
-        from pyflink.table import Table
-        if isinstance(obj, Table):
-            if 'stream_type' in kwargs:
-                self.z.show(obj._j_table, kwargs['stream_type'], kwargs)
+        def __init__(self, z, gateway):
+            super(IPyFlinkZeppelinContext, self).__init__(z, gateway)
+
+        def show(self, obj, **kwargs):
+            from pyflink.table import Table
+            if isinstance(obj, Table):
+                if 'stream_type' in kwargs:
+                    self.z.show(obj._j_table, kwargs['stream_type'], kwargs)
+                else:
+                    print(self.z.showData(obj._j_table))
             else:
-                print(self.z.showData(obj._j_table))
-        else:
-            super(IPyFlinkZeppelinContext, self).show(obj, **kwargs)
+                super(IPyFlinkZeppelinContext, self).show(obj, **kwargs)
 
-z = __zeppelin__ = IPyFlinkZeppelinContext(intp.getZeppelinContext(), gateway)
+
+    z = __zeppelin__ = IPyFlinkZeppelinContext(intp.getZeppelinContext(), gateway)

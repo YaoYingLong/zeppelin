@@ -26,8 +26,8 @@ import java.util.Properties;
  */
 public class HazelcastJetInterpreter extends JavaInterpreter {
 
-  public HazelcastJetInterpreter(Properties property) {
-    super(property);
-  }
+    public HazelcastJetInterpreter(Properties property) {
+        super(property);
+    }
 
 }

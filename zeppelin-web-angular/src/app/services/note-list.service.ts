@@ -28,6 +28,11 @@ export class NoteListService {
     flatFolderMap: {}
   };
 
+  constructor(
+    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
+    private arrayOrderingService: ArrayOrderingService
+  ) {}
+
   setNotes(notesList: NotesInfoItem[]) {
     // a flat list to boost searching
     this.notes.flatList = notesList.map(note => {
@@ -89,9 +94,4 @@ export class NoteListService {
       }
     }
   }
-
-  constructor(
-    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
-    private arrayOrderingService: ArrayOrderingService
-  ) {}
 }

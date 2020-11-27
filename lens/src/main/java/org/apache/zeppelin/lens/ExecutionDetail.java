@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,25 +24,25 @@ import org.springframework.shell.core.JLineShell;
  * Pojo tracking query execution details. Used to cancel the query.
  */
 public class ExecutionDetail {
-  private String queryHandle;
-  private LensClient lensClient;
-  private JLineShell shell;
+    private String queryHandle;
+    private LensClient lensClient;
+    private JLineShell shell;
 
-  ExecutionDetail(String qh, LensClient lensClient, JLineShell shell) {
-    this.queryHandle = qh;
-    this.lensClient = lensClient;
-    this.shell = shell;
-  }
+    ExecutionDetail(String qh, LensClient lensClient, JLineShell shell) {
+        this.queryHandle = qh;
+        this.lensClient = lensClient;
+        this.shell = shell;
+    }
 
-  public JLineShell getShell() {
-    return shell;
-  }
+    public JLineShell getShell() {
+        return shell;
+    }
 
-  public String getQueryHandle() {
-    return queryHandle;
-  }
+    public String getQueryHandle() {
+        return queryHandle;
+    }
 
-  public LensClient getLensClient() {
-    return lensClient;
-  }
+    public LensClient getLensClient() {
+        return lensClient;
+    }
 }

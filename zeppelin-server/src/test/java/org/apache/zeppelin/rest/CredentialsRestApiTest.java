@@ -16,18 +16,8 @@
  */
 package org.apache.zeppelin.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Map;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.NoAuthenticationService;
 import org.apache.zeppelin.user.Credentials;
@@ -35,68 +25,76 @@ import org.apache.zeppelin.user.UserCredentials;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
 public class CredentialsRestApiTest {
-  private final Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
-  private CredentialRestApi credentialRestApi;
-  private Credentials credentials;
-  private AuthenticationService authenticationService;
+    private CredentialRestApi credentialRestApi;
+    private Credentials credentials;
+    private AuthenticationService authenticationService;
 
-  @Before
-  public void setUp() throws IOException {
-    credentials = new Credentials();
-    authenticationService = new NoAuthenticationService();
-    credentialRestApi = new CredentialRestApi(credentials, authenticationService);
-  }
+    @Before
+    public void setUp() throws IOException {
+        credentials = new Credentials();
+        authenticationService = new NoAuthenticationService();
+        credentialRestApi = new CredentialRestApi(credentials, authenticationService);
+    }
 
-  @Test
-  public void testInvalidRequest() throws IOException {
-    String jsonInvalidRequestEntityNull =
-        "{\"entity\" : null, \"username\" : \"test\", " + "\"password\" : \"testpass\"}";
-    String jsonInvalidRequestNameNull =
-        "{\"entity\" : \"test\", \"username\" : null, " + "\"password\" : \"testpass\"}";
-    String jsonInvalidRequestPasswordNull =
-        "{\"entity\" : \"test\", \"username\" : \"test\", " + "\"password\" : null}";
-    String jsonInvalidRequestAllNull =
-        "{\"entity\" : null, \"username\" : null, " + "\"password\" : null}";
+    @Test
+    public void testInvalidRequest() throws IOException {
+        String jsonInvalidRequestEntityNull =
+                "{\"entity\" : null, \"username\" : \"test\", " + "\"password\" : \"testpass\"}";
+        String jsonInvalidRequestNameNull =
+                "{\"entity\" : \"test\", \"username\" : null, " + "\"password\" : \"testpass\"}";
+        String jsonInvalidRequestPasswordNull =
+                "{\"entity\" : \"test\", \"username\" : \"test\", " + "\"password\" : null}";
+        String jsonInvalidRequestAllNull =
+                "{\"entity\" : null, \"username\" : null, " + "\"password\" : null}";
 
-    Response response = credentialRestApi.putCredentials(jsonInvalidRequestEntityNull);
-    assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+        Response response = credentialRestApi.putCredentials(jsonInvalidRequestEntityNull);
+        assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
 
-    response = credentialRestApi.putCredentials(jsonInvalidRequestNameNull);
-    assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+        response = credentialRestApi.putCredentials(jsonInvalidRequestNameNull);
+        assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
 
-    response = credentialRestApi.putCredentials(jsonInvalidRequestPasswordNull);
-    assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+        response = credentialRestApi.putCredentials(jsonInvalidRequestPasswordNull);
+        assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
 
-    response = credentialRestApi.putCredentials(jsonInvalidRequestAllNull);
-    assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
-  }
+        response = credentialRestApi.putCredentials(jsonInvalidRequestAllNull);
+        assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+    }
 
-  public Map<String, UserCredentials> testGetUserCredentials() throws IOException {
-    Response response = credentialRestApi.getCredentials();
-    Map<String, Object> resp =
-        gson.fromJson(
-            response.getEntity().toString(), new TypeToken<Map<String, Object>>() {}.getType());
-    Map<String, Object> body = (Map<String, Object>) resp.get("body");
-    Map<String, UserCredentials> credentialMap =
-        (Map<String, UserCredentials>) body.get("userCredentials");
-    return credentialMap;
-  }
+    public Map<String, UserCredentials> testGetUserCredentials() throws IOException {
+        Response response = credentialRestApi.getCredentials();
+        Map<String, Object> resp =
+                gson.fromJson(
+                        response.getEntity().toString(), new TypeToken<Map<String, Object>>() {
+                        }.getType());
+        Map<String, Object> body = (Map<String, Object>) resp.get("body");
+        Map<String, UserCredentials> credentialMap =
+                (Map<String, UserCredentials>) body.get("userCredentials");
+        return credentialMap;
+    }
 
-  @Test
-  public void testCredentialsAPIs() throws IOException {
-    String requestData1 =
-        "{\"entity\" : \"entityname\", \"username\" : \"myuser\", \"password\" " + ": \"mypass\"}";
-    String entity = "entityname";
+    @Test
+    public void testCredentialsAPIs() throws IOException {
+        String requestData1 =
+                "{\"entity\" : \"entityname\", \"username\" : \"myuser\", \"password\" " + ": \"mypass\"}";
+        String entity = "entityname";
 
-    credentialRestApi.putCredentials(requestData1);
-    assertNotNull("CredentialMap should be null", testGetUserCredentials());
+        credentialRestApi.putCredentials(requestData1);
+        assertNotNull("CredentialMap should be null", testGetUserCredentials());
 
-    credentialRestApi.removeCredentialEntity(entity);
-    assertNull("CredentialMap should be null", testGetUserCredentials().get("entity1"));
+        credentialRestApi.removeCredentialEntity(entity);
+        assertNull("CredentialMap should be null", testGetUserCredentials().get("entity1"));
 
-    credentialRestApi.removeCredentials();
-    assertEquals("Compare CredentialMap", testGetUserCredentials().toString(), "{}");
-  }
+        credentialRestApi.removeCredentials();
+        assertEquals("Compare CredentialMap", testGetUserCredentials().toString(), "{}");
+    }
 }

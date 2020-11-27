@@ -51,11 +51,13 @@ export interface InterpreterRepository {
   mirroredRepositories: any[];
   repositoryManager: boolean;
 }
+
 interface ReleasePolicy {
   enabled: boolean;
   updatePolicy: string;
   checksumPolicy: string;
 }
+
 interface SnapshotPolicy {
   enabled: boolean;
   updatePolicy: string;
@@ -78,6 +80,7 @@ interface InterpreterGroupItem {
   defaultInterpreter: boolean;
   editor: Editor;
 }
+
 interface Editor {
   language: string;
   editOnDblClick: boolean;

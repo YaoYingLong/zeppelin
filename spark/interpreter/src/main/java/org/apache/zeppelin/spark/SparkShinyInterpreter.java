@@ -27,17 +27,17 @@ import java.util.Properties;
  * The same function as ShinyInterpreter, but support Spark as well.
  */
 public class SparkShinyInterpreter extends ShinyInterpreter {
-  public SparkShinyInterpreter(Properties properties) {
-    super(properties);
-  }
-
-  protected IRInterpreter createIRInterpreter() {
-    SparkIRInterpreter interpreter = new SparkIRInterpreter(properties);
-    try {
-      interpreter.setSparkInterpreter(getInterpreterInTheSameSessionByClassName(SparkInterpreter.class));
-      return interpreter;
-    } catch (InterpreterException e) {
-      throw new RuntimeException("Fail to set spark interpreter for SparkIRInterpreter", e);
+    public SparkShinyInterpreter(Properties properties) {
+        super(properties);
     }
-  }
+
+    protected IRInterpreter createIRInterpreter() {
+        SparkIRInterpreter interpreter = new SparkIRInterpreter(properties);
+        try {
+            interpreter.setSparkInterpreter(getInterpreterInTheSameSessionByClassName(SparkInterpreter.class));
+            return interpreter;
+        } catch (InterpreterException e) {
+            throw new RuntimeException("Fail to set spark interpreter for SparkIRInterpreter", e);
+        }
+    }
 }

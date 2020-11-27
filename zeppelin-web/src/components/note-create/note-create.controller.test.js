@@ -1,11 +1,11 @@
-describe('Controller: NoteCreateCtrl', function() {
+describe('Controller: NoteCreateCtrl', function () {
   beforeEach(angular.mock.module('zeppelinWebApp'));
 
   let scope;
   let ctrl;
   let noteList;
 
-  beforeEach(inject(function($injector, $rootScope, $controller) {
+  beforeEach(inject(function ($injector, $rootScope, $controller) {
     noteList = $injector.get('noteListFactory');
     scope = $rootScope.$new();
     ctrl = $controller('NoteCreateCtrl', {
@@ -14,7 +14,7 @@ describe('Controller: NoteCreateCtrl', function() {
     });
   }));
 
-  it('should create a new name from current name when cloneNoteName is called', function() {
+  it('should create a new name from current name when cloneNoteName is called', function () {
     let notesList = [
       {path: 'dsds 1', id: '1'},
       {path: 'dsds 2', id: '2'},

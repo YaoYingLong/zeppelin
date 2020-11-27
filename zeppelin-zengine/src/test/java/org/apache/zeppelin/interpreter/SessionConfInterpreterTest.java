@@ -31,39 +31,39 @@ import static org.mockito.Mockito.when;
 
 public class SessionConfInterpreterTest {
 
-  @Test
-  public void testUserSessionConfInterpreter() throws InterpreterException {
+    @Test
+    public void testUserSessionConfInterpreter() throws InterpreterException {
 
-    InterpreterSetting mockInterpreterSetting = mock(InterpreterSetting.class);
-    ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);
-    when(mockInterpreterSetting.getInterpreterGroup("group_1")).thenReturn(mockInterpreterGroup);
+        InterpreterSetting mockInterpreterSetting = mock(InterpreterSetting.class);
+        ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);
+        when(mockInterpreterSetting.getInterpreterGroup("group_1")).thenReturn(mockInterpreterGroup);
 
-    Properties properties = new Properties();
-    properties.setProperty("property_1", "value_1");
-    properties.setProperty("property_2", "value_2");
-    SessionConfInterpreter confInterpreter = new SessionConfInterpreter(
-        properties, "session_1", "group_1", mockInterpreterSetting);
+        Properties properties = new Properties();
+        properties.setProperty("property_1", "value_1");
+        properties.setProperty("property_2", "value_2");
+        SessionConfInterpreter confInterpreter = new SessionConfInterpreter(
+                properties, "session_1", "group_1", mockInterpreterSetting);
 
-    RemoteInterpreter remoteInterpreter =
-        new RemoteInterpreter(properties, "session_1", "clasName", "user1");
-    List<Interpreter> interpreters = new ArrayList<>();
-    interpreters.add(confInterpreter);
-    interpreters.add(remoteInterpreter);
-    when(mockInterpreterGroup.get("session_1")).thenReturn(interpreters);
+        RemoteInterpreter remoteInterpreter =
+                new RemoteInterpreter(properties, "session_1", "clasName", "user1");
+        List<Interpreter> interpreters = new ArrayList<>();
+        interpreters.add(confInterpreter);
+        interpreters.add(remoteInterpreter);
+        when(mockInterpreterGroup.get("session_1")).thenReturn(interpreters);
 
-    InterpreterResult result =
-        confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
-            mock(InterpreterContext.class));
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
-    assertEquals(3, remoteInterpreter.getProperties().size());
-    assertEquals("updated_value_1", remoteInterpreter.getProperty("property_1"));
-    assertEquals("value_2", remoteInterpreter.getProperty("property_2"));
-    assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
+        InterpreterResult result =
+                confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
+                        mock(InterpreterContext.class));
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+        assertEquals(3, remoteInterpreter.getProperties().size());
+        assertEquals("updated_value_1", remoteInterpreter.getProperty("property_1"));
+        assertEquals("value_2", remoteInterpreter.getProperty("property_2"));
+        assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
 
-    remoteInterpreter.setOpened(true);
-    result =
-        confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
-            mock(InterpreterContext.class));
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
-  }
+        remoteInterpreter.setOpened(true);
+        result =
+                confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
+                        mock(InterpreterContext.class));
+        assertEquals(InterpreterResult.Code.ERROR, result.code);
+    }
 }

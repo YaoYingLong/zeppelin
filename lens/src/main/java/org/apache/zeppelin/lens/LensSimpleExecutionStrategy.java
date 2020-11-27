@@ -29,56 +29,56 @@ import java.util.logging.Logger;
  */
 public class LensSimpleExecutionStrategy implements ExecutionStrategy {
 
-  private static final Logger logger = HandlerUtils.getLogger(LensSimpleExecutionStrategy.class);
+    private static final Logger logger = HandlerUtils.getLogger(LensSimpleExecutionStrategy.class);
 
-  public Object execute(ParseResult parseResult) throws RuntimeException {
-    Assert.notNull(parseResult, "Parse result required");
-    logger.info("LensSimpleExecutionStrategy execute method invoked");
-    synchronized (this) {
-      Assert.isTrue(isReadyForCommands(), "SimpleExecutionStrategy not yet ready for commands");
-      Object target = parseResult.getInstance();
-      if (target instanceof ExecutionProcessor) {
-        ExecutionProcessor processor = ((ExecutionProcessor) target);
-        parseResult = processor.beforeInvocation(parseResult);
-        try {
-          Object result = invoke(parseResult);
-          processor.afterReturningInvocation(parseResult, result);
-          return result;
-        } catch (Throwable th) {
-          processor.afterThrowingInvocation(parseResult, th);
-          return handleThrowable(th);
+    public Object execute(ParseResult parseResult) throws RuntimeException {
+        Assert.notNull(parseResult, "Parse result required");
+        logger.info("LensSimpleExecutionStrategy execute method invoked");
+        synchronized (this) {
+            Assert.isTrue(isReadyForCommands(), "SimpleExecutionStrategy not yet ready for commands");
+            Object target = parseResult.getInstance();
+            if (target instanceof ExecutionProcessor) {
+                ExecutionProcessor processor = ((ExecutionProcessor) target);
+                parseResult = processor.beforeInvocation(parseResult);
+                try {
+                    Object result = invoke(parseResult);
+                    processor.afterReturningInvocation(parseResult, result);
+                    return result;
+                } catch (Throwable th) {
+                    processor.afterThrowingInvocation(parseResult, th);
+                    return handleThrowable(th);
+                }
+            } else {
+                return invoke(parseResult);
+            }
         }
-      } else {
-        return invoke(parseResult);
-      }
     }
-  }
 
-  private Object invoke(ParseResult parseResult) {
-    try {
-      return ReflectionUtils.invokeMethod(parseResult.getMethod(),
-        parseResult.getInstance(), parseResult.getArguments());
-    } catch (Throwable th) {
-      logger.severe("Command failed " + th);
-      return handleThrowable(th);
+    private Object invoke(ParseResult parseResult) {
+        try {
+            return ReflectionUtils.invokeMethod(parseResult.getMethod(),
+                    parseResult.getInstance(), parseResult.getArguments());
+        } catch (Throwable th) {
+            logger.severe("Command failed " + th);
+            return handleThrowable(th);
+        }
     }
-  }
 
-  private Object handleThrowable(Throwable th) {
-    if (th instanceof Error) {
-      throw ((Error) th);
+    private Object handleThrowable(Throwable th) {
+        if (th instanceof Error) {
+            throw ((Error) th);
+        }
+        if (th instanceof RuntimeException) {
+            throw ((RuntimeException) th);
+        }
+        throw new RuntimeException(th);
     }
-    if (th instanceof RuntimeException) {
-      throw ((RuntimeException) th);
+
+    public boolean isReadyForCommands() {
+        return true;
     }
-    throw new RuntimeException(th);
-  }
 
-  public boolean isReadyForCommands() {
-    return true;
-  }
-
-  public void terminate() {
-    // do nothing
-  }
+    public void terminate() {
+        // do nothing
+    }
 }

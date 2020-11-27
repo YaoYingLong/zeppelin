@@ -10,85 +10,85 @@
   ~ limitations under the License.
   -->
 
-<nz-card id="fields-drop-group" nzTitle="Available Fields" nzSize="small" cdkDropListGroup>
-  <div cdkDropList
-       id="columns-list"
-       [cdkDropListData]="columns"
-       [cdkDropListEnterPredicate]="noReturnPredicate">
-    <span class="drag-tag field-item"
-          *ngFor="let item of columns"
+<nz-card cdkDropListGroup id="fields-drop-group" nzSize="small" nzTitle="Available Fields">
+  <div [cdkDropListData]="columns"
+       [cdkDropListEnterPredicate]="noReturnPredicate"
+       cdkDropList
+       id="columns-list">
+    <span *ngFor="let item of columns"
           cdkDrag
-          cdkDragBoundary="#fields-drop-group">{{item.name}}</span>
+          cdkDragBoundary="#fields-drop-group"
+          class="drag-tag field-item">{{item.name}}</span>
   </div>
-  <div class="field-setting-wrap" nz-row [nzGutter]="8">
-    <div nz-col [nzSpan]="6">
-      <nz-card nzTitle="XAxis"
-               nzSize="small">
-        <div class="drag-wrap"
+  <div [nzGutter]="8" class="field-setting-wrap" nz-row>
+    <div [nzSpan]="6" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="XAxis">
+        <div (cdkDropListDropped)="drop($event)"
+             [cdkDropListData]="field.xAxis"
              cdkDropList
-             (cdkDropListDropped)="drop($event)"
-             [cdkDropListData]="field.xAxis">
-          <span class="drag-tag field-item"
-                *ngFor="let item of field.xAxis; index as i"
+             class="drag-wrap">
+          <span *ngFor="let item of field.xAxis; index as i"
                 [cdkDragDisabled]="true"
                 cdkDrag
-                cdkDragBoundary="#fields-drop-group">
+                cdkDragBoundary="#fields-drop-group"
+                class="drag-tag field-item">
             {{item.name}}
-            <i nz-icon nzType="close" (click)="clean(field.xAxis)"></i>
+            <i (click)="clean(field.xAxis)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>
     </div>
-    <div nz-col [nzSpan]="6">
-      <nz-card nzTitle="YAxis"
-               nzSize="small">
-        <div class="drag-wrap"
+    <div [nzSpan]="6" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="YAxis">
+        <div (cdkDropListDropped)="drop($event)"
+             [cdkDropListData]="field.yAxis"
              cdkDropList
-             (cdkDropListDropped)="drop($event)"
-             [cdkDropListData]="field.yAxis">
-          <span class="drag-tag field-item"
-                *ngFor="let item of field.yAxis; index as i"
+             class="drag-wrap">
+          <span *ngFor="let item of field.yAxis; index as i"
                 [cdkDragDisabled]="true"
                 cdkDrag
-                cdkDragBoundary="#fields-drop-group">
+                cdkDragBoundary="#fields-drop-group"
+                class="drag-tag field-item">
             {{item.name}}
-            <i nz-icon nzType="close" (click)="clean(field.yAxis)"></i>
+            <i (click)="clean(field.yAxis)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>
     </div>
-    <div nz-col [nzSpan]="6">
-      <nz-card nzTitle="Group"
-               nzSize="small">
-        <div class="drag-wrap"
+    <div [nzSpan]="6" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="Group">
+        <div (cdkDropListDropped)="drop($event)"
+             [cdkDropListData]="field.group"
              cdkDropList
-             (cdkDropListDropped)="drop($event)"
-             [cdkDropListData]="field.group">
-            <span class="drag-tag field-item"
-                  *ngFor="let item of field.group; index as i"
+             class="drag-wrap">
+            <span *ngFor="let item of field.group; index as i"
                   [cdkDragDisabled]="true"
                   cdkDrag
-                  cdkDragBoundary="#fields-drop-group">
+                  cdkDragBoundary="#fields-drop-group"
+                  class="drag-tag field-item">
             {{item.name}}
-              <i nz-icon nzType="close" (click)="clean(field.group)"></i>
+              <i (click)="clean(field.group)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>
     </div>
-    <div nz-col [nzSpan]="6">
-      <nz-card nzTitle="Size"
-               nzSize="small">
-        <div class="drag-wrap"
+    <div [nzSpan]="6" nz-col>
+      <nz-card nzSize="small"
+               nzTitle="Size">
+        <div (cdkDropListDropped)="drop($event)"
+             [cdkDropListData]="field.size"
              cdkDropList
-             (cdkDropListDropped)="drop($event)"
-             [cdkDropListData]="field.size">
-            <span class="drag-tag field-item"
-                  *ngFor="let item of field.size; index as i"
+             class="drag-wrap">
+            <span *ngFor="let item of field.size; index as i"
                   [cdkDragDisabled]="true"
                   cdkDrag
-                  cdkDragBoundary="#fields-drop-group">
+                  cdkDragBoundary="#fields-drop-group"
+                  class="drag-tag field-item">
             {{item.name}}
-              <i nz-icon nzType="close" (click)="clean(field.size)"></i>
+              <i (click)="clean(field.size)" nz-icon nzType="close"></i>
           </span>
         </div>
       </nz-card>

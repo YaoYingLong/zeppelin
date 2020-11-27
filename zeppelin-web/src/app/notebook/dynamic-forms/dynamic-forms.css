@@ -1,4 +1,6 @@
-import './note-create.css'
+import
+
+'./note-create.css'
 
 .dynamicForm {
   margin-right: 20px;
@@ -7,7 +9,7 @@ import './note-create.css'
 
 .dynamicForm.form-horizontal .form-group {
   margin-right: 0;
-  margin-left:  0;
+  margin-left: 0;
 }
 
 .dynamicForm.form-horizontal .form-group label {

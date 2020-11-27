@@ -17,106 +17,108 @@
 
 package org.apache.zeppelin.interpreter.launcher;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import static org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE;
 
 /**
+ * 启动解释器程序的组件
  * Component to Launch interpreter process.
  */
 public abstract class InterpreterLauncher {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterLauncher.class);
-  private static final String SPECIAL_CHARACTER="{}()<>&*‘|=?;[]$–#~!.\"%/\\:+,`";
+    private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterLauncher.class);
+    private static final String SPECIAL_CHARACTER = "{}()<>&*‘|=?;[]$–#~!.\"%/\\:+,`";
 
-  protected ZeppelinConfiguration zConf;
-  protected Properties properties;
-  protected RecoveryStorage recoveryStorage;
+    protected ZeppelinConfiguration zConf;
+    protected Properties properties;
+    protected RecoveryStorage recoveryStorage;
 
-  public InterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
-    this.zConf = zConf;
-    this.recoveryStorage = recoveryStorage;
-  }
-
-  public void setProperties(Properties props) {
-    this.properties = props;
-  }
-
-  /**
-   * The timeout setting in interpreter setting take precedence over
-   * that in zeppelin-site.xml
-   * @return
-   */
-  protected int getConnectTimeout() {
-    int connectTimeout =
-        zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT);
-    if (properties != null && properties.containsKey(
-        ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName())) {
-      connectTimeout = Integer.parseInt(properties.getProperty(
-          ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName()));
+    public InterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
+        this.zConf = zConf;
+        this.recoveryStorage = recoveryStorage;
     }
-    return connectTimeout;
-  }
 
-  protected int getConnectPoolSize() {
-    return Integer.parseInt(properties.getProperty(
-            ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE.getVarName(),
-            ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE.getIntValue() + ""));
-  }
-
-  public static String escapeSpecialCharacter(String command) {
-    StringBuilder builder = new StringBuilder();
-    for (char c : command.toCharArray()) {
-      if (SPECIAL_CHARACTER.indexOf(c) != -1) {
-        builder.append("\\");
-      }
-      builder.append(c);
-    }
-    return builder.toString();
-  }
-
-  /**
-   * Try to recover interpreter process first, then call launchDirectly via sub class implementation.
-   *
-   * @param context
-   * @return
-   * @throws IOException
-   */
-  public InterpreterClient launch(InterpreterLaunchContext context) throws IOException {
-    // try to recover it first
-    if (zConf.isRecoveryEnabled()) {
-      InterpreterClient recoveredClient =
-              recoveryStorage.getInterpreterClient(context.getInterpreterGroupId());
-      if (recoveredClient != null) {
-        if (recoveredClient.isRunning()) {
-          LOGGER.info("Recover interpreter process running at {}:{} of interpreter group: {}",
-                  recoveredClient.getHost(), recoveredClient.getPort(),
-                  recoveredClient.getInterpreterGroupId());
-          return recoveredClient;
-        } else {
-          recoveryStorage.removeInterpreterClient(context.getInterpreterGroupId());
-          LOGGER.warn("Unable to recover interpreter process: {}:{}, as it is already terminated.", recoveredClient.getHost(), recoveredClient.getPort());
+    public static String escapeSpecialCharacter(String command) {
+        StringBuilder builder = new StringBuilder();
+        for (char c : command.toCharArray()) {
+            if (SPECIAL_CHARACTER.indexOf(c) != -1) {
+                builder.append("\\");
+            }
+            builder.append(c);
         }
-      }
+        return builder.toString();
     }
 
-    // launch it via sub class implementation without recovering.
-    return launchDirectly(context);
-  }
+    public void setProperties(Properties props) {
+        this.properties = props;
+    }
 
-  /**
-   * launch interpreter process directly without recovering.
-   *
-   * @param context
-   * @return
-   * @throws IOException
-   */
-  public abstract InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException;
+    /**
+     * The timeout setting in interpreter setting take precedence over
+     * that in zeppelin-site.xml
+     *
+     * @return
+     */
+    protected int getConnectTimeout() {
+        int connectTimeout =
+                zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT);
+        if (properties != null && properties.containsKey(
+                ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName())) {
+            connectTimeout = Integer.parseInt(properties.getProperty(
+                    ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName()));
+        }
+        return connectTimeout;
+    }
+
+    protected int getConnectPoolSize() {
+        return Integer.parseInt(properties.getProperty(
+                ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE.getVarName(),
+                ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE.getIntValue() + ""));
+    }
+
+    /**
+     * Try to recover interpreter process first, then call launchDirectly via sub class implementation.
+     *
+     * @param context
+     * @return
+     * @throws IOException
+     */
+    public InterpreterClient launch(InterpreterLaunchContext context) throws IOException {
+        // try to recover it first
+        if (zConf.isRecoveryEnabled()) {
+            InterpreterClient recoveredClient = recoveryStorage.getInterpreterClient(context.getInterpreterGroupId());
+            if (recoveredClient != null) {
+                if (recoveredClient.isRunning()) {
+                    LOGGER.info("Recover interpreter process running at {}:{} of interpreter group: {}",
+                            recoveredClient.getHost(), recoveredClient.getPort(),
+                            recoveredClient.getInterpreterGroupId());
+                    return recoveredClient;
+                } else {
+                    recoveryStorage.removeInterpreterClient(context.getInterpreterGroupId());
+                    LOGGER.warn("Unable to recover interpreter process: {}:{}, as it is already terminated.", recoveredClient.getHost(), recoveredClient.getPort());
+                }
+            }
+        }
+
+        // launch it via sub class implementation without recovering.
+        return launchDirectly(context);
+    }
+
+    /**
+     * 直接启动解释程序，而无需恢复
+     * launch interpreter process directly without recovering.
+     *
+     * @param context
+     * @return
+     * @throws IOException
+     */
+    public abstract InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException;
 
 }

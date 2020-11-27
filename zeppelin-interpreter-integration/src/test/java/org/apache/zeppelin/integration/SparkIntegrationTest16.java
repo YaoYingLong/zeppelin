@@ -24,17 +24,17 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(value = Parameterized.class)
-public class SparkIntegrationTest16 extends SparkIntegrationTest{
+public class SparkIntegrationTest16 extends SparkIntegrationTest {
 
-  public SparkIntegrationTest16(String sparkVersion, String hadoopVersion) {
-    super(sparkVersion, hadoopVersion);
-  }
+    public SparkIntegrationTest16(String sparkVersion, String hadoopVersion) {
+        super(sparkVersion, hadoopVersion);
+    }
 
-  @Parameterized.Parameters
-  public static List<Object[]> data() {
-    return Arrays.asList(new Object[][]{
-            {"1.6.3", "2.6"}
-    });
-  }
+    @Parameterized.Parameters
+    public static List<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"1.6.3", "2.6"}
+        });
+    }
 
 }

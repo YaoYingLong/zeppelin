@@ -71,13 +71,14 @@ let app = {
 };
 
 var t = null;
+
 function setupHterm() {
     // alert("setupHterm");
 
     hterm.defaultStorage = new lib.Storage.Memory();
     t = new hterm.Terminal();
 
-    t.onTerminalReady = function() {
+    t.onTerminalReady = function () {
         // app.onTerminalInit();
 
         // Create a new terminal IO object and give it the foreground.

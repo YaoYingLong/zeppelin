@@ -20,60 +20,60 @@ package org.apache.zeppelin.interpreter.launcher;
 import java.io.IOException;
 
 /**
+ * 用于从zeppelin服务器进程到zeppelin解释器进程进行通信的组件，且管理解释器进程的生命周期
  * Interface to InterpreterClient which is created by InterpreterLauncher. This is the component
  * that is used for the communication from zeppelin-server process to zeppelin interpreter
  * process and also manage the lifecycle of interpreter process.
  */
 public interface InterpreterClient {
 
-  /**
-   * InterpreterGroupId that is associated with this interpreter process.
-   *
-   * @return
-   */
-  String getInterpreterGroupId();
+    /**
+     * InterpreterGroupId that is associated with this interpreter process.
+     *
+     * @return
+     */
+    String getInterpreterGroupId();
 
-  /**
-   * InterpreterSetting name of this interpreter process.
-   *
-   * @return
-   */
-  String getInterpreterSettingName();
+    /**
+     * InterpreterSetting name of this interpreter process.
+     *
+     * @return
+     */
+    String getInterpreterSettingName();
 
-  /**
-   * Start interpreter process.
-   *
-   * @param userName
-   * @throws IOException
-   */
-  void start(String userName) throws IOException;
+    /**
+     * Start interpreter process.
+     *
+     * @param userName
+     * @throws IOException
+     */
+    void start(String userName) throws IOException;
 
-  /**
-   * Stop interpreter process.
-   *
-   */
-  void stop();
+    /**
+     * Stop interpreter process.
+     */
+    void stop();
 
-  /**
-   * Host name of interpreter process thrift server
-   *
-   * @return
-   */
-  String getHost();
+    /**
+     * Host name of interpreter process thrift server
+     *
+     * @return
+     */
+    String getHost();
 
-  /**
-   * Port of interpreter process thrift server
-   *
-   * @return
-   */
-  int getPort();
+    /**
+     * Port of interpreter process thrift server
+     *
+     * @return
+     */
+    int getPort();
 
-  boolean isRunning();
+    boolean isRunning();
 
-  /**
-   * Return true if recovering successfully, otherwise return false.
-   *
-   * @return
-   */
-  boolean recover();
+    /**
+     * Return true if recovering successfully, otherwise return false.
+     *
+     * @return
+     */
+    boolean recover();
 }

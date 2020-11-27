@@ -30,92 +30,92 @@ import java.util.Map;
 
 public class InMemoryNotebookRepo implements NotebookRepo {
 
-  private Map<String, Note> notes = new HashMap<>();
+    private Map<String, Note> notes = new HashMap<>();
 
-  @Override
-  public void init(ZeppelinConfiguration zConf) throws IOException {
+    @Override
+    public void init(ZeppelinConfiguration zConf) throws IOException {
 
-  }
-
-  @Override
-  public Map<String, NoteInfo> list(AuthenticationInfo subject) throws IOException {
-    Map<String, NoteInfo> notesInfo = new HashMap<>();
-    for (Note note : notes.values()) {
-      notesInfo.put(note.getId(), new NoteInfo(note));
     }
-    return notesInfo;
-  }
 
-  @Override
-  public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
-    if (!notePath.startsWith("/")) {
-      throw new RuntimeException(String.format("notePath '%s' is not started with '/'", notePath));
+    @Override
+    public Map<String, NoteInfo> list(AuthenticationInfo subject) throws IOException {
+        Map<String, NoteInfo> notesInfo = new HashMap<>();
+        for (Note note : notes.values()) {
+            notesInfo.put(note.getId(), new NoteInfo(note));
+        }
+        return notesInfo;
     }
-    return notes.get(noteId);
-  }
 
-  @Override
-  public void save(Note note, AuthenticationInfo subject) throws IOException {
-    notes.put(note.getId(), note);
-  }
-
-  @Override
-  public void move(String noteId, String notePath, String newNotePath, AuthenticationInfo subject) {
-    if (!newNotePath.startsWith("/")) {
-      throw new RuntimeException(String.format("newNotePath '%s' is not started with '/'", newNotePath));
+    @Override
+    public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+        if (!notePath.startsWith("/")) {
+            throw new RuntimeException(String.format("notePath '%s' is not started with '/'", notePath));
+        }
+        return notes.get(noteId);
     }
-    if (newNotePath.startsWith("//")) {
-      throw new RuntimeException(String.format("newNotePath '%s' is started with '//'", newNotePath));
+
+    @Override
+    public void save(Note note, AuthenticationInfo subject) throws IOException {
+        notes.put(note.getId(), note);
     }
-  }
 
-  @Override
-  public void move(String folderPath, String newFolderPath, AuthenticationInfo subject) {
-    if (!folderPath.startsWith("/")) {
-      throw new RuntimeException(String.format("folderPath '%s' is not started with '/'", folderPath));
+    @Override
+    public void move(String noteId, String notePath, String newNotePath, AuthenticationInfo subject) {
+        if (!newNotePath.startsWith("/")) {
+            throw new RuntimeException(String.format("newNotePath '%s' is not started with '/'", newNotePath));
+        }
+        if (newNotePath.startsWith("//")) {
+            throw new RuntimeException(String.format("newNotePath '%s' is started with '//'", newNotePath));
+        }
     }
-    if (folderPath.startsWith("//")) {
-      throw new RuntimeException(String.format("folderPath '%s' is started with '//'", folderPath));
+
+    @Override
+    public void move(String folderPath, String newFolderPath, AuthenticationInfo subject) {
+        if (!folderPath.startsWith("/")) {
+            throw new RuntimeException(String.format("folderPath '%s' is not started with '/'", folderPath));
+        }
+        if (folderPath.startsWith("//")) {
+            throw new RuntimeException(String.format("folderPath '%s' is started with '//'", folderPath));
+        }
+        if (!newFolderPath.startsWith("/")) {
+            throw new RuntimeException(String.format("newFolderPath '%s' is not started with '/'", newFolderPath));
+        }
+        if (newFolderPath.startsWith("//")) {
+            throw new RuntimeException(String.format("newFolderPath '%s' is started with '//'", newFolderPath));
+        }
     }
-    if (!newFolderPath.startsWith("/")) {
-      throw new RuntimeException(String.format("newFolderPath '%s' is not started with '/'", newFolderPath));
+
+    @Override
+    public void remove(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+        if (!notePath.startsWith("/")) {
+            throw new RuntimeException(String.format("notePath '%s' is not started with '/'", notePath));
+        }
+        notes.remove(noteId);
     }
-    if (newFolderPath.startsWith("//")) {
-      throw new RuntimeException(String.format("newFolderPath '%s' is started with '//'", newFolderPath));
+
+    @Override
+    public void remove(String folderPath, AuthenticationInfo subject) {
+        if (!folderPath.startsWith("/")) {
+            throw new RuntimeException(String.format("folderPath '%s' is not started with '/'", folderPath));
+        }
     }
-  }
 
-  @Override
-  public void remove(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
-    if (!notePath.startsWith("/")) {
-      throw new RuntimeException(String.format("notePath '%s' is not started with '/'", notePath));
+    @Override
+    public void close() {
+
     }
-    notes.remove(noteId);
-  }
 
-  @Override
-  public void remove(String folderPath, AuthenticationInfo subject) {
-    if (!folderPath.startsWith("/")) {
-      throw new RuntimeException(String.format("folderPath '%s' is not started with '/'", folderPath));
+    @Override
+    public List<NotebookRepoSettingsInfo> getSettings(AuthenticationInfo subject) {
+        return null;
     }
-  }
 
-  @Override
-  public void close() {
+    @Override
+    public void updateSettings(Map<String, String> settings, AuthenticationInfo subject) {
 
-  }
+    }
 
-  @Override
-  public List<NotebookRepoSettingsInfo> getSettings(AuthenticationInfo subject) {
-    return null;
-  }
-
-  @Override
-  public void updateSettings(Map<String, String> settings, AuthenticationInfo subject) {
-
-  }
-
-  public void reset() {
-    this.notes.clear();
-  }
+    public void reset() {
+        this.notes.clear();
+    }
 }

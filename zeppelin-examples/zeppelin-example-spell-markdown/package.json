@@ -1,6 +1,6 @@
 {
   "name": "markdown-spell",
-  "description" : "Parse markdown using https://github.com/evilstreak/markdown-js (example)",
+  "description": "Parse markdown using https://github.com/evilstreak/markdown-js (example)",
   "version": "1.0.0",
   "main": "index",
   "author": "",

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 {
-  "type" : "SPELL",
-  "name" : "echo-spell",
-  "description" : "Return just what receive (example)",
-  "artifact" : "./zeppelin-examples/zeppelin-example-spell-echo",
-  "license" : "Apache-2.0",
-  "icon" : "<i class='fa fa-repeat'></i>",
+  "type": "SPELL",
+  "name": "echo-spell",
+  "description": "Return just what receive (example)",
+  "artifact": "./zeppelin-examples/zeppelin-example-spell-echo",
+  "license": "Apache-2.0",
+  "icon": "<i class='fa fa-repeat'></i>",
   "config": {
     "repeat": {
       "type": "number",

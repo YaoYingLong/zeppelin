@@ -34,6 +34,13 @@ export class TicketService {
   logout$ = new BehaviorSubject<boolean>(false);
   version: string;
 
+  constructor(
+    private httpClient: HttpClient,
+    private baseUrlService: BaseUrlService,
+    private router: Router,
+    private nzMessageService: NzMessageService
+  ) {}
+
   setConfiguration(conf: ConfigurationsInfo) {
     this.configuration = conf.configurations;
   }
@@ -103,11 +110,4 @@ export class TicketService {
       .get<IZeppelinVersion>(`${this.baseUrlService.getRestApiBase()}/version`)
       .pipe(map(data => data.version));
   }
-
-  constructor(
-    private httpClient: HttpClient,
-    private baseUrlService: BaseUrlService,
-    private router: Router,
-    private nzMessageService: NzMessageService
-  ) {}
 }

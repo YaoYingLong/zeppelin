@@ -17,92 +17,89 @@
 
 package org.apache.zeppelin.kotlin.repl.building;
 
-import org.jetbrains.kotlin.scripting.compiler.plugin.impl.KJvmReplCompilerImpl;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
 import kotlin.Unit;
-import kotlin.script.experimental.api.KotlinType;
-import kotlin.script.experimental.api.ScriptCompilationConfiguration;
-import kotlin.script.experimental.api.ScriptCompilationKt;
-import kotlin.script.experimental.api.ScriptEvaluationConfiguration;
-import kotlin.script.experimental.api.ScriptEvaluationKt;
+import kotlin.script.experimental.api.*;
 import kotlin.script.experimental.jvm.BasicJvmScriptEvaluator;
 import kotlin.script.experimental.jvm.JvmScriptCompilationConfigurationBuilder;
 import kotlin.script.experimental.jvm.JvmScriptCompilationKt;
 import kotlin.script.experimental.jvmhost.impl.JvmHostUtilKt;
 import kotlin.script.experimental.jvmhost.repl.JvmReplCompiler;
 import kotlin.script.experimental.jvmhost.repl.JvmReplEvaluator;
+import org.jetbrains.kotlin.scripting.compiler.plugin.impl.KJvmReplCompilerImpl;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Util class for building REPL components.
  */
 public class ReplBuilding {
-  public static JvmReplCompiler buildCompiler(KotlinReplProperties properties) {
-    String receiverClassPath = properties.getReceiver().getClass()
-        .getProtectionDomain().getCodeSource().getLocation().getPath();
-    properties.classPath(receiverClassPath);
+    public static JvmReplCompiler buildCompiler(KotlinReplProperties properties) {
+        String receiverClassPath = properties.getReceiver().getClass()
+                .getProtectionDomain().getCodeSource().getLocation().getPath();
+        properties.classPath(receiverClassPath);
 
-    KJvmReplCompilerImpl compilerImpl =
-        new KJvmReplCompilerImpl(JvmHostUtilKt.withDefaults(properties.getHostConf()));
+        KJvmReplCompilerImpl compilerImpl =
+                new KJvmReplCompilerImpl(JvmHostUtilKt.withDefaults(properties.getHostConf()));
 
-    return new JvmReplCompiler(
-        buildCompilationConfiguration(properties),
-        properties.getHostConf(),
-        compilerImpl);
-  }
-
-  public static JvmReplEvaluator buildEvaluator(KotlinReplProperties properties) {
-    return new JvmReplEvaluator(
-        buildEvaluationConfiguration(properties),
-        new BasicJvmScriptEvaluator());
-  }
-
-  private static String buildClassPath(KotlinReplProperties p) {
-    StringJoiner joiner = new StringJoiner(File.pathSeparator);
-    for (String path : p.getClasspath()) {
-      if (path != null && !path.equals("")) {
-        joiner.add(path);
-      }
+        return new JvmReplCompiler(
+                buildCompilationConfiguration(properties),
+                properties.getHostConf(),
+                compilerImpl);
     }
-    return joiner.toString();
-  }
 
-  private static ScriptCompilationConfiguration buildCompilationConfiguration(
-      KotlinReplProperties p) {
-    return new ScriptCompilationConfiguration((b) -> {
-      b.invoke(ScriptCompilationKt.getHostConfiguration(b), p.getHostConf());
+    public static JvmReplEvaluator buildEvaluator(KotlinReplProperties properties) {
+        return new JvmReplEvaluator(
+                buildEvaluationConfiguration(properties),
+                new BasicJvmScriptEvaluator());
+    }
 
-      JvmScriptCompilationConfigurationBuilder jvmBuilder =
-          JvmScriptCompilationKt.getJvm(b);
-      JvmScriptCompilationKt.dependenciesFromCurrentContext(
-          jvmBuilder, new String[0], true, false);
+    private static String buildClassPath(KotlinReplProperties p) {
+        StringJoiner joiner = new StringJoiner(File.pathSeparator);
+        for (String path : p.getClasspath()) {
+            if (path != null && !path.equals("")) {
+                joiner.add(path);
+            }
+        }
+        return joiner.toString();
+    }
 
-      List<String> compilerOptions = Arrays.asList("-classpath", buildClassPath(p));
+    private static ScriptCompilationConfiguration buildCompilationConfiguration(
+            KotlinReplProperties p) {
+        return new ScriptCompilationConfiguration((b) -> {
+            b.invoke(ScriptCompilationKt.getHostConfiguration(b), p.getHostConf());
 
-      b.invoke(ScriptCompilationKt.getCompilerOptions(b), compilerOptions);
+            JvmScriptCompilationConfigurationBuilder jvmBuilder =
+                    JvmScriptCompilationKt.getJvm(b);
+            JvmScriptCompilationKt.dependenciesFromCurrentContext(
+                    jvmBuilder, new String[0], true, false);
 
-      KotlinType kt = new KotlinType(p.getReceiver().getClass().getCanonicalName());
-      List<KotlinType> receivers =
-          Collections.singletonList(kt);
-      b.invoke(ScriptCompilationKt.getImplicitReceivers(b), receivers);
+            List<String> compilerOptions = Arrays.asList("-classpath", buildClassPath(p));
 
-      return Unit.INSTANCE;
-    });
-  }
+            b.invoke(ScriptCompilationKt.getCompilerOptions(b), compilerOptions);
 
-  private static ScriptEvaluationConfiguration buildEvaluationConfiguration(
-      KotlinReplProperties p) {
-    return new ScriptEvaluationConfiguration((b) -> {
-      b.invoke(ScriptEvaluationKt.getHostConfiguration(b), p.getHostConf());
+            KotlinType kt = new KotlinType(p.getReceiver().getClass().getCanonicalName());
+            List<KotlinType> receivers =
+                    Collections.singletonList(kt);
+            b.invoke(ScriptCompilationKt.getImplicitReceivers(b), receivers);
 
-      List<Object> receivers =
-          Collections.singletonList(p.getReceiver());
-      b.invoke(ScriptEvaluationKt.getImplicitReceivers(b), receivers);
+            return Unit.INSTANCE;
+        });
+    }
 
-      return Unit.INSTANCE;
-    });
-  }
+    private static ScriptEvaluationConfiguration buildEvaluationConfiguration(
+            KotlinReplProperties p) {
+        return new ScriptEvaluationConfiguration((b) -> {
+            b.invoke(ScriptEvaluationKt.getHostConfiguration(b), p.getHostConf());
+
+            List<Object> receivers =
+                    Collections.singletonList(p.getReceiver());
+            b.invoke(ScriptEvaluationKt.getImplicitReceivers(b), receivers);
+
+            return Unit.INSTANCE;
+        });
+    }
 }

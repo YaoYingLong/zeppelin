@@ -27,18 +27,18 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer;
  */
 public class NullLifecycleManager extends LifecycleManager {
 
-  public NullLifecycleManager(ZeppelinConfiguration zConf,
-                              RemoteInterpreterServer remoteInterpreterServer) {
-    super(zConf, remoteInterpreterServer);
-  }
+    public NullLifecycleManager(ZeppelinConfiguration zConf,
+                                RemoteInterpreterServer remoteInterpreterServer) {
+        super(zConf, remoteInterpreterServer);
+    }
 
-  @Override
-  public void onInterpreterProcessStarted(String interpreterGroupId) {
+    @Override
+    public void onInterpreterProcessStarted(String interpreterGroupId) {
 
-  }
+    }
 
-  @Override
-  public void onInterpreterUse(String interpreterGroupId) {
+    @Override
+    public void onInterpreterUse(String interpreterGroupId) {
 
-  }
+    }
 }

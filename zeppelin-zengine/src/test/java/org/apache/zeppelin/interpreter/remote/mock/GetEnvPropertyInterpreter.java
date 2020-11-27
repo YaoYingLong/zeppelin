@@ -29,54 +29,54 @@ import java.util.Properties;
 
 public class GetEnvPropertyInterpreter extends Interpreter {
 
-  public GetEnvPropertyInterpreter(Properties property) {
-    super(property);
-  }
-
-  @Override
-  public void open() {
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    String[] cmd = st.split(" ");
-    if (cmd[0].equals("getEnv")) {
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
-    } else if (cmd[0].equals("getProperty")){
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
-    } else {
-      return new InterpreterResult(InterpreterResult.Code.ERROR, cmd[0]);
+    public GetEnvPropertyInterpreter(Properties property) {
+        super(property);
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) {
+    @Override
+    public void open() {
+    }
 
-  }
+    @Override
+    public void close() {
+    }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.NATIVE;
-  }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context) {
+        String[] cmd = st.split(" ");
+        if (cmd[0].equals("getEnv")) {
+            return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
+        } else if (cmd[0].equals("getProperty")) {
+            return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
+        } else {
+            return new InterpreterResult(InterpreterResult.Code.ERROR, cmd[0]);
+        }
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
-    return null;
-  }
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton().createOrGetFIFOScheduler("interpreter_" + this.hashCode());
-  }
+    @Override
+    public FormType getFormType() {
+        return FormType.NATIVE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
+
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return null;
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton().createOrGetFIFOScheduler("interpreter_" + this.hashCode());
+    }
 }
 

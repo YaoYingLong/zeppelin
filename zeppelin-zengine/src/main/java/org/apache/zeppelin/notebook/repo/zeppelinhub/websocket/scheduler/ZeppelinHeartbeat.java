@@ -22,23 +22,22 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Routine that sends PING to all connected Zeppelin ws connections.
- *
  */
 public class ZeppelinHeartbeat implements Runnable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinHeartbeat.class);
-  private ZeppelinClient client;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinHeartbeat.class);
+    private ZeppelinClient client;
 
-  public static ZeppelinHeartbeat newInstance(ZeppelinClient client) {
-    return new ZeppelinHeartbeat(client);
-  }
+    private ZeppelinHeartbeat(ZeppelinClient client) {
+        this.client = client;
+    }
 
-  private ZeppelinHeartbeat(ZeppelinClient client) {
-    this.client = client;
-  }
+    public static ZeppelinHeartbeat newInstance(ZeppelinClient client) {
+        return new ZeppelinHeartbeat(client);
+    }
 
-  @Override
-  public void run() {
-    LOGGER.debug("Sending PING to Zeppelin Websocket Server");
-    client.ping();
-  }
+    @Override
+    public void run() {
+        LOGGER.debug("Sending PING to Zeppelin Websocket Server");
+        client.ping();
+    }
 }

@@ -30,6 +30,8 @@ export class VisualizationPivotSettingComponent implements OnInit {
   columns = [];
   aggregates = ['sum', 'count', 'avg', 'min', 'max'];
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   // tslint:disable-next-line
   drop(event: CdkDragDrop<any[]>) {
     if (event.container.id === 'columns-list') {
@@ -80,8 +82,6 @@ export class VisualizationPivotSettingComponent implements OnInit {
     }));
     this.cdr.markForCheck();
   }
-
-  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.init();

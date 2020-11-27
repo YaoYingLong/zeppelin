@@ -23,22 +23,22 @@ import java.util.Properties;
 
 public class IPySubmarineInterpreter extends IPythonInterpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(IPySubmarineInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IPySubmarineInterpreter.class);
 
-  private PySubmarineInterpreter pySubmarineInterpreter;
+    private PySubmarineInterpreter pySubmarineInterpreter;
 
-  public IPySubmarineInterpreter(Properties properties) {
-    super(properties);
-  }
+    public IPySubmarineInterpreter(Properties properties) {
+        super(properties);
+    }
 
-  @Override
-  public void open() throws InterpreterException {
-    PySubmarineInterpreter pySparkInterpreter =
-        getInterpreterInTheSameSessionByClassName(PySubmarineInterpreter.class, false);
+    @Override
+    public void open() throws InterpreterException {
+        PySubmarineInterpreter pySparkInterpreter =
+                getInterpreterInTheSameSessionByClassName(PySubmarineInterpreter.class, false);
 
-    pySubmarineInterpreter
-        = getInterpreterInTheSameSessionByClassName(PySubmarineInterpreter.class);
+        pySubmarineInterpreter
+                = getInterpreterInTheSameSessionByClassName(PySubmarineInterpreter.class);
 
-    super.open();
-  }
+        super.open();
+    }
 }

@@ -40,10 +40,10 @@ export default class ColumnselectorTransformation extends Transformation {
         config: self.config,
         props: self.props,
         tableDataColumns: self.tableDataColumns,
-        save: function() {
+        save: function () {
           self.emitConfig(configObj);
         },
-        remove: function(selectorName) {
+        remove: function (selectorName) {
           configObj[selectorName] = null;
           self.emitConfig(configObj);
         },

@@ -26,42 +26,42 @@ import com.google.gson.JsonParser;
  */
 public class HitWrapper {
 
-  private final JsonParser parser = new JsonParser();
+    private final JsonParser parser = new JsonParser();
 
-  private final String index;
-  private final String type;
-  private final String id;
-  private final String source;
+    private final String index;
+    private final String type;
+    private final String id;
+    private final String source;
 
-  public HitWrapper(String index, String type, String id, String source) {
-    this.index = index;
-    this.type = type;
-    this.id = id;
-    this.source = source;
-  }
+    public HitWrapper(String index, String type, String id, String source) {
+        this.index = index;
+        this.type = type;
+        this.id = id;
+        this.source = source;
+    }
 
-  public HitWrapper(String source) {
-    this(null, null, null, source);
-  }
+    public HitWrapper(String source) {
+        this(null, null, null, source);
+    }
 
-  public String getSourceAsString() {
-    return source;
-  }
+    public String getSourceAsString() {
+        return source;
+    }
 
-  public JsonObject getSourceAsJsonObject() {
-    final JsonElement element = parser.parse(source);
-    return element.getAsJsonObject();
-  }
+    public JsonObject getSourceAsJsonObject() {
+        final JsonElement element = parser.parse(source);
+        return element.getAsJsonObject();
+    }
 
-  public String getIndex() {
-    return index;
-  }
+    public String getIndex() {
+        return index;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 }

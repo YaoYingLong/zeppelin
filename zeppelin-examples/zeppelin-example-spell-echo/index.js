@@ -15,11 +15,7 @@
  * limitations under the License.
  */
 
-import {
-    SpellBase,
-    SpellResult,
-    DefaultDisplayType,
-} from 'zeppelin-spell';
+import {SpellBase, SpellResult,} from 'zeppelin-spell';
 
 export default class EchoSpell extends SpellBase {
     constructor() {

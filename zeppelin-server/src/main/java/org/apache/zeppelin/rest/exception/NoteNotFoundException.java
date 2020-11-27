@@ -25,8 +25,8 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 public class NoteNotFoundException extends WebApplicationException {
 
-  public NoteNotFoundException(String noteId) {
-    super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such note: " + noteId));
-  }
+    public NoteNotFoundException(String noteId) {
+        super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such note: " + noteId));
+    }
 
 }

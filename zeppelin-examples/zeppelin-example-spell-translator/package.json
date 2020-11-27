@@ -1,6 +1,6 @@
 {
   "name": "translator-spell",
-  "description" : "Translate langauges using Google API (examaple)",
+  "description": "Translate langauges using Google API (examaple)",
   "version": "1.0.0",
   "main": "index",
   "author": "",

@@ -10,10 +10,9 @@
  * limitations under the License.
  */
 
-import { Injectable, Type } from '@angular/core';
-import { Visualization } from '@zeppelin/visualization';
-import { COMMON_DEPS } from './common-deps';
-import { ZeppelinHeliumModule } from './zeppelin-helium.module';
+import {Injectable, Type} from '@angular/core';
+import {COMMON_DEPS} from './common-deps';
+import {ZeppelinHeliumModule} from './zeppelin-helium.module';
 
 // tslint:disable-next-line:no-any
 const SystemJs = (window as any).System;
@@ -68,7 +67,8 @@ export class ZeppelinHeliumService {
 
   depsDefined = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   defineDeps() {
     if (this.depsDefined) {
@@ -76,7 +76,7 @@ export class ZeppelinHeliumService {
     }
     Object.keys(COMMON_DEPS).forEach(externalKey =>
       // tslint:disable-next-line:no-any
-      (window as any).define(externalKey, [], () => COMMON_DEPS[ externalKey ])
+      (window as any).define(externalKey, [], () => COMMON_DEPS[externalKey])
     );
     this.depsDefined = true;
   }

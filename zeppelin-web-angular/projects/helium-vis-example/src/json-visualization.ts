@@ -10,10 +10,10 @@
  * limitations under the License.
  */
 
-import { CdkPortalOutlet } from '@angular/cdk/portal';
-import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+import {CdkPortalOutlet} from '@angular/cdk/portal';
+import {ComponentFactoryResolver, ViewContainerRef} from '@angular/core';
 
-import { GraphConfig } from '@zeppelin/sdk';
+import {GraphConfig} from '@zeppelin/sdk';
 import {
   TableTransformation,
   Transformation,
@@ -21,7 +21,7 @@ import {
   VisualizationComponentPortal
 } from '@zeppelin/visualization';
 
-import { JsonVisComponent } from './json-vis.component';
+import {JsonVisComponent} from './json-vis.component';
 
 export class JsonVisualization extends Visualization<JsonVisComponent> {
   tableTransformation = new TableTransformation(this.getConfig());
@@ -32,6 +32,7 @@ export class JsonVisualization extends Visualization<JsonVisComponent> {
     this.viewContainerRef,
     this.componentFactoryResolver
   );
+
   constructor(config: GraphConfig,
               private portalOutlet: CdkPortalOutlet,
               private viewContainerRef: ViewContainerRef,
@@ -52,7 +53,8 @@ export class JsonVisualization extends Visualization<JsonVisComponent> {
     return this.tableTransformation;
   }
 
-  refresh(): void {}
+  refresh(): void {
+  }
 
   render(data): void {
     this.transformed = data;

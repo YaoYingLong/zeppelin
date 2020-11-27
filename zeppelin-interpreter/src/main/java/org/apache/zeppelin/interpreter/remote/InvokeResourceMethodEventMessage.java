@@ -24,83 +24,83 @@ import org.apache.zeppelin.resource.ResourceId;
  * message payload to invoke method of resource in the resourcepool
  */
 public class InvokeResourceMethodEventMessage implements JsonSerializable {
-  private static final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-  public final ResourceId resourceId;
-  public final String methodName;
-  public final String[] paramClassnames;
-  public final Object[] params;
-  public final String returnResourceName;
+    public final ResourceId resourceId;
+    public final String methodName;
+    public final String[] paramClassnames;
+    public final Object[] params;
+    public final String returnResourceName;
 
-  public InvokeResourceMethodEventMessage(
-      ResourceId resourceId,
-      String methodName,
-      Class[] paramtypes,
-      Object[] params,
-      String returnResourceName
-  ) {
-    this.resourceId = resourceId;
-    this.methodName = methodName;
-    if (paramtypes != null) {
-      paramClassnames = new String[paramtypes.length];
-      for (int i = 0; i < paramClassnames.length; i++) {
-        paramClassnames[i] = paramtypes[i].getName();
-      }
-    } else {
-      paramClassnames = null;
+    public InvokeResourceMethodEventMessage(
+            ResourceId resourceId,
+            String methodName,
+            Class[] paramtypes,
+            Object[] params,
+            String returnResourceName
+    ) {
+        this.resourceId = resourceId;
+        this.methodName = methodName;
+        if (paramtypes != null) {
+            paramClassnames = new String[paramtypes.length];
+            for (int i = 0; i < paramClassnames.length; i++) {
+                paramClassnames[i] = paramtypes[i].getName();
+            }
+        } else {
+            paramClassnames = null;
+        }
+
+        this.params = params;
+        this.returnResourceName = returnResourceName;
     }
 
-    this.params = params;
-    this.returnResourceName = returnResourceName;
-  }
-
-  public Class [] getParamTypes() throws ClassNotFoundException {
-    if (paramClassnames == null) {
-      return null;
+    public static InvokeResourceMethodEventMessage fromJson(String json) {
+        return gson.fromJson(json, InvokeResourceMethodEventMessage.class);
     }
 
-    Class [] types = new Class[paramClassnames.length];
-    for (int i = 0; i < paramClassnames.length; i++) {
-      types[i] = this.getClass().getClassLoader().loadClass(paramClassnames[i]);
+    public Class[] getParamTypes() throws ClassNotFoundException {
+        if (paramClassnames == null) {
+            return null;
+        }
+
+        Class[] types = new Class[paramClassnames.length];
+        for (int i = 0; i < paramClassnames.length; i++) {
+            types[i] = this.getClass().getClassLoader().loadClass(paramClassnames[i]);
+        }
+
+        return types;
     }
 
-    return types;
-  }
-
-  public boolean shouldPutResultIntoResourcePool() {
-    return (returnResourceName != null);
-  }
-
-  @Override
-  public int hashCode() {
-    String hash = resourceId.hashCode() + methodName;
-    if (paramClassnames != null) {
-      for (String name : paramClassnames) {
-        hash += name;
-      }
-    }
-    if (returnResourceName != null) {
-      hash += returnResourceName;
+    public boolean shouldPutResultIntoResourcePool() {
+        return (returnResourceName != null);
     }
 
-    return hash.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        String hash = resourceId.hashCode() + methodName;
+        if (paramClassnames != null) {
+            for (String name : paramClassnames) {
+                hash += name;
+            }
+        }
+        if (returnResourceName != null) {
+            hash += returnResourceName;
+        }
 
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof InvokeResourceMethodEventMessage) {
-      InvokeResourceMethodEventMessage r = (InvokeResourceMethodEventMessage) o;
-      return r.hashCode() == hashCode();
-    } else {
-      return false;
+        return hash.hashCode();
     }
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof InvokeResourceMethodEventMessage) {
+            InvokeResourceMethodEventMessage r = (InvokeResourceMethodEventMessage) o;
+            return r.hashCode() == hashCode();
+        } else {
+            return false;
+        }
+    }
 
-  public static InvokeResourceMethodEventMessage fromJson(String json) {
-    return gson.fromJson(json, InvokeResourceMethodEventMessage.class);
-  }
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

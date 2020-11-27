@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 {
-  "type" : "VISUALIZATION",
-  "name" : "zeppelin_horizontalbar",
-  "description" : "Horizontal Bar chart (example)",
-  "artifact" : "./zeppelin-examples/zeppelin-example-horizontalbar",
-  "license" : "Apache-2.0",
-  "icon" : "<i class='fa fa-bar-chart rotate90flipX'></i>"
+  "type": "VISUALIZATION",
+  "name": "zeppelin_horizontalbar",
+  "description": "Horizontal Bar chart (example)",
+  "artifact": "./zeppelin-examples/zeppelin-example-horizontalbar",
+  "license": "Apache-2.0",
+  "icon": "<i class='fa fa-bar-chart rotate90flipX'></i>"
 }

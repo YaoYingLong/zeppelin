@@ -19,15 +19,15 @@ function ResizableDirective() {
     autoHide: true,
     handles: 'se',
     helper: 'resizable-helper',
-    stop: function() {
+    stop: function () {
       angular.element(this).css({'width': '100%', 'height': '100%'});
     },
   };
 
-  let addEvent = function(config) {
-    let removeEventByID = function(id) {
+  let addEvent = function (config) {
+    let removeEventByID = function (id) {
       let events = jQuery._data(config.element, 'events')[config.eventType];
-      for (let i=0; i < events.length; i++) {
+      for (let i = 0; i < events.length; i++) {
         if (events[i].data && events[i].data.eventID === id) {
           events.splice(i, 1);
           i--;
@@ -47,8 +47,8 @@ function ResizableDirective() {
       callback: '&onResize',
     },
     link: function postLink(scope, elem, attrs) {
-      attrs.$observe('resize', function(resize) {
-        let resetResize = function(elem, resize) {
+      attrs.$observe('resize', function (resize) {
+        let resetResize = function (elem, resize) {
           let colStep = window.innerWidth / 12;
           elem.off('resizestop');
           let conf = angular.copy(resizableConfig);
@@ -62,7 +62,7 @@ function ResizableDirective() {
           conf.maxWidth = window.innerWidth;
 
           elem.resizable(conf);
-          elem.on('resizestop', function() {
+          elem.on('resizestop', function () {
             if (scope.callback) {
               let height = elem.height();
               if (height < 50) {

@@ -35,6 +35,16 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
   importLoading = false;
   maxLimit = get(this.ticketService.configuration, ['zeppelin.websocket.max.text.message.size'], null);
 
+  constructor(
+    private ticketService: TicketService,
+    public messageService: MessageService,
+    private cdr: ChangeDetectorRef,
+    private nzModalRef: NzModalRef,
+    private httpClient: HttpClient
+  ) {
+    super(messageService);
+  }
+
   @MessageListener(OP.NOTES_INFO)
   getNotes() {
     this.nzModalRef.destroy();
@@ -95,16 +105,6 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
       this.errorText = 'Invalid JSON';
     }
     this.cdr.markForCheck();
-  }
-
-  constructor(
-    private ticketService: TicketService,
-    public messageService: MessageService,
-    private cdr: ChangeDetectorRef,
-    private nzModalRef: NzModalRef,
-    private httpClient: HttpClient
-  ) {
-    super(messageService);
   }
 
   ngOnInit() {}

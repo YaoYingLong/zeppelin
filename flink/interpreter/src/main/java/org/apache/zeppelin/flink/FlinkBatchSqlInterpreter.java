@@ -28,59 +28,59 @@ import java.util.Properties;
 
 public class FlinkBatchSqlInterpreter extends FlinkSqlInterrpeter {
 
-  private FlinkZeppelinContext z;
+    private FlinkZeppelinContext z;
 
-  public FlinkBatchSqlInterpreter(Properties properties) {
-    super(properties);
-  }
+    public FlinkBatchSqlInterpreter(Properties properties) {
+        super(properties);
+    }
 
-  @Override
-  protected boolean isBatch() {
-    return true;
-  }
+    @Override
+    protected boolean isBatch() {
+        return true;
+    }
 
-  @Override
-  public void open() throws InterpreterException {
-    this.flinkInterpreter =
-            getInterpreterInTheSameSessionByClassName(FlinkInterpreter.class);
-    this.tbenv = flinkInterpreter.getJavaBatchTableEnvironment("blink");
-    this.z = flinkInterpreter.getZeppelinContext();
-    super.open();
-  }
+    @Override
+    public void open() throws InterpreterException {
+        this.flinkInterpreter =
+                getInterpreterInTheSameSessionByClassName(FlinkInterpreter.class);
+        this.tbenv = flinkInterpreter.getJavaBatchTableEnvironment("blink");
+        this.z = flinkInterpreter.getZeppelinContext();
+        super.open();
+    }
 
-  @Override
-  public void close() throws InterpreterException {
+    @Override
+    public void close() throws InterpreterException {
 
-  }
+    }
 
-  @Override
-  public void callInnerSelect(String sql, InterpreterContext context) throws IOException {
-    Table table = this.tbenv.sqlQuery(sql);
-    z.setCurrentSql(sql);
-    String result = z.showData(table);
-    context.out.write(result);
-  }
+    @Override
+    public void callInnerSelect(String sql, InterpreterContext context) throws IOException {
+        Table table = this.tbenv.sqlQuery(sql);
+        z.setCurrentSql(sql);
+        String result = z.showData(table);
+        context.out.write(result);
+    }
 
-  @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
-    flinkInterpreter.cancel(context);
-  }
+    @Override
+    public void cancel(InterpreterContext context) throws InterpreterException {
+        flinkInterpreter.cancel(context);
+    }
 
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return FormType.SIMPLE;
-  }
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return FormType.SIMPLE;
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return flinkInterpreter.getProgress(context);
-  }
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return flinkInterpreter.getProgress(context);
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    int maxConcurrency = Integer.parseInt(properties.getProperty(
-            "zeppelin.flink.concurrentBatchSql.max", "10"));
-    return SchedulerFactory.singleton().createOrGetParallelScheduler(
-            FlinkBatchSqlInterpreter.class.getName(), maxConcurrency);
-  }
+    @Override
+    public Scheduler getScheduler() {
+        int maxConcurrency = Integer.parseInt(properties.getProperty(
+                "zeppelin.flink.concurrentBatchSql.max", "10"));
+        return SchedulerFactory.singleton().createOrGetParallelScheduler(
+                FlinkBatchSqlInterpreter.class.getName(), maxConcurrency);
+    }
 }

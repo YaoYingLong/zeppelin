@@ -24,48 +24,47 @@ import java.util.List;
 /**
  * Represent the single row interpreter result, usually this is for the sql result.
  * Where you would like to build dashboard for the sql output via just single row. e.g. KPI
- *
  */
 public class SingleRowInterpreterResult {
 
-  private String template;
-  private List values;
-  private InterpreterContext context;
+    private String template;
+    private List values;
+    private InterpreterContext context;
 
-  public SingleRowInterpreterResult(List values, String template, InterpreterContext context) {
-    this.values = values;
-    this.template = template;
-    this.context = context;
-  }
-
-  public String toHtml() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("%html ");
-    String outputText = template;
-    for (int i = 0; i < values.size(); ++i) {
-      outputText = outputText.replace("{" + i + "}", values.get(i).toString());
+    public SingleRowInterpreterResult(List values, String template, InterpreterContext context) {
+        this.values = values;
+        this.template = template;
+        this.context = context;
     }
-    builder.append(outputText);
-    return builder.toString();
-  }
 
-  public String toAngular() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("%angular ");
-    String outputText = template;
-    for (int i = 0; i < values.size(); ++i) {
-      outputText = outputText.replace("{" + i + "}", "{{value_" + i + "}}");
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("%html ");
+        String outputText = template;
+        for (int i = 0; i < values.size(); ++i) {
+            outputText = outputText.replace("{" + i + "}", values.get(i).toString());
+        }
+        builder.append(outputText);
+        return builder.toString();
     }
-    builder.append(outputText);
-    return builder.toString();
-  }
 
-  public void pushAngularObjects() {
-    for (int i = 0; i < values.size(); ++i) {
-      context.getAngularObjectRegistry().add("value_" + i,
-              TableDataUtils.normalizeColumn(values.get(i)),
-              context.getNoteId(),
-              context.getParagraphId());
+    public String toAngular() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("%angular ");
+        String outputText = template;
+        for (int i = 0; i < values.size(); ++i) {
+            outputText = outputText.replace("{" + i + "}", "{{value_" + i + "}}");
+        }
+        builder.append(outputText);
+        return builder.toString();
     }
-  }
+
+    public void pushAngularObjects() {
+        for (int i = 0; i < values.size(); ++i) {
+            context.getAngularObjectRegistry().add("value_" + i,
+                    TableDataUtils.normalizeColumn(values.get(i)),
+                    context.getNoteId(),
+                    context.getParagraphId());
+        }
+    }
 }

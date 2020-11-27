@@ -23,21 +23,21 @@ import static org.junit.Assert.assertEquals;
 
 public class JobManagerTest {
 
-  @Test
-  public void testRichDuration() {
-    String richDuration = JobManager.toRichTimeDuration(18);
-    assertEquals("18 seconds", richDuration);
+    @Test
+    public void testRichDuration() {
+        String richDuration = JobManager.toRichTimeDuration(18);
+        assertEquals("18 seconds", richDuration);
 
-    richDuration = JobManager.toRichTimeDuration(120);
-    assertEquals("2 minutes 0 seconds", richDuration);
+        richDuration = JobManager.toRichTimeDuration(120);
+        assertEquals("2 minutes 0 seconds", richDuration);
 
-    richDuration = JobManager.toRichTimeDuration(60 * 60 + 1);
-    assertEquals("1 hours 0 minutes 1 seconds", richDuration);
+        richDuration = JobManager.toRichTimeDuration(60 * 60 + 1);
+        assertEquals("1 hours 0 minutes 1 seconds", richDuration);
 
-    richDuration = JobManager.toRichTimeDuration(60 * 60 + 60 + 1);
-    assertEquals("1 hours 1 minutes 1 seconds", richDuration);
+        richDuration = JobManager.toRichTimeDuration(60 * 60 + 60 + 1);
+        assertEquals("1 hours 1 minutes 1 seconds", richDuration);
 
-    richDuration = JobManager.toRichTimeDuration(24 * 60 * 60 + 60 + 1);
-    assertEquals("1 days 0 hours 1 minutes 1 seconds", richDuration);
-  }
+        richDuration = JobManager.toRichTimeDuration(24 * 60 * 60 + 60 + 1);
+        assertEquals("1 days 0 hours 1 minutes 1 seconds", richDuration);
+    }
 }

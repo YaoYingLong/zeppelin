@@ -59,7 +59,7 @@
 }
 
 .revisions-comparator-panel.ng-enter,
-.revisions-comparator-panel.ng-enter.ng-enter-active ,
+.revisions-comparator-panel.ng-enter.ng-enter-active,
 .revisions-comparator-panel.ng-leave,
 .revisions-comparator-panel.ng-leave-active {
   transition-duration: 0s !important;
@@ -128,7 +128,7 @@
   width: 20%;
 }
 
-.commit-tree th{
+.commit-tree th {
   font-weight: normal;
   font-size: 1.2em;
   background-color: #317bb4;
@@ -136,7 +136,7 @@
   text-align: center;
 }
 
-.commit-tree .commit-rows td{
+.commit-tree .commit-rows td {
   padding-left: 15px;
 }
 

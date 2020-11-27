@@ -16,39 +16,37 @@
  */
 package org.apache.zeppelin.notebook.repo.zeppelinhub.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Simple and yet dummy container for zeppelinhub session.
- * 
  */
 public class UserSessionContainer {
-  private static class Entity {
-    public final String userSession;
-    
-    Entity(String userSession) {
-      this.userSession = userSession;
+    public static final UserSessionContainer instance = new UserSessionContainer();
+    private Map<String, Entity> sessions = new ConcurrentHashMap<>();
+
+    public synchronized String getSession(String principal) {
+        Entity entry = sessions.get(principal);
+        if (entry == null) {
+            return StringUtils.EMPTY;
+        }
+        return entry.userSession;
     }
-  }
 
-  private Map<String, Entity> sessions = new ConcurrentHashMap<>();
-
-  public static final UserSessionContainer instance = new UserSessionContainer();
-
-  public synchronized String getSession(String principal) {
-    Entity entry = sessions.get(principal);
-    if (entry == null) {
-      return StringUtils.EMPTY;
+    public synchronized String setSession(String principal, String userSession) {
+        Entity entry = new Entity(userSession);
+        sessions.put(principal, entry);
+        return entry.userSession;
     }
-    return entry.userSession;
-  }
-  
-  public synchronized String setSession(String principal, String userSession) {
-    Entity entry = new Entity(userSession);
-    sessions.put(principal, entry);
-    return entry.userSession;
-  }
+
+    private static class Entity {
+        public final String userSession;
+
+        Entity(String userSession) {
+            this.userSession = userSession;
+        }
+    }
 }

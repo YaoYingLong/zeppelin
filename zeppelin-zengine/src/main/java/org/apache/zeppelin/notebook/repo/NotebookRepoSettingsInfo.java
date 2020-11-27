@@ -22,23 +22,21 @@ import java.util.Map;
 /**
  * Notebook repo settings. This represent a structure of a notebook repo settings that will mostly
  * used in the frontend.
- *
  */
 public class NotebookRepoSettingsInfo {
 
-  /**
-   * Type of value, It can be text or list.
-   */
-  public enum Type {
-    INPUT, DROPDOWN
-  }
+    public Type type;
+    public List<Map<String, String>> value;
+    public String selected;
+    public String name;
 
-  public static NotebookRepoSettingsInfo newInstance() {
-    return new NotebookRepoSettingsInfo();
-  }
-
-  public Type type;
-  public List<Map<String, String>> value;
-  public String selected;
-  public String name;
+    public static NotebookRepoSettingsInfo newInstance() {
+        return new NotebookRepoSettingsInfo();
+    }
+    /**
+     * Type of value, It can be text or list.
+     */
+    public enum Type {
+        INPUT, DROPDOWN
+    }
 }

@@ -16,19 +16,6 @@
  */
 package org.apache.zeppelin.ignite;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
@@ -37,10 +24,17 @@ import org.apache.zeppelin.interpreter.InterpreterResult.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Apache Ignite SQL interpreter (http://ignite.apache.org/).
- *
+ * <p>
  * Use {@code ignite.jdbc.url} property to set up JDBC connection URL.
  * URL has the following pattern:
  * {@code jdbc:ignite://<hostname>:<port>/<cache_name>}
@@ -53,130 +47,128 @@ import org.apache.zeppelin.scheduler.SchedulerFactory;
  * </ul>
  */
 public class IgniteSqlInterpreter extends Interpreter {
-  private static final String IGNITE_JDBC_DRIVER_NAME = "org.apache.ignite.IgniteJdbcDriver";
+    static final String IGNITE_JDBC_URL = "ignite.jdbc.url";
+    private static final String IGNITE_JDBC_DRIVER_NAME = "org.apache.ignite.IgniteJdbcDriver";
+    private Logger logger = LoggerFactory.getLogger(IgniteSqlInterpreter.class);
 
-  static final String IGNITE_JDBC_URL = "ignite.jdbc.url";
+    private Connection conn;
+    private Throwable connEx;
+    private Statement curStmt;
 
-  private Logger logger = LoggerFactory.getLogger(IgniteSqlInterpreter.class);
-
-  private Connection conn;
-  private Throwable connEx;
-  private Statement curStmt;
-
-  public IgniteSqlInterpreter(Properties property) {
-    super(property);
-  }
-
-  @Override
-  public void open() {
-    try {
-      Class.forName(IGNITE_JDBC_DRIVER_NAME);
-    } catch (ClassNotFoundException e) {
-      logger.error("Can't find Ignite JDBC driver", e);
-      connEx = e;
-      return;
+    public IgniteSqlInterpreter(Properties property) {
+        super(property);
     }
 
-    try {
-      logger.info("connect to " + getProperty(IGNITE_JDBC_URL));
-      conn = DriverManager.getConnection(getProperty(IGNITE_JDBC_URL));
-      connEx = null;
-      logger.info("Successfully created JDBC connection");
-    } catch (Exception e) {
-      logger.error("Can't open connection: ", e);
-      connEx = e;
-    }
-  }
-
-  @Override
-  public void close() throws InterpreterException {
-    try {
-      if (conn != null) {
-        conn.close();
-      }
-    } catch (SQLException e) {
-      throw new InterpreterException(e);
-    } finally {
-      conn = null;
-      connEx = null;
-    }
-  }
-
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    if (connEx != null) {
-      return new InterpreterResult(Code.ERROR, connEx.getMessage());
-    }
-
-    StringBuilder msg = new StringBuilder("%table ");
-    try (Statement stmt = conn.createStatement()) {
-      curStmt = stmt;
-      try (ResultSet res = stmt.executeQuery(st)) {
-        ResultSetMetaData md = res.getMetaData();
-
-        for (int i = 1; i <= md.getColumnCount(); i++) {
-          if (i > 1) {
-            msg.append('\t');
-          }
-          msg.append(md.getColumnName(i));
+    @Override
+    public void open() {
+        try {
+            Class.forName(IGNITE_JDBC_DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            logger.error("Can't find Ignite JDBC driver", e);
+            connEx = e;
+            return;
         }
-        msg.append('\n');
 
-        while (res.next()) {
-          for (int i = 1; i <= md.getColumnCount(); i++) {
-            msg.append(res.getString(i));
+        try {
+            logger.info("connect to " + getProperty(IGNITE_JDBC_URL));
+            conn = DriverManager.getConnection(getProperty(IGNITE_JDBC_URL));
+            connEx = null;
+            logger.info("Successfully created JDBC connection");
+        } catch (Exception e) {
+            logger.error("Can't open connection: ", e);
+            connEx = e;
+        }
+    }
 
-            if (i != md.getColumnCount()) {
-              msg.append('\t');
+    @Override
+    public void close() throws InterpreterException {
+        try {
+            if (conn != null) {
+                conn.close();
             }
-          }
-
-          msg.append('\n');
+        } catch (SQLException e) {
+            throw new InterpreterException(e);
+        } finally {
+            conn = null;
+            connEx = null;
         }
-      }
-    } catch (Exception e) {
-      logger.error("Exception in IgniteSqlInterpreter while InterpreterResult interpret: ", e);
-      return IgniteInterpreterUtils.buildErrorResult(e);
-    } finally {
-      curStmt = null;
     }
 
-    return new InterpreterResult(Code.SUCCESS, msg.toString());
-  }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context) {
+        if (connEx != null) {
+            return new InterpreterResult(Code.ERROR, connEx.getMessage());
+        }
 
-  @Override
-  public void cancel(InterpreterContext context) {
-    if (curStmt != null) {
-      try {
-        curStmt.cancel();
-      } catch (SQLException e) {
-        // No-op.
-        logger.info("No-op while cancel in IgniteSqlInterpreter", e);
-      } finally {
-        curStmt = null;
-      }
+        StringBuilder msg = new StringBuilder("%table ");
+        try (Statement stmt = conn.createStatement()) {
+            curStmt = stmt;
+            try (ResultSet res = stmt.executeQuery(st)) {
+                ResultSetMetaData md = res.getMetaData();
+
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    if (i > 1) {
+                        msg.append('\t');
+                    }
+                    msg.append(md.getColumnName(i));
+                }
+                msg.append('\n');
+
+                while (res.next()) {
+                    for (int i = 1; i <= md.getColumnCount(); i++) {
+                        msg.append(res.getString(i));
+
+                        if (i != md.getColumnCount()) {
+                            msg.append('\t');
+                        }
+                    }
+
+                    msg.append('\n');
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception in IgniteSqlInterpreter while InterpreterResult interpret: ", e);
+            return IgniteInterpreterUtils.buildErrorResult(e);
+        } finally {
+            curStmt = null;
+        }
+
+        return new InterpreterResult(Code.SUCCESS, msg.toString());
     }
-  }
 
-  @Override
-  public FormType getFormType() {
-    return FormType.SIMPLE;
-  }
+    @Override
+    public void cancel(InterpreterContext context) {
+        if (curStmt != null) {
+            try {
+                curStmt.cancel();
+            } catch (SQLException e) {
+                // No-op.
+                logger.info("No-op while cancel in IgniteSqlInterpreter", e);
+            } finally {
+                curStmt = null;
+            }
+        }
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) {
-    return 0;
-  }
+    @Override
+    public FormType getFormType() {
+        return FormType.SIMPLE;
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    return SchedulerFactory.singleton().createOrGetFIFOScheduler(
-            IgniteSqlInterpreter.class.getName() + this.hashCode());
-  }
+    @Override
+    public int getProgress(InterpreterContext context) {
+        return 0;
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
-    return new LinkedList<>();
-  }
+    @Override
+    public Scheduler getScheduler() {
+        return SchedulerFactory.singleton().createOrGetFIFOScheduler(
+                IgniteSqlInterpreter.class.getName() + this.hashCode());
+    }
+
+    @Override
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        return new LinkedList<>();
+    }
 }

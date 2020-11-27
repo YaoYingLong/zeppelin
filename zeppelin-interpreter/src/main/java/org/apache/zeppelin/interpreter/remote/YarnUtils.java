@@ -35,44 +35,44 @@ import org.slf4j.LoggerFactory;
  */
 public class YarnUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YarnUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YarnUtils.class);
 
-  private static AMRMClient<ContainerRequest> amClient = AMRMClient.createAMRMClient();
-  private static Configuration conf = new YarnConfiguration();
+    private static AMRMClient<ContainerRequest> amClient = AMRMClient.createAMRMClient();
+    private static Configuration conf = new YarnConfiguration();
 
-  static {
-    amClient.init(conf);
-    amClient.start();
-  }
-
-  public static void register(String host, int port) throws Exception {
-    LOGGER.info("Registering yarn app at {}:{}", host, port);
-    try {
-      amClient.registerApplicationMaster(host, port, null);
-    } catch (YarnException e) {
-      throw new Exception("Fail to register yarn app", e);
+    static {
+        amClient.init(conf);
+        amClient.start();
     }
-  }
 
-  public static void heartbeat() {
-    LOGGER.info("Heartbeating to RM");
-    try {
-      amClient.allocate(1.0f);
-    } catch (Exception e) {
-      LOGGER.warn(e.getMessage(), e);
+    public static void register(String host, int port) throws Exception {
+        LOGGER.info("Registering yarn app at {}:{}", host, port);
+        try {
+            amClient.registerApplicationMaster(host, port, null);
+        } catch (YarnException e) {
+            throw new Exception("Fail to register yarn app", e);
+        }
     }
-  }
 
-  public static void unregister(boolean succcess, String diagnostic) throws Exception {
-    LOGGER.info("Unregistering yarn app");
-    try {
-      if (succcess) {
-        amClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", null);
-      } else {
-        amClient.unregisterApplicationMaster(FinalApplicationStatus.FAILED, diagnostic, null);
-      }
-    } catch (YarnException e) {
-        throw new Exception("Fail to unregister yarn app", e);
+    public static void heartbeat() {
+        LOGGER.info("Heartbeating to RM");
+        try {
+            amClient.allocate(1.0f);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
     }
-  }
+
+    public static void unregister(boolean succcess, String diagnostic) throws Exception {
+        LOGGER.info("Unregistering yarn app");
+        try {
+            if (succcess) {
+                amClient.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "", null);
+            } else {
+                amClient.unregisterApplicationMaster(FinalApplicationStatus.FAILED, diagnostic, null);
+            }
+        } catch (YarnException e) {
+            throw new Exception("Fail to unregister yarn app", e);
+        }
+    }
 }

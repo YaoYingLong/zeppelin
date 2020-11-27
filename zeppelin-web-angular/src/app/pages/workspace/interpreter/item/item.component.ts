@@ -52,6 +52,17 @@ export class InterpreterItemComponent extends DestroyHookComponent implements On
 
   interpreterRunningOption = 'Globally';
 
+  constructor(
+    public parent: InterpreterComponent,
+    public ticketService: TicketService,
+    private securityService: SecurityService,
+    private interpreterService: InterpreterService,
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
+    super();
+  }
+
   switchToEditMode(): void {
     this.setupEditableForm();
     this.formGroup.enable();
@@ -371,17 +382,6 @@ export class InterpreterItemComponent extends DestroyHookComponent implements On
           this.cdr.markForCheck();
         });
     }
-  }
-
-  constructor(
-    public parent: InterpreterComponent,
-    public ticketService: TicketService,
-    private securityService: SecurityService,
-    private interpreterService: InterpreterService,
-    private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {
-    super();
   }
 
   ngOnInit() {

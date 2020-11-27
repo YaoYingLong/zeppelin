@@ -37,159 +37,159 @@ import java.util.Properties;
  */
 public class FlinkInterpreter extends Interpreter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FlinkInterpreter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlinkInterpreter.class);
 
-  private FlinkScalaInterpreter innerIntp;
-  private FlinkZeppelinContext z;
+    private FlinkScalaInterpreter innerIntp;
+    private FlinkZeppelinContext z;
 
-  public FlinkInterpreter(Properties properties) {
-    super(properties);
-  }
-
-  private void checkScalaVersion() throws InterpreterException {
-    String scalaVersionString = scala.util.Properties.versionString();
-    LOGGER.info("Using Scala: " + scalaVersionString);
-    if (scalaVersionString.contains("version 2.11")) {
-      return;
-    } else {
-      throw new InterpreterException("Unsupported scala version: " + scalaVersionString +
-              ", Only scala 2.11 is supported");
+    public FlinkInterpreter(Properties properties) {
+        super(properties);
     }
-  }
 
-  @Override
-  public void open() throws InterpreterException {
-    checkScalaVersion();
-    
-    this.innerIntp = new FlinkScalaInterpreter(getProperties());
-    this.innerIntp.open();
-    this.z = this.innerIntp.getZeppelinContext();
-  }
-
-  @Override
-  public void close() throws InterpreterException {
-    if (this.innerIntp != null) {
-      this.innerIntp.close();
+    private void checkScalaVersion() throws InterpreterException {
+        String scalaVersionString = scala.util.Properties.versionString();
+        LOGGER.info("Using Scala: " + scalaVersionString);
+        if (scalaVersionString.contains("version 2.11")) {
+            return;
+        } else {
+            throw new InterpreterException("Unsupported scala version: " + scalaVersionString +
+                    ", Only scala 2.11 is supported");
+        }
     }
-  }
 
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
-      throws InterpreterException {
-    LOGGER.debug("Interpret code: " + st);
-    this.z.setInterpreterContext(context);
-    this.z.setGui(context.getGui());
-    this.z.setNoteGui(context.getNoteGui());
+    @Override
+    public void open() throws InterpreterException {
+        checkScalaVersion();
 
-    // set ClassLoader of current Thread to be the ClassLoader of Flink scala-shell,
-    // otherwise codegen will fail to find classes defined in scala-shell
-    ClassLoader originClassLoader = Thread.currentThread().getContextClassLoader();
-    try {
-      Thread.currentThread().setContextClassLoader(getFlinkScalaShellLoader());
-      createPlannerAgain();
-      setParallelismIfNecessary(context);
-      setSavepointIfNecessary(context);
-      return innerIntp.interpret(st, context);
-    } finally {
-      Thread.currentThread().setContextClassLoader(originClassLoader);
+        this.innerIntp = new FlinkScalaInterpreter(getProperties());
+        this.innerIntp.open();
+        this.z = this.innerIntp.getZeppelinContext();
     }
-  }
 
-  @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
-    this.innerIntp.cancel(context);
-  }
+    @Override
+    public void close() throws InterpreterException {
+        if (this.innerIntp != null) {
+            this.innerIntp.close();
+        }
+    }
 
-  @Override
-  public FormType getFormType() throws InterpreterException {
-    return FormType.SIMPLE;
-  }
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context)
+            throws InterpreterException {
+        LOGGER.debug("Interpret code: " + st);
+        this.z.setInterpreterContext(context);
+        this.z.setGui(context.getGui());
+        this.z.setNoteGui(context.getNoteGui());
 
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return this.innerIntp.getProgress(context);
-  }
+        // set ClassLoader of current Thread to be the ClassLoader of Flink scala-shell,
+        // otherwise codegen will fail to find classes defined in scala-shell
+        ClassLoader originClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getFlinkScalaShellLoader());
+            createPlannerAgain();
+            setParallelismIfNecessary(context);
+            setSavepointIfNecessary(context);
+            return innerIntp.interpret(st, context);
+        } finally {
+            Thread.currentThread().setContextClassLoader(originClassLoader);
+        }
+    }
 
-  @Override
-  public List<InterpreterCompletion> completion(String buf,
-                                                int cursor,
-                                                InterpreterContext interpreterContext)
-      throws InterpreterException {
-    return innerIntp.completion(buf, cursor, interpreterContext);
-  }
+    @Override
+    public void cancel(InterpreterContext context) throws InterpreterException {
+        this.innerIntp.cancel(context);
+    }
 
-  ExecutionEnvironment getExecutionEnvironment() {
-    return this.innerIntp.getExecutionEnvironment();
-  }
+    @Override
+    public FormType getFormType() throws InterpreterException {
+        return FormType.SIMPLE;
+    }
 
-  StreamExecutionEnvironment getStreamExecutionEnvironment() {
-    return this.innerIntp.getStreamExecutionEnvironment();
-  }
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return this.innerIntp.getProgress(context);
+    }
 
-  TableEnvironment getStreamTableEnvironment() {
-    return this.innerIntp.getStreamTableEnvironment("blink");
-  }
+    @Override
+    public List<InterpreterCompletion> completion(String buf,
+                                                  int cursor,
+                                                  InterpreterContext interpreterContext)
+            throws InterpreterException {
+        return innerIntp.completion(buf, cursor, interpreterContext);
+    }
 
-  org.apache.flink.table.api.TableEnvironment getJavaBatchTableEnvironment(String planner) {
-    return this.innerIntp.getJavaBatchTableEnvironment(planner);
-  }
+    ExecutionEnvironment getExecutionEnvironment() {
+        return this.innerIntp.getExecutionEnvironment();
+    }
 
-  TableEnvironment getJavaStreamTableEnvironment(String planner) {
-    return this.innerIntp.getJavaStreamTableEnvironment(planner);
-  }
+    StreamExecutionEnvironment getStreamExecutionEnvironment() {
+        return this.innerIntp.getStreamExecutionEnvironment();
+    }
 
-  TableEnvironment getBatchTableEnvironment() {
-    return this.innerIntp.getBatchTableEnvironment("blink");
-  }
+    TableEnvironment getStreamTableEnvironment() {
+        return this.innerIntp.getStreamTableEnvironment("blink");
+    }
 
-  JobManager getJobManager() {
-    return this.innerIntp.getJobManager();
-  }
+    org.apache.flink.table.api.TableEnvironment getJavaBatchTableEnvironment(String planner) {
+        return this.innerIntp.getJavaBatchTableEnvironment(planner);
+    }
 
-  int getDefaultParallelism() {
-    return this.innerIntp.getDefaultParallelism();
-  }
+    TableEnvironment getJavaStreamTableEnvironment(String planner) {
+        return this.innerIntp.getJavaStreamTableEnvironment(planner);
+    }
 
-  int getDefaultSqlParallelism() {
-    return this.innerIntp.getDefaultSqlParallelism();
-  }
+    TableEnvironment getBatchTableEnvironment() {
+        return this.innerIntp.getBatchTableEnvironment("blink");
+    }
 
-  /**
-   * Workaround for issue of FLINK-16936.
-   */
-  public void createPlannerAgain() {
-    this.innerIntp.createPlannerAgain();
-  }
+    JobManager getJobManager() {
+        return this.innerIntp.getJobManager();
+    }
 
-  public ClassLoader getFlinkScalaShellLoader() {
-    return innerIntp.getFlinkScalaShellLoader();
-  }
+    int getDefaultParallelism() {
+        return this.innerIntp.getDefaultParallelism();
+    }
 
-  FlinkZeppelinContext getZeppelinContext() {
-    return this.z;
-  }
+    int getDefaultSqlParallelism() {
+        return this.innerIntp.getDefaultSqlParallelism();
+    }
 
-  Configuration getFlinkConfiguration() {
-    return this.innerIntp.getConfiguration();
-  }
+    /**
+     * Workaround for issue of FLINK-16936.
+     */
+    public void createPlannerAgain() {
+        this.innerIntp.createPlannerAgain();
+    }
 
-  public FlinkScalaInterpreter getInnerIntp() {
-    return this.innerIntp;
-  }
+    public ClassLoader getFlinkScalaShellLoader() {
+        return innerIntp.getFlinkScalaShellLoader();
+    }
 
-  public FlinkShims getFlinkShims() {
-    return this.innerIntp.getFlinkShims();
-  }
+    FlinkZeppelinContext getZeppelinContext() {
+        return this.z;
+    }
 
-  public void setSavepointIfNecessary(InterpreterContext context) {
-    this.innerIntp.setSavepointPathIfNecessary(context);
-  }
+    Configuration getFlinkConfiguration() {
+        return this.innerIntp.getConfiguration();
+    }
 
-  public void setParallelismIfNecessary(InterpreterContext context) {
-    this.innerIntp.setParallelismIfNecessary(context);
-  }
+    public FlinkScalaInterpreter getInnerIntp() {
+        return this.innerIntp;
+    }
 
-  public FlinkVersion getFlinkVersion() {
-    return this.innerIntp.getFlinkVersion();
-  }
+    public FlinkShims getFlinkShims() {
+        return this.innerIntp.getFlinkShims();
+    }
+
+    public void setSavepointIfNecessary(InterpreterContext context) {
+        this.innerIntp.setSavepointPathIfNecessary(context);
+    }
+
+    public void setParallelismIfNecessary(InterpreterContext context) {
+        this.innerIntp.setParallelismIfNecessary(context);
+    }
+
+    public FlinkVersion getFlinkVersion() {
+        return this.innerIntp.getFlinkVersion();
+    }
 }

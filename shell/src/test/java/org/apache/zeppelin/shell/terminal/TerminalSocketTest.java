@@ -20,13 +20,7 @@ package org.apache.zeppelin.shell.terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.CloseReason;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,32 +28,27 @@ import java.util.List;
 @ClientEndpoint
 @ServerEndpoint(value = "/")
 public class TerminalSocketTest {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TerminalSocketTest.class);
+    public static final List<String> ReceivedMsg = new ArrayList();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TerminalSocketTest.class);
 
-  public static final List<String> ReceivedMsg = new ArrayList();
+    @OnOpen
+    public void onWebSocketConnect(Session sess) {
+        LOGGER.info("Socket Connected: " + sess);
+    }
 
-  @OnOpen
-  public void onWebSocketConnect(Session sess)
-  {
-    LOGGER.info("Socket Connected: " + sess);
-  }
+    @OnMessage
+    public void onWebSocketText(String message) {
+        LOGGER.info("Received TEXT message: " + message);
+        ReceivedMsg.add(message);
+    }
 
-  @OnMessage
-  public void onWebSocketText(String message)
-  {
-    LOGGER.info("Received TEXT message: " + message);
-    ReceivedMsg.add(message);
-  }
+    @OnClose
+    public void onWebSocketClose(CloseReason reason) {
+        LOGGER.info("Socket Closed: " + reason);
+    }
 
-  @OnClose
-  public void onWebSocketClose(CloseReason reason)
-  {
-    LOGGER.info("Socket Closed: " + reason);
-  }
-
-  @OnError
-  public void onWebSocketError(Throwable cause)
-  {
-    LOGGER.error(cause.getMessage(), cause);
-  }
+    @OnError
+    public void onWebSocketError(Throwable cause) {
+        LOGGER.error(cause.getMessage(), cause);
+    }
 }

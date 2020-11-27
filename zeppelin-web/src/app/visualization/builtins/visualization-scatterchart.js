@@ -35,7 +35,7 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
       {
         name: 'size',
         tooltip: `This option is only valid for numeric fields.
-          When data in each axis is discrete, 
+          When data in each axis is discrete,
           'number of values in corresponding coordinate' will be used.
           Zeppelin considers values as discrete when input values contain a string
           or the number of distinct values is greater than 5% of the total number of values.
@@ -66,11 +66,11 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
   configureChart(chart) {
     let self = this;
 
-    chart.xAxis.tickFormat(function(d) { // TODO remove round after bump to nvd3 > 1.8.5
+    chart.xAxis.tickFormat(function (d) { // TODO remove round after bump to nvd3 > 1.8.5
       return self.xAxisTickFormat(Math.round(d * 1e3) / 1e3, self.xLabels);
     });
 
-    chart.yAxis.tickFormat(function(d) { // TODO remove round after bump to nvd3 > 1.8.5
+    chart.yAxis.tickFormat(function (d) { // TODO remove round after bump to nvd3 > 1.8.5
       return self.yAxisTickFormat(Math.round(d * 1e3) / 1e3, self.yLabels);
     });
 
@@ -142,8 +142,8 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
     }
 
     let isAllDiscrete = ((xAxis && yAxis && this.isDiscrete(xValues) && this.isDiscrete(yValues)) ||
-    (!xAxis && this.isDiscrete(yValues)) ||
-    (!yAxis && this.isDiscrete(xValues)));
+      (!xAxis && this.isDiscrete(yValues)) ||
+      (!yAxis && this.isDiscrete(xValues)));
 
     if (isAllDiscrete) {
       rows = this.setDiscreteScatterData(data);
@@ -221,13 +221,13 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
 
     // TODO remove sort and dedup after bump to nvd3 > 1.8.5
     let d3gvalues = d3g[grpNameIndex[grpName]].values;
-    d3gvalues.sort(function(a, b) {
+    d3gvalues.sort(function (a, b) {
       return ((a['x'] - b['x']) || (a['y'] - b['y']));
     });
 
     for (let i = 0; i < d3gvalues.length - 1;) {
       if ((Math.abs(d3gvalues[i]['x'] - d3gvalues[i + 1]['x']) < epsilon) &&
-           (Math.abs(d3gvalues[i]['y'] - d3gvalues[i + 1]['y']) < epsilon)) {
+        (Math.abs(d3gvalues[i]['y'] - d3gvalues[i + 1]['y']) < epsilon)) {
         d3gvalues.splice(i + 1, 1);
       } else {
         i++;
@@ -300,7 +300,7 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
   }
 
   isDiscrete(field) {
-    let getUnique = function(f) {
+    let getUnique = function (f) {
       let uniqObj = {};
       let uniqArr = [];
       let j = 0;
@@ -356,8 +356,8 @@ export default class ScatterchartVisualization extends Nvd3ChartVisualization {
 
     // check if all existing fields are discrete
     let isAllDiscrete = ((options.xAxis && options.yAxis && this.isDiscrete(xValues) && this.isDiscrete(yValues)) ||
-    (!options.xAxis && this.isDiscrete(yValues)) ||
-    (!options.yAxis && this.isDiscrete(xValues)));
+      (!options.xAxis && this.isDiscrete(yValues)) ||
+      (!options.yAxis && this.isDiscrete(xValues)));
 
     if (isAllDiscrete) {
       return false;

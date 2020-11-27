@@ -32,35 +32,35 @@ import java.util.Map;
  */
 public class YarnInterpreterLauncher extends InterpreterLauncher {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(YarnInterpreterLauncher.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(YarnInterpreterLauncher.class);
 
-  public YarnInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
-    super(zConf, recoveryStorage);
-  }
-
-  @Override
-  public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
-    LOGGER.info("Launching Interpreter: {}", context.getInterpreterSettingGroup());
-    this.properties = context.getProperties();
-
-    return new YarnRemoteInterpreterProcess(
-            context,
-            properties,
-            buildEnvFromProperties(context),
-            getConnectTimeout(),
-            getConnectPoolSize());
-  }
-
-  protected Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) {
-    Map<String, String> env = new HashMap<>();
-    for (Object key : context.getProperties().keySet()) {
-      if (RemoteInterpreterUtils.isEnvString((String) key)) {
-        env.put((String) key, context.getProperties().getProperty((String) key));
-      }
+    public YarnInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
+        super(zConf, recoveryStorage);
     }
-    env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
-    env.put("ZEPPELIN_INTERPRETER_LAUNCHER", "yarn");
-    return env;
-  }
+
+    @Override
+    public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
+        LOGGER.info("Launching Interpreter: {}", context.getInterpreterSettingGroup());
+        this.properties = context.getProperties();
+
+        return new YarnRemoteInterpreterProcess(
+                context,
+                properties,
+                buildEnvFromProperties(context),
+                getConnectTimeout(),
+                getConnectPoolSize());
+    }
+
+    protected Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) {
+        Map<String, String> env = new HashMap<>();
+        for (Object key : context.getProperties().keySet()) {
+            if (RemoteInterpreterUtils.isEnvString((String) key)) {
+                env.put((String) key, context.getProperties().getProperty((String) key));
+            }
+        }
+        env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
+        env.put("ZEPPELIN_INTERPRETER_LAUNCHER", "yarn");
+        return env;
+    }
 
 }

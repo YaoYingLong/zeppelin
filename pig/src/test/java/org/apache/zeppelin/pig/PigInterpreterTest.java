@@ -18,10 +18,11 @@
 
 package org.apache.zeppelin.pig;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.InterpreterResult.Code;
+import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.junit.After;
 import org.junit.Test;
 
@@ -30,125 +31,123 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResult.Code;
-import org.apache.zeppelin.interpreter.InterpreterResult.Type;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PigInterpreterTest {
 
-  private PigInterpreter pigInterpreter;
-  private InterpreterContext context;
+    private PigInterpreter pigInterpreter;
+    private InterpreterContext context;
 
-  private void setUpLocal(boolean includeJobStats) {
-    Properties properties = new Properties();
-    properties.put("zeppelin.pig.execType", "local");
-    properties.put("zeppelin.pig.includeJobStats", includeJobStats + "");
-    pigInterpreter = new PigInterpreter(properties);
-    pigInterpreter.open();
-    context = InterpreterContext.builder().setParagraphId("paragraphId").build();
-  }
+    private void setUpLocal(boolean includeJobStats) {
+        Properties properties = new Properties();
+        properties.put("zeppelin.pig.execType", "local");
+        properties.put("zeppelin.pig.includeJobStats", includeJobStats + "");
+        pigInterpreter = new PigInterpreter(properties);
+        pigInterpreter.open();
+        context = InterpreterContext.builder().setParagraphId("paragraphId").build();
+    }
 
-  @After
-  public void tearDown() {
-    pigInterpreter.close();
-  }
+    @After
+    public void tearDown() {
+        pigInterpreter.close();
+    }
 
-  @Test
-  public void testBasics() throws IOException {
-    setUpLocal(false);
+    @Test
+    public void testBasics() throws IOException {
+        setUpLocal(false);
 
-    String content = "1\tandy\n"
-            + "2\tpeter\n";
-    File tmpFile = File.createTempFile("zeppelin", "test");
-    FileWriter writer = new FileWriter(tmpFile);
-    IOUtils.write(content, writer);
-    writer.close();
+        String content = "1\tandy\n"
+                + "2\tpeter\n";
+        File tmpFile = File.createTempFile("zeppelin", "test");
+        FileWriter writer = new FileWriter(tmpFile);
+        IOUtils.write(content, writer);
+        writer.close();
 
-    // simple pig script using dump
-    String pigscript = "a = load '" + tmpFile.getAbsolutePath() + "';"
-            + "dump a;";
-    InterpreterResult result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.SUCCESS, result.code());
-    assertTrue(result.message().get(0).getData().contains("(1,andy)\n(2,peter)"));
+        // simple pig script using dump
+        String pigscript = "a = load '" + tmpFile.getAbsolutePath() + "';"
+                + "dump a;";
+        InterpreterResult result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.SUCCESS, result.code());
+        assertTrue(result.message().get(0).getData().contains("(1,andy)\n(2,peter)"));
 
-    // describe
-    pigscript = "a = load '" + tmpFile.getAbsolutePath() + "' as (id: int, name: bytearray);"
-            + "describe a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.SUCCESS, result.code());
-    assertTrue(result.message().get(0).getData().contains("a: {id: int,name: bytearray}"));
+        // describe
+        pigscript = "a = load '" + tmpFile.getAbsolutePath() + "' as (id: int, name: bytearray);"
+                + "describe a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.SUCCESS, result.code());
+        assertTrue(result.message().get(0).getData().contains("a: {id: int,name: bytearray}"));
 
-    // syntax error (compilation error)
-    pigscript = "a = loa '" + tmpFile.getAbsolutePath() + "';"
-            + "describe a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.ERROR, result.code());
-    assertTrue(result.message().get(0).getData().contains(
-            "Syntax error, unexpected symbol at or near 'a'"));
+        // syntax error (compilation error)
+        pigscript = "a = loa '" + tmpFile.getAbsolutePath() + "';"
+                + "describe a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.ERROR, result.code());
+        assertTrue(result.message().get(0).getData().contains(
+                "Syntax error, unexpected symbol at or near 'a'"));
 
-    // execution error
-    pigscript = "a = load 'invalid_path';"
-            + "dump a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.ERROR, result.code());
-    assertTrue(result.message().get(0).getData().contains("Input path does not exist"));
-  }
+        // execution error
+        pigscript = "a = load 'invalid_path';"
+                + "dump a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.ERROR, result.code());
+        assertTrue(result.message().get(0).getData().contains("Input path does not exist"));
+    }
 
 
-  @Test
-  public void testIncludeJobStats() throws IOException {
-    setUpLocal(true);
+    @Test
+    public void testIncludeJobStats() throws IOException {
+        setUpLocal(true);
 
-    String content = "1\tandy\n"
-            + "2\tpeter\n";
-    File tmpFile = File.createTempFile("zeppelin", "test");
-    FileWriter writer = new FileWriter(tmpFile);
-    IOUtils.write(content, writer);
-    writer.close();
+        String content = "1\tandy\n"
+                + "2\tpeter\n";
+        File tmpFile = File.createTempFile("zeppelin", "test");
+        FileWriter writer = new FileWriter(tmpFile);
+        IOUtils.write(content, writer);
+        writer.close();
 
-    // simple pig script using dump
-    String pigscript = "a = load '" + tmpFile.getAbsolutePath() + "';"
-            + "dump a;";
-    InterpreterResult result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.SUCCESS, result.code());
-    assertTrue(result.message().get(0).getData().contains("Counters:"));
-    assertTrue(result.message().get(0).getData().contains("(1,andy)\n(2,peter)"));
+        // simple pig script using dump
+        String pigscript = "a = load '" + tmpFile.getAbsolutePath() + "';"
+                + "dump a;";
+        InterpreterResult result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.SUCCESS, result.code());
+        assertTrue(result.message().get(0).getData().contains("Counters:"));
+        assertTrue(result.message().get(0).getData().contains("(1,andy)\n(2,peter)"));
 
-    // describe
-    pigscript = "a = load '" + tmpFile.getAbsolutePath() + "' as (id: int, name: bytearray);"
-            + "describe a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.SUCCESS, result.code());
-    // no job is launched, so no jobStats
-    assertTrue(!result.message().get(0).getData().contains("Counters:"));
-    assertTrue(result.message().get(0).getData().contains("a: {id: int,name: bytearray}"));
+        // describe
+        pigscript = "a = load '" + tmpFile.getAbsolutePath() + "' as (id: int, name: bytearray);"
+                + "describe a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.SUCCESS, result.code());
+        // no job is launched, so no jobStats
+        assertTrue(!result.message().get(0).getData().contains("Counters:"));
+        assertTrue(result.message().get(0).getData().contains("a: {id: int,name: bytearray}"));
 
-    // syntax error (compilation error)
-    pigscript = "a = loa '" + tmpFile.getAbsolutePath() + "';"
-            + "describe a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.ERROR, result.code());
-    // no job is launched, so no jobStats
-    assertTrue(!result.message().get(0).getData().contains("Counters:"));
-    assertTrue(result.message().get(0).getData().contains(
-            "Syntax error, unexpected symbol at or near 'a'"));
+        // syntax error (compilation error)
+        pigscript = "a = loa '" + tmpFile.getAbsolutePath() + "';"
+                + "describe a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.ERROR, result.code());
+        // no job is launched, so no jobStats
+        assertTrue(!result.message().get(0).getData().contains("Counters:"));
+        assertTrue(result.message().get(0).getData().contains(
+                "Syntax error, unexpected symbol at or near 'a'"));
 
-    // execution error
-    pigscript = "a = load 'invalid_path';"
-            + "dump a;";
-    result = pigInterpreter.interpret(pigscript, context);
-    assertEquals(Type.TEXT, result.message().get(0).getType());
-    assertEquals(Code.ERROR, result.code());
-    assertTrue(result.message().get(0).getData().contains("Counters:"));
-    assertTrue(result.message().get(0).getData().contains("Input path does not exist"));
-  }
+        // execution error
+        pigscript = "a = load 'invalid_path';"
+                + "dump a;";
+        result = pigInterpreter.interpret(pigscript, context);
+        assertEquals(Type.TEXT, result.message().get(0).getType());
+        assertEquals(Code.ERROR, result.code());
+        assertTrue(result.message().get(0).getData().contains("Counters:"));
+        assertTrue(result.message().get(0).getData().contains("Input path does not exist"));
+    }
 
 }

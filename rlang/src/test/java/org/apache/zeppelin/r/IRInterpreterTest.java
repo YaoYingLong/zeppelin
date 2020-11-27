@@ -28,19 +28,19 @@ import java.util.Properties;
 
 public class IRInterpreterTest extends IRKernelTest {
 
-  @Override
-  protected Interpreter createInterpreter(Properties properties) {
-    return new IRInterpreter(properties);
-  }
+    @Override
+    protected Interpreter createInterpreter(Properties properties) {
+        return new IRInterpreter(properties);
+    }
 
-  @Override
-  protected InterpreterContext getInterpreterContext() {
-    InterpreterContext context = InterpreterContext.builder()
-            .setNoteId("note_1")
-            .setParagraphId("paragraph_1")
-            .setInterpreterOut(new InterpreterOutput(null))
-            .setLocalProperties(new HashMap<>())
-            .build();
-    return context;
-  }
+    @Override
+    protected InterpreterContext getInterpreterContext() {
+        InterpreterContext context = InterpreterContext.builder()
+                .setNoteId("note_1")
+                .setParagraphId("paragraph_1")
+                .setInterpreterOut(new InterpreterOutput(null))
+                .setLocalProperties(new HashMap<>())
+                .build();
+        return context;
+    }
 }

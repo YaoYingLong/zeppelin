@@ -73,11 +73,11 @@
 }
 
 .node table tr .nodePropertyKey {
-  padding : 5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
 }
 
 .node table tr .nodePropertyValue {
-  padding : 5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
   display: block;
   max-height: 100px;
   overflow-y: auto;
@@ -92,12 +92,12 @@
 }
 
 .nodeSettingAdd {
-  margin : 5px 5px 5px 5px;
-  padding : 10px 10px 10px 10px;
+  margin: 5px 5px 5px 5px;
+  padding: 10px 10px 10px 10px;
 }
 
 .editable-wrap {
-  width : 100%;
+  width: 100%;
 }
 
 .node h5 {

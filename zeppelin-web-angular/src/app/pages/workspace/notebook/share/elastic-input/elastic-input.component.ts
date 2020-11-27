@@ -41,6 +41,8 @@ export class ElasticInputComponent implements OnChanges {
   showEditor = false;
   editValue: string;
 
+  constructor(private renderer: Renderer2) {}
+
   cancelEdit() {
     this.editValue = this.value;
     this.showEditor = false;
@@ -76,8 +78,6 @@ export class ElasticInputComponent implements OnChanges {
       this.renderer.setStyle(this.inputElement.nativeElement, 'width', `${width}px`);
     }
   }
-
-  constructor(private renderer: Renderer2) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.value) {

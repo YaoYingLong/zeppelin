@@ -40,7 +40,7 @@
 .job .runControl {
   font-size: 1px;
   color: #AAAAAA;
-  height:4px;
+  height: 4px;
   margin: 0px 0px 0px 0px;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .job .control {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   float: right;
   color: #999;
   margin-top: 1px;
@@ -85,28 +85,43 @@
   color: #3071A9;
 }
 
-@-webkit-keyframes spinnerRotateAnimation
-{
-  from{-webkit-transform:rotate(0deg);}
-  to{-webkit-transform:rotate(360deg);}
+@-webkit-keyframes spinnerRotateAnimation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
-@-moz-keyframes spinnerRotateAnimation
-{
-  from{-moz-transform:rotate(0deg);}
-  to{-moz-transform:rotate(360deg);}
+
+@-moz-keyframes spinnerRotateAnimation {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
 }
-@-ms-keyframes spinnerRotateAnimation
-{
-  from{-ms-transform:rotate(0deg);}
-  to{-ms-transform:rotate(360deg);}
+
+@-ms-keyframes spinnerRotateAnimation {
+  from {
+    -ms-transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+  }
 }
 
 @keyframes spinnerRotateAnimation {
-  from {transform: rotate(0deg);}
-  to{transform: rotate(360deg);}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.spinAnimation{
+.spinAnimation {
   -webkit-animation-name: spinnerRotateAnimation;
   -webkit-animation-duration: 1s;
   -webkit-animation-iteration-count: infinite;

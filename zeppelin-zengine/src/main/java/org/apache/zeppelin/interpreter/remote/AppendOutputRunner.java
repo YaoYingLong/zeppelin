@@ -36,79 +36,79 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class AppendOutputRunner implements Runnable {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(AppendOutputRunner.class);
-  public static final Long BUFFER_TIME_MS = new Long(100);
-  private static final Long SAFE_PROCESSING_TIME = new Long(10);
-  private static final Long SAFE_PROCESSING_STRING_SIZE = new Long(100000);
+    public static final Long BUFFER_TIME_MS = new Long(100);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(AppendOutputRunner.class);
+    private static final Long SAFE_PROCESSING_TIME = new Long(10);
+    private static final Long SAFE_PROCESSING_STRING_SIZE = new Long(100000);
 
-  private final BlockingQueue<AppendOutputBuffer> queue = new LinkedBlockingQueue<>();
-  private final RemoteInterpreterProcessListener listener;
+    private final BlockingQueue<AppendOutputBuffer> queue = new LinkedBlockingQueue<>();
+    private final RemoteInterpreterProcessListener listener;
 
-  public AppendOutputRunner(RemoteInterpreterProcessListener listener) {
-    this.listener = listener;
-  }
-
-  @Override
-  public void run() {
-
-    Map<String, StringBuilder> stringBufferMap = new HashMap<>();
-    List<AppendOutputBuffer> list = new LinkedList<>();
-
-    /* "drainTo" method does not wait for any element
-     * to be present in the queue, and thus this loop would
-     * continuosly run (with period of BUFFER_TIME_MS). "take()" method
-     * waits for the queue to become non-empty and then removes
-     * one element from it. Rest elements from queue (if present) are
-     * removed using "drainTo" method. Thus we save on some un-necessary
-     * cpu-cycles.
-     */
-    try {
-      list.add(queue.take());
-    } catch (InterruptedException e) {
-      LOGGER.error("Wait for OutputBuffer queue interrupted: {}", e.getMessage());
-    }
-    Long processingStartTime = System.currentTimeMillis();
-    queue.drainTo(list);
-
-    for (AppendOutputBuffer buffer: list) {
-      String noteId = buffer.getNoteId();
-      String paragraphId = buffer.getParagraphId();
-      int index = buffer.getIndex();
-      String stringBufferKey = noteId + ":" + paragraphId + ":" + index;
-
-      StringBuilder builder = stringBufferMap.containsKey(stringBufferKey) ?
-          stringBufferMap.get(stringBufferKey) : new StringBuilder();
-
-      builder.append(buffer.getData());
-      stringBufferMap.put(stringBufferKey, builder);
-    }
-    Long processingTime = System.currentTimeMillis() - processingStartTime;
-
-    if (processingTime > SAFE_PROCESSING_TIME) {
-      LOGGER.warn("Processing time for buffered append-output is high: {} milliseconds.", processingTime);
-    } else {
-      LOGGER.debug("Processing time for append-output took {} milliseconds", processingTime);
+    public AppendOutputRunner(RemoteInterpreterProcessListener listener) {
+        this.listener = listener;
     }
 
-    Long sizeProcessed = new Long(0);
-    for (Entry<String, StringBuilder> stringBufferMapEntry : stringBufferMap.entrySet()) {
-      String stringBufferKey = stringBufferMapEntry.getKey();
-      StringBuilder buffer = stringBufferMapEntry.getValue();
-      sizeProcessed += buffer.length();
-      String[] keys = stringBufferKey.split(":");
-      listener.onOutputAppend(keys[0], keys[1], Integer.parseInt(keys[2]), buffer.toString());
+    @Override
+    public void run() {
+
+        Map<String, StringBuilder> stringBufferMap = new HashMap<>();
+        List<AppendOutputBuffer> list = new LinkedList<>();
+
+        /* "drainTo" method does not wait for any element
+         * to be present in the queue, and thus this loop would
+         * continuosly run (with period of BUFFER_TIME_MS). "take()" method
+         * waits for the queue to become non-empty and then removes
+         * one element from it. Rest elements from queue (if present) are
+         * removed using "drainTo" method. Thus we save on some un-necessary
+         * cpu-cycles.
+         */
+        try {
+            list.add(queue.take());
+        } catch (InterruptedException e) {
+            LOGGER.error("Wait for OutputBuffer queue interrupted: {}", e.getMessage());
+        }
+        Long processingStartTime = System.currentTimeMillis();
+        queue.drainTo(list);
+
+        for (AppendOutputBuffer buffer : list) {
+            String noteId = buffer.getNoteId();
+            String paragraphId = buffer.getParagraphId();
+            int index = buffer.getIndex();
+            String stringBufferKey = noteId + ":" + paragraphId + ":" + index;
+
+            StringBuilder builder = stringBufferMap.containsKey(stringBufferKey) ?
+                    stringBufferMap.get(stringBufferKey) : new StringBuilder();
+
+            builder.append(buffer.getData());
+            stringBufferMap.put(stringBufferKey, builder);
+        }
+        Long processingTime = System.currentTimeMillis() - processingStartTime;
+
+        if (processingTime > SAFE_PROCESSING_TIME) {
+            LOGGER.warn("Processing time for buffered append-output is high: {} milliseconds.", processingTime);
+        } else {
+            LOGGER.debug("Processing time for append-output took {} milliseconds", processingTime);
+        }
+
+        Long sizeProcessed = new Long(0);
+        for (Entry<String, StringBuilder> stringBufferMapEntry : stringBufferMap.entrySet()) {
+            String stringBufferKey = stringBufferMapEntry.getKey();
+            StringBuilder buffer = stringBufferMapEntry.getValue();
+            sizeProcessed += buffer.length();
+            String[] keys = stringBufferKey.split(":");
+            listener.onOutputAppend(keys[0], keys[1], Integer.parseInt(keys[2]), buffer.toString());
+        }
+
+        if (sizeProcessed > SAFE_PROCESSING_STRING_SIZE) {
+            LOGGER.warn("Processing size for buffered append-output is high: {} characters.", sizeProcessed);
+        } else {
+            LOGGER.debug("Processing size for append-output is {} characters", sizeProcessed);
+        }
     }
 
-    if (sizeProcessed > SAFE_PROCESSING_STRING_SIZE) {
-      LOGGER.warn("Processing size for buffered append-output is high: {} characters.", sizeProcessed);
-    } else {
-      LOGGER.debug("Processing size for append-output is {} characters", sizeProcessed);
+    public void appendBuffer(String noteId, String paragraphId, int index, String outputToAppend) {
+        queue.offer(new AppendOutputBuffer(noteId, paragraphId, index, outputToAppend));
     }
-  }
-
-  public void appendBuffer(String noteId, String paragraphId, int index, String outputToAppend) {
-    queue.offer(new AppendOutputBuffer(noteId, paragraphId, index, outputToAppend));
-  }
 
 }

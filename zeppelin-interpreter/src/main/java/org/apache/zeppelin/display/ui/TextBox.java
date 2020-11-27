@@ -25,14 +25,14 @@ import org.apache.zeppelin.display.Input;
  */
 public class TextBox extends Input<String> {
 
-  public TextBox() {
+    public TextBox() {
 
-  }
+    }
 
-  public TextBox(String name, String defaultValue) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = defaultValue;
-  }
+    public TextBox(String name, String defaultValue) {
+        this.name = name;
+        this.displayName = name;
+        this.defaultValue = defaultValue;
+    }
 
 }

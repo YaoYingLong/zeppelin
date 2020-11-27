@@ -69,6 +69,41 @@ export class NotebookActionBarComponent extends MessageListenersManager implemen
     { name: '12h', value: '0 0 0/12 * * ?' },
     { name: '1d', value: '0 0 0 * * ?' }
   ];
+
+  constructor(
+    public messageService: MessageService,
+    private nzModalService: NzModalService,
+    private ticketService: TicketService,
+    private nzMessageService: NzMessageService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private noteActionService: NoteActionService,
+    private noteStatusService: NoteStatusService,
+    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
+    private activatedRoute: ActivatedRoute,
+    private saveAsService: SaveAsService
+  ) {
+    super(messageService);
+  }
+
+  get isTrash() {
+    return this.noteStatusService.isTrash(this.note);
+  }
+
+  get viewOnly(): boolean {
+    return this.noteStatusService.viewOnly(this.note);
+  }
+
+  get getCronOptionNameFromValue() {
+    if (!this.note.config.cron) {
+      return '';
+    } else if (this.cronOption.find(cron => cron.value === this.note.config.cron)) {
+      return this.cronOption.find(cron => cron.value === this.note.config.cron).name;
+    } else {
+      return this.note.config.cron;
+    }
+  }
+
   updateNoteName(name: string) {
     const trimmedNewName = name.trim();
     if (trimmedNewName.length > 0 && this.note.name !== trimmedNewName) {
@@ -216,14 +251,6 @@ export class NotebookActionBarComponent extends MessageListenersManager implemen
     this.messageService.moveNoteToTrash(this.note.id);
   }
 
-  get isTrash() {
-    return this.noteStatusService.isTrash(this.note);
-  }
-
-  get viewOnly(): boolean {
-    return this.noteStatusService.viewOnly(this.note);
-  }
-
   updateIsNoteParagraphRunning() {
     this.isNoteParagraphRunning = this.noteStatusService.isNoteParagraphRunning(this.note);
   }
@@ -259,32 +286,6 @@ export class NotebookActionBarComponent extends MessageListenersManager implemen
         }
       });
     }
-  }
-
-  get getCronOptionNameFromValue() {
-    if (!this.note.config.cron) {
-      return '';
-    } else if (this.cronOption.find(cron => cron.value === this.note.config.cron)) {
-      return this.cronOption.find(cron => cron.value === this.note.config.cron).name;
-    } else {
-      return this.note.config.cron;
-    }
-  }
-
-  constructor(
-    public messageService: MessageService,
-    private nzModalService: NzModalService,
-    private ticketService: TicketService,
-    private nzMessageService: NzMessageService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private noteActionService: NoteActionService,
-    private noteStatusService: NoteStatusService,
-    @Inject(TRASH_FOLDER_ID_TOKEN) public TRASH_FOLDER_ID: string,
-    private activatedRoute: ActivatedRoute,
-    private saveAsService: SaveAsService
-  ) {
-    super(messageService);
   }
 
   ngOnInit(): void {

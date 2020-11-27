@@ -37,128 +37,124 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ClusterMockTest {
-  private static Logger LOGGER = LoggerFactory.getLogger(ClusterMockTest.class);
+    static final String metaKey = "ClusterMockKey";
+    protected static ZeppelinConfiguration zconf = null;
+    static String zServerHost;
+    static int zServerPort;
+    static TServerSocket tSocket = null;
+    private static Logger LOGGER = LoggerFactory.getLogger(ClusterMockTest.class);
+    private static ClusterManagerServer clusterServer = null;
+    private static ClusterManagerClient clusterClient = null;
 
-  private static ClusterManagerServer clusterServer = null;
-  private static ClusterManagerClient clusterClient = null;
+    public static void startCluster() throws IOException, InterruptedException {
+        LOGGER.info("startCluster >>>");
 
-  protected static ZeppelinConfiguration zconf = null;
+        zconf = ZeppelinConfiguration.create();
 
-  static String zServerHost;
-  static int zServerPort;
-  static final String metaKey = "ClusterMockKey";
+        // Set the cluster IP and port
+        zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
+        zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
+        zconf.setClusterAddress(zServerHost + ":" + zServerPort);
 
-  static TServerSocket tSocket = null;
+        // mock cluster manager server
+        clusterServer = ClusterManagerServer.getInstance(zconf);
+        clusterServer.start();
 
-  public static void startCluster() throws IOException, InterruptedException {
-    LOGGER.info("startCluster >>>");
+        // mock cluster manager client
+        clusterClient = ClusterManagerClient.getInstance(zconf);
+        clusterClient.start(metaKey);
 
-    zconf = ZeppelinConfiguration.create();
+        // Waiting for cluster startup
+        int wait = 0;
+        while (wait++ < 100) {
+            if (clusterServer.isClusterLeader()
+                    && clusterServer.raftInitialized()
+                    && clusterClient.raftInitialized()) {
+                LOGGER.info("wait {}(ms) found cluster leader", wait * 3000);
+                break;
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        assertEquals(true, clusterServer.isClusterLeader());
 
-    // Set the cluster IP and port
-    zServerHost = RemoteInterpreterUtils.findAvailableHostAddress();
-    zServerPort = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();
-    zconf.setClusterAddress(zServerHost + ":" + zServerPort);
+        try {
+            tSocket = new TServerSocket(0);
+        } catch (TTransportException e) {
+            throw new IOException("Fail to create TServerSocket", e);
+        }
 
-    // mock cluster manager server
-    clusterServer = ClusterManagerServer.getInstance(zconf);
-    clusterServer.start();
-
-    // mock cluster manager client
-    clusterClient = ClusterManagerClient.getInstance(zconf);
-    clusterClient.start(metaKey);
-
-    // Waiting for cluster startup
-    int wait = 0;
-    while (wait++ < 100) {
-      if (clusterServer.isClusterLeader()
-          && clusterServer.raftInitialized()
-          && clusterClient.raftInitialized()) {
-        LOGGER.info("wait {}(ms) found cluster leader", wait * 3000);
-        break;
-      }
-      try {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-    assertEquals(true, clusterServer.isClusterLeader());
-
-    try {
-      tSocket = new TServerSocket(0);
-    } catch (TTransportException e) {
-      throw new IOException("Fail to create TServerSocket", e);
-    }
-
-    LOGGER.info("startCluster <<<");
-  }
-
-  public static void stopCluster() {
-    LOGGER.info("stopCluster >>>");
-    if (null != clusterClient) {
-      clusterClient.shutdown();
-    }
-    if (null != clusterClient) {
-      clusterServer.shutdown();
+        LOGGER.info("startCluster <<<");
     }
 
-    tSocket.close();
-    ZeppelinConfiguration.reset();
-    LOGGER.info("stopCluster <<<");
-  }
+    public static void stopCluster() {
+        LOGGER.info("stopCluster >>>");
+        if (null != clusterClient) {
+            clusterClient.shutdown();
+        }
+        if (null != clusterClient) {
+            clusterServer.shutdown();
+        }
 
-  public void getServerMeta() {
-    LOGGER.info("serverMeta >>>");
-
-    // Get metadata for all services
-    Object meta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
-
-    LOGGER.info(meta.toString());
-
-    assertNotNull(meta);
-    assertEquals(true, (meta instanceof HashMap));
-    HashMap hashMap = (HashMap) meta;
-
-    // Get metadata for the current service
-    Object values = hashMap.get(zServerHost + ":" + zServerPort);
-    assertEquals(true, (values instanceof HashMap));
-    HashMap mapMetaValues = (HashMap) values;
-
-    assertEquals(true, mapMetaValues.size() > 0);
-
-    LOGGER.info("serverMeta <<<");
-  }
-
-  public void mockIntpProcessMeta(String metaKey, boolean online) {
-    // mock IntpProcess Meta
-    HashMap<String, Object> meta = new HashMap<>();
-    meta.put(ClusterMeta.SERVER_HOST, "127.0.0.1");
-    meta.put(ClusterMeta.SERVER_PORT, 6000);
-    meta.put(ClusterMeta.INTP_TSERVER_HOST, "127.0.0.1");
-    meta.put(ClusterMeta.INTP_TSERVER_PORT, tSocket.getServerSocket().getLocalPort());
-    meta.put(ClusterMeta.CPU_CAPACITY, "CPU_CAPACITY");
-    meta.put(ClusterMeta.CPU_USED, "CPU_USED");
-    meta.put(ClusterMeta.MEMORY_CAPACITY, "MEMORY_CAPACITY");
-    meta.put(ClusterMeta.MEMORY_USED, "MEMORY_USED");
-    meta.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
-
-    if (online) {
-      meta.put(ClusterMeta.STATUS, ONLINE_STATUS);
-    } else {
-      meta.put(ClusterMeta.STATUS, OFFLINE_STATUS);
+        tSocket.close();
+        ZeppelinConfiguration.reset();
+        LOGGER.info("stopCluster <<<");
     }
-    // put IntpProcess Meta
-    clusterClient.putClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey, meta);
 
-    // get IntpProcess Meta
-    HashMap<String, HashMap<String, Object>> check
-        = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey);
+    public void getServerMeta() {
+        LOGGER.info("serverMeta >>>");
 
-    LOGGER.info(check.toString());
+        // Get metadata for all services
+        Object meta = clusterClient.getClusterMeta(ClusterMetaType.SERVER_META, "");
 
-    assertNotNull(check);
-    assertNotNull(check.get(metaKey));
-    assertEquals(true, check.get(metaKey).size() == 10);
-  }
+        LOGGER.info(meta.toString());
+
+        assertNotNull(meta);
+        assertEquals(true, (meta instanceof HashMap));
+        HashMap hashMap = (HashMap) meta;
+
+        // Get metadata for the current service
+        Object values = hashMap.get(zServerHost + ":" + zServerPort);
+        assertEquals(true, (values instanceof HashMap));
+        HashMap mapMetaValues = (HashMap) values;
+
+        assertEquals(true, mapMetaValues.size() > 0);
+
+        LOGGER.info("serverMeta <<<");
+    }
+
+    public void mockIntpProcessMeta(String metaKey, boolean online) {
+        // mock IntpProcess Meta
+        HashMap<String, Object> meta = new HashMap<>();
+        meta.put(ClusterMeta.SERVER_HOST, "127.0.0.1");
+        meta.put(ClusterMeta.SERVER_PORT, 6000);
+        meta.put(ClusterMeta.INTP_TSERVER_HOST, "127.0.0.1");
+        meta.put(ClusterMeta.INTP_TSERVER_PORT, tSocket.getServerSocket().getLocalPort());
+        meta.put(ClusterMeta.CPU_CAPACITY, "CPU_CAPACITY");
+        meta.put(ClusterMeta.CPU_USED, "CPU_USED");
+        meta.put(ClusterMeta.MEMORY_CAPACITY, "MEMORY_CAPACITY");
+        meta.put(ClusterMeta.MEMORY_USED, "MEMORY_USED");
+        meta.put(ClusterMeta.LATEST_HEARTBEAT, LocalDateTime.now());
+
+        if (online) {
+            meta.put(ClusterMeta.STATUS, ONLINE_STATUS);
+        } else {
+            meta.put(ClusterMeta.STATUS, OFFLINE_STATUS);
+        }
+        // put IntpProcess Meta
+        clusterClient.putClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey, meta);
+
+        // get IntpProcess Meta
+        HashMap<String, HashMap<String, Object>> check
+                = clusterClient.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, metaKey);
+
+        LOGGER.info(check.toString());
+
+        assertNotNull(check);
+        assertNotNull(check.get(metaKey));
+        assertEquals(true, check.get(metaKey).size() == 10);
+    }
 }

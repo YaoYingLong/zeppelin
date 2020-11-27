@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin.markdown;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.support.StringBuilderVar;
@@ -32,111 +30,113 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 /**
  * Pegdown plugin for YUML.
  */
 public class PegdownYumlPlugin extends Parser implements BlockPluginParser {
-  public PegdownYumlPlugin() {
-    super(PegdownParser.OPTIONS,
-        PegdownParser.PARSING_TIMEOUT_AS_MILLIS,
-        DefaultParseRunnerProvider);
-  }
+    public static final String TAG = "%%%";
 
-  public PegdownYumlPlugin(Integer options,
-                           Long maxParsingTimeInMillis,
-                           ParseRunnerProvider parseRunnerProvider,
-                           PegDownPlugins plugins) {
-    super(options, maxParsingTimeInMillis, parseRunnerProvider, plugins);
-  }
+    public PegdownYumlPlugin() {
+        super(PegdownParser.OPTIONS,
+                PegdownParser.PARSING_TIMEOUT_AS_MILLIS,
+                DefaultParseRunnerProvider);
+    }
 
-  public static final String TAG = "%%%";
+    public PegdownYumlPlugin(Integer options,
+                             Long maxParsingTimeInMillis,
+                             ParseRunnerProvider parseRunnerProvider,
+                             PegDownPlugins plugins) {
+        super(options, maxParsingTimeInMillis, parseRunnerProvider, plugins);
+    }
 
-  Rule startMarker() {
-    return Sequence(Spn1(), TAG, Sp(), "yuml", Sp());
-  }
-
-  String endMarker() {
-    return TAG;
-  }
-
-  Rule parameterName() {
-    return FirstOf("type", "style", "scale", "format", "dir");
-  }
-
-  Rule body() {
-    return OneOrMore(TestNot(TAG), BaseParser.ANY);
-  }
-
-  Rule blockRule() {
-    ParamVar<String, String> params = new ParamVar<>();
-    StringBuilderVar name = new StringBuilderVar();
-    StringBuilderVar value = new StringBuilderVar();
-    StringBuilderVar body = new StringBuilderVar();
-
-    return NodeSequence(
-        startMarker(),
-        ZeroOrMore(
-            Sequence(
-                parameterName(), name.append(match()),
-                String("="),
-                OneOrMore(Alphanumeric()), value.append(match())),
-            Sp(),
-            params.put(name.getString(), value.getString()),
-            name.clear(), value.clear()),
-        body(),
-        body.append(match()),
-        endMarker(),
-        push(
-            new ExpImageNode(
-                "title", createYumlUrl(params.get(), body.getString()), new TextNode("")))
-    );
-  }
-
-  public static String createYumlUrl(Map<String, String> params, String body) {
-    StringBuilder inlined = new StringBuilder();
-    for (String line : body.split("\\r?\\n")) {
-      line = line.trim();
-      if (line.length() > 0) {
-        if (inlined.length() > 0) {
-          inlined.append(", ");
+    public static String createYumlUrl(Map<String, String> params, String body) {
+        StringBuilder inlined = new StringBuilder();
+        for (String line : body.split("\\r?\\n")) {
+            line = line.trim();
+            if (line.length() > 0) {
+                if (inlined.length() > 0) {
+                    inlined.append(", ");
+                }
+                inlined.append(line);
+            }
         }
-        inlined.append(line);
-      }
+
+        String encodedBody = null;
+        try {
+            encodedBody = URLEncoder.encode(inlined.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            new RuntimeException("Failed to encode YUML markdown body", e);
+        }
+
+        StringBuilder mergedStyle = new StringBuilder();
+        String style = defaultString(params.get("style"), "scruffy");
+        String type = defaultString(params.get("type"), "class");
+        String format = defaultString(params.get("format"), "svg");
+
+        mergedStyle.append(style);
+
+        if (null != params.get("dir")) {
+            mergedStyle.append(";dir:" + params.get("dir"));
+        }
+
+        if (null != params.get("scale")) {
+            mergedStyle.append(";scale:" + params.get("scale"));
+        }
+
+        return new StringBuilder()
+                .append("http://yuml.me/diagram/")
+                .append(mergedStyle.toString() + "/")
+                .append(type + "/")
+                .append(encodedBody)
+                .append("." + format)
+                .toString();
     }
 
-    String encodedBody = null;
-    try {
-      encodedBody = URLEncoder.encode(inlined.toString(), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      new RuntimeException("Failed to encode YUML markdown body", e);
+    Rule startMarker() {
+        return Sequence(Spn1(), TAG, Sp(), "yuml", Sp());
     }
 
-    StringBuilder mergedStyle = new StringBuilder();
-    String style = defaultString(params.get("style"), "scruffy");
-    String type = defaultString(params.get("type"), "class");
-    String format = defaultString(params.get("format"), "svg");
-
-    mergedStyle.append(style);
-
-    if (null != params.get("dir")) {
-      mergedStyle.append(";dir:" + params.get("dir"));
+    String endMarker() {
+        return TAG;
     }
 
-    if (null != params.get("scale")) {
-      mergedStyle.append(";scale:" + params.get("scale"));
+    Rule parameterName() {
+        return FirstOf("type", "style", "scale", "format", "dir");
     }
 
-    return new StringBuilder()
-        .append("http://yuml.me/diagram/")
-        .append(mergedStyle.toString() + "/")
-        .append(type + "/")
-        .append(encodedBody)
-        .append("." + format)
-        .toString();
-  }
+    Rule body() {
+        return OneOrMore(TestNot(TAG), BaseParser.ANY);
+    }
 
-  @Override
-  public Rule[] blockPluginRules() {
-    return new Rule[]{blockRule()};
-  }
+    Rule blockRule() {
+        ParamVar<String, String> params = new ParamVar<>();
+        StringBuilderVar name = new StringBuilderVar();
+        StringBuilderVar value = new StringBuilderVar();
+        StringBuilderVar body = new StringBuilderVar();
+
+        return NodeSequence(
+                startMarker(),
+                ZeroOrMore(
+                        Sequence(
+                                parameterName(), name.append(match()),
+                                String("="),
+                                OneOrMore(Alphanumeric()), value.append(match())),
+                        Sp(),
+                        params.put(name.getString(), value.getString()),
+                        name.clear(), value.clear()),
+                body(),
+                body.append(match()),
+                endMarker(),
+                push(
+                        new ExpImageNode(
+                                "title", createYumlUrl(params.get(), body.getString()), new TextNode("")))
+        );
+    }
+
+    @Override
+    public Rule[] blockPluginRules() {
+        return new Rule[]{blockRule()};
+    }
 }

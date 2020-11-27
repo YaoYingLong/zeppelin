@@ -29,43 +29,43 @@ import java.util.Properties;
 
 public class SessionConfInterpreter extends ConfInterpreter {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(SessionConfInterpreter.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SessionConfInterpreter.class);
 
-  public SessionConfInterpreter(Properties properties,
-                                String sessionId,
-                                String interpreterGroupId,
-                                InterpreterSetting interpreterSetting) {
-    super(properties, sessionId, interpreterGroupId, interpreterSetting);
-  }
-
-  @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
-      throws InterpreterException {
-    try {
-      Properties finalProperties = new Properties();
-      finalProperties.putAll(this.properties);
-      Properties updatedProperties = new Properties();
-      updatedProperties.load(new StringReader(st));
-      finalProperties.putAll(updatedProperties);
-      LOGGER.debug("Properties for Session: {}:{}", sessionId, finalProperties);
-
-      List<Interpreter> interpreters =
-          interpreterSetting.getInterpreterGroup(interpreterGroupId).get(sessionId);
-      for (Interpreter intp : interpreters) {
-        // only check the RemoteInterpreter, ConfInterpreter itself will be ignored here.
-        if (intp instanceof RemoteInterpreter) {
-          RemoteInterpreter remoteInterpreter = (RemoteInterpreter) intp;
-          if (remoteInterpreter.isOpened()) {
-            return new InterpreterResult(InterpreterResult.Code.ERROR,
-                "Can not change interpreter session properties after this session is started");
-          }
-          remoteInterpreter.setProperties(finalProperties);
-        }
-      }
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
-    } catch (IOException e) {
-      LOGGER.error("Fail to update interpreter setting", e);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+    public SessionConfInterpreter(Properties properties,
+                                  String sessionId,
+                                  String interpreterGroupId,
+                                  InterpreterSetting interpreterSetting) {
+        super(properties, sessionId, interpreterGroupId, interpreterSetting);
     }
-  }
+
+    @Override
+    public InterpreterResult interpret(String st, InterpreterContext context)
+            throws InterpreterException {
+        try {
+            Properties finalProperties = new Properties();
+            finalProperties.putAll(this.properties);
+            Properties updatedProperties = new Properties();
+            updatedProperties.load(new StringReader(st));
+            finalProperties.putAll(updatedProperties);
+            LOGGER.debug("Properties for Session: {}:{}", sessionId, finalProperties);
+
+            List<Interpreter> interpreters =
+                    interpreterSetting.getInterpreterGroup(interpreterGroupId).get(sessionId);
+            for (Interpreter intp : interpreters) {
+                // only check the RemoteInterpreter, ConfInterpreter itself will be ignored here.
+                if (intp instanceof RemoteInterpreter) {
+                    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) intp;
+                    if (remoteInterpreter.isOpened()) {
+                        return new InterpreterResult(InterpreterResult.Code.ERROR,
+                                "Can not change interpreter session properties after this session is started");
+                    }
+                    remoteInterpreter.setProperties(finalProperties);
+                }
+            }
+            return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+        } catch (IOException e) {
+            LOGGER.error("Fail to update interpreter setting", e);
+            return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+        }
+    }
 }

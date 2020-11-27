@@ -25,24 +25,24 @@ import java.util.Properties;
  */
 public class LivySparkRInterpreter extends BaseLivyInterpreter {
 
-  public LivySparkRInterpreter(Properties property) {
-    super(property);
-  }
+    public LivySparkRInterpreter(Properties property) {
+        super(property);
+    }
 
-  @Override
-  public String getSessionKind() {
-    return "sparkr";
-  }
+    @Override
+    public String getSessionKind() {
+        return "sparkr";
+    }
 
-  @Override
-  protected String extractAppId() throws LivyException {
-    //TODO(zjffdu) depends on SparkR
-    return null;
-  }
+    @Override
+    protected String extractAppId() throws LivyException {
+        //TODO(zjffdu) depends on SparkR
+        return null;
+    }
 
-  @Override
-  protected String extractWebUIAddress() throws LivyException {
-    //TODO(zjffdu) depends on SparkR
-    return null;
-  }
+    @Override
+    protected String extractWebUIAddress() throws LivyException {
+        //TODO(zjffdu) depends on SparkR
+        return null;
+    }
 }

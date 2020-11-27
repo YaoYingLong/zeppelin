@@ -24,13 +24,13 @@ import java.io.IOException;
 
 public class VFSNotebookRepoMock extends VFSNotebookRepo {
 
-  public VFSNotebookRepoMock() {
-    String secNotebookDir = ZeppelinConfiguration.create().getNotebookDir() + "_secondary";
-    System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(), secNotebookDir);
-  }
+    public VFSNotebookRepoMock() {
+        String secNotebookDir = ZeppelinConfiguration.create().getNotebookDir() + "_secondary";
+        System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(), secNotebookDir);
+    }
 
-  public void init(ZeppelinConfiguration conf) throws IOException {
-    super.init(conf);
-  }
+    public void init(ZeppelinConfiguration conf) throws IOException {
+        super.init(conf);
+    }
 
 }

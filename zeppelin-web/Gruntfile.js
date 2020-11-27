@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -139,21 +139,18 @@ module.exports = function(grunt) {
       ci: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath: /\.\.\//,
-        exclude: [
-        ]
+        exclude: []
       },
       dist: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath: /\.\.\//,
-        exclude: [
-        ],
+        exclude: [],
       },
       test: {
         devDependencies: true,
         src: '<%= karma.unit.configFile %>',
         ignorePath: /\.\.\//,
-        exclude: [
-        ],
+        exclude: [],
         fileTypes: {
           js: {
             block: /(([\s\t]*)\/{2}\s*?bower:\s*?(\S*))(\n|\r|.)*?(\/{2}\s*endbower)/gi,
@@ -378,7 +375,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('pre-webpack-dev', 'Compile then start a connect web server', function(target) {
+  grunt.registerTask('pre-webpack-dev', 'Compile then start a connect web server', function (target) {
     grunt.task.run([
       'wiredep:test',
       'wiredep:dist',

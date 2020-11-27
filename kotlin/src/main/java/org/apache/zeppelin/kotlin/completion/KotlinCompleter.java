@@ -17,52 +17,54 @@
 
 package org.apache.zeppelin.kotlin.completion;
 
-import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.shorten;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.kotlin.reflect.KotlinFunctionInfo;
 import org.apache.zeppelin.kotlin.reflect.KotlinVariableInfo;
 import org.apache.zeppelin.kotlin.repl.KotlinRepl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.zeppelin.kotlin.reflect.KotlinReflectUtil.shorten;
+
 public class KotlinCompleter {
-  private static final List<InterpreterCompletion> keywords = KotlinKeywords.KEYWORDS.stream()
-      .map(keyword -> new InterpreterCompletion(keyword, keyword, null))
-      .collect(Collectors.toList());
+    private static final List<InterpreterCompletion> keywords = KotlinKeywords.KEYWORDS.stream()
+            .map(keyword -> new InterpreterCompletion(keyword, keyword, null))
+            .collect(Collectors.toList());
 
-  private KotlinRepl.KotlinContext ctx;
+    private KotlinRepl.KotlinContext ctx;
 
-  public void setCtx(KotlinRepl.KotlinContext ctx) {
-    this.ctx = ctx;
-  }
-
-  public List<InterpreterCompletion> completion(String buf, int cursor,
-                                                InterpreterContext interpreterContext)  {
-    if (ctx == null) {
-      return new ArrayList<>(keywords);
+    public void setCtx(KotlinRepl.KotlinContext ctx) {
+        this.ctx = ctx;
     }
 
-    List<InterpreterCompletion> result = new ArrayList<>();
+    public List<InterpreterCompletion> completion(String buf, int cursor,
+                                                  InterpreterContext interpreterContext) {
+        if (ctx == null) {
+            return new ArrayList<>(keywords);
+        }
 
-    for (KotlinVariableInfo var : ctx.getVars()) {
-      result.add(new InterpreterCompletion(
-          var.getName(),
-          var.getName(),
-          shorten(var.getType())
-      ));
+        List<InterpreterCompletion> result = new ArrayList<>();
+
+        for (KotlinVariableInfo var : ctx.getVars()) {
+            result.add(new InterpreterCompletion(
+                    var.getName(),
+                    var.getName(),
+                    shorten(var.getType())
+            ));
+        }
+
+        for (KotlinFunctionInfo fun : ctx.getFunctions()) {
+            result.add(new InterpreterCompletion(
+                    fun.getName(),
+                    fun.getName(),
+                    fun.toString(true)
+            ));
+        }
+
+        result.addAll(keywords);
+        return result;
     }
-
-    for (KotlinFunctionInfo fun : ctx.getFunctions()) {
-      result.add(new InterpreterCompletion(
-          fun.getName(),
-          fun.getName(),
-          fun.toString(true)
-      ));
-    }
-
-    result.addAll(keywords);
-    return result;
-  }
 }

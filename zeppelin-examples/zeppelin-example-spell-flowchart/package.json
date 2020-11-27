@@ -1,6 +1,6 @@
 {
   "name": "flowchart-spell",
-  "description" : "Draw flowchart using http://flowchart.js.org (example)",
+  "description": "Draw flowchart using http://flowchart.js.org (example)",
   "version": "1.0.0",
   "main": "index",
   "author": "",

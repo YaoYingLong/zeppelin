@@ -21,65 +21,65 @@ package org.apache.zeppelin.sap.universe;
  * Info about of universe item
  */
 public class UniverseNodeInfo {
-  private String id;
-  private String name;
-  private String type;
-  private String folder;
-  private String nodePath;
+    private String id;
+    private String name;
+    private String type;
+    private String folder;
+    private String nodePath;
 
-  public UniverseNodeInfo() {
-  }
+    public UniverseNodeInfo() {
+    }
 
-  public UniverseNodeInfo(String id, String name, String type, String folder, String nodePath) {
-    this.id = id;
-    this.name = name;
-    this.type = type;
-    this.folder = folder;
-    this.nodePath = nodePath;
-  }
+    public UniverseNodeInfo(String id, String name, String type, String folder, String nodePath) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.folder = folder;
+        this.nodePath = nodePath;
+    }
 
-  public UniverseNodeInfo(String name, String type) {
-    this.name = name;
-    this.type = type;
-  }
+    public UniverseNodeInfo(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getFolder() {
-    return folder;
-  }
+    public String getFolder() {
+        return folder;
+    }
 
-  public void setFolder(String folder) {
-    this.folder = folder;
-  }
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
 
-  public String getNodePath() {
-    return nodePath;
-  }
+    public String getNodePath() {
+        return nodePath;
+    }
 
-  public void setNodePath(String nodePath) {
-    this.nodePath = nodePath;
-  }
+    public void setNodePath(String nodePath) {
+        this.nodePath = nodePath;
+    }
 }

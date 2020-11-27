@@ -21,24 +21,24 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class InterpreterInstallationRequest {
-  private static final Gson gson = new GsonBuilder().create();
-  private String name;
-  private String artifact;
+    private static final Gson gson = new GsonBuilder().create();
+    private String name;
+    private String artifact;
 
-  public InterpreterInstallationRequest(String name, String artifact) {
-    this.name = name;
-    this.artifact = artifact;
-  }
+    public InterpreterInstallationRequest(String name, String artifact) {
+        this.name = name;
+        this.artifact = artifact;
+    }
 
-  public static InterpreterInstallationRequest fromJson(String message) {
-    return gson.fromJson(message, InterpreterInstallationRequest.class);
-  }
+    public static InterpreterInstallationRequest fromJson(String message) {
+        return gson.fromJson(message, InterpreterInstallationRequest.class);
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getArtifact() {
-    return artifact;
-  }
+    public String getArtifact() {
+        return artifact;
+    }
 }

@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.Set;
 
 public class NoSchedulerService implements SchedulerService {
-  @Override
-  public boolean refreshCron(String noteId) {
-    return false;
-  }
+    @Override
+    public boolean refreshCron(String noteId) {
+        return false;
+    }
 
-  @Override
-  public Set<?> getJobs() {
-    return Collections.emptySet();
-  }
+    @Override
+    public Set<?> getJobs() {
+        return Collections.emptySet();
+    }
 }

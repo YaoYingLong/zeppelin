@@ -15,18 +15,15 @@
 # limitations under the License.
 #
 
+import pyflink
 from pyflink.common import *
 from pyflink.dataset import *
 from pyflink.datastream import *
 from pyflink.table import *
 from pyflink.table.catalog import *
 from pyflink.table.descriptors import *
-from pyflink.table.window import *
 from pyflink.table.udf import *
-
-import pyflink
-
-from py4j.java_gateway import java_import
+from pyflink.table.window import *
 
 intp = gateway.entry_point
 
@@ -38,33 +35,35 @@ b_env = pyflink.dataset.ExecutionEnvironment(intp.getJavaExecutionEnvironment())
 s_env = StreamExecutionEnvironment(intp.getJavaStreamExecutionEnvironment())
 
 if intp.isFlink110():
-  bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"), True)
-  bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"), False)
-  st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"), True)
-  st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"), False)
+    bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"), True)
+    bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"), False)
+    st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"), True)
+    st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"), False)
 else:
-  bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"))
-  bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"))
-  st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"))
-  st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"))
+    bt_env = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("blink"))
+    bt_env_2 = BatchTableEnvironment(intp.getJavaBatchTableEnvironment("flink"))
+    st_env = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("blink"))
+    st_env_2 = StreamTableEnvironment(intp.getJavaStreamTableEnvironment("flink"))
 
 from zeppelin_context import PyZeppelinContext
 
-#TODO(zjffdu) merge it with IPyFlinkZeppelinContext
+
+# TODO(zjffdu) merge it with IPyFlinkZeppelinContext
 class PyFlinkZeppelinContext(PyZeppelinContext):
 
-  def __init__(self, z, gateway):
-    super(PyFlinkZeppelinContext, self).__init__(z, gateway)
+    def __init__(self, z, gateway):
+        super(PyFlinkZeppelinContext, self).__init__(z, gateway)
 
-  def show(self, obj, **kwargs):
-    from pyflink.table import Table
-    if isinstance(obj, Table):
-      if 'stream_type' in kwargs:
-        self.z.show(obj._j_table, kwargs['stream_type'], kwargs)
-      else:
-        print(self.z.showData(obj._j_table))
-    else:
-      super(PyFlinkZeppelinContext, self).show(obj, **kwargs)
+    def show(self, obj, **kwargs):
+        from pyflink.table import Table
+        if isinstance(obj, Table):
+            if 'stream_type' in kwargs:
+                self.z.show(obj._j_table, kwargs['stream_type'], kwargs)
+            else:
+                print(self.z.showData(obj._j_table))
+        else:
+            super(PyFlinkZeppelinContext, self).show(obj, **kwargs)
+
 
 z = __zeppelin__ = PyFlinkZeppelinContext(intp.getZeppelinContext(), gateway)
 __zeppelin__._setup_matplotlib()

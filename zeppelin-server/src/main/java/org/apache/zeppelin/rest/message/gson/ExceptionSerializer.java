@@ -23,23 +23,23 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.lang.reflect.Type;
 import javax.ws.rs.WebApplicationException;
+import java.lang.reflect.Type;
 
 public class ExceptionSerializer implements JsonSerializer<Exception> {
 
-  @Override
-  public JsonElement serialize(
-      Exception e, Type type, JsonSerializationContext jsonSerializationContext) {
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("exception", e.getClass().getSimpleName());
-    jsonObject.addProperty("message", e.getMessage());
-    jsonObject.addProperty("stacktrace", ExceptionUtils.getStackTrace(e));
+    @Override
+    public JsonElement serialize(
+            Exception e, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("exception", e.getClass().getSimpleName());
+        jsonObject.addProperty("message", e.getMessage());
+        jsonObject.addProperty("stacktrace", ExceptionUtils.getStackTrace(e));
 
-    if (e instanceof WebApplicationException) {
-      jsonObject.addProperty("status", ((WebApplicationException) e).getResponse().getStatus());
+        if (e instanceof WebApplicationException) {
+            jsonObject.addProperty("status", ((WebApplicationException) e).getResponse().getStatus());
+        }
+
+        return jsonObject;
     }
-
-    return jsonObject;
-  }
 }

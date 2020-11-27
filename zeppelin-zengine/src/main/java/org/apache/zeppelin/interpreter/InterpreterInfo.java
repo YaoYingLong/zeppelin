@@ -26,67 +26,68 @@ import java.util.Map;
  * this will be serialized for conf/interpreter.json and REST api response.
  */
 public class InterpreterInfo {
-  private String name;
-  @SerializedName("class") private String className;
-  private boolean defaultInterpreter = false;
-  private Map<String, Object> editor;
-  private Map<String, Object> config;
+    private String name;
+    @SerializedName("class")
+    private String className;
+    private boolean defaultInterpreter = false;
+    private Map<String, Object> editor;
+    private Map<String, Object> config;
 
-  public InterpreterInfo(String className, String name, boolean defaultInterpreter,
-                         Map<String, Object> editor, Map<String, Object> config) {
-    this.className = className;
-    this.name = name;
-    this.defaultInterpreter = defaultInterpreter;
-    this.editor = editor;
-    this.config = config;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getClassName() {
-    return className;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  boolean isDefaultInterpreter() {
-    return defaultInterpreter;
-  }
-
-  public Map<String, Object> getEditor() {
-    return editor;
-  }
-
-  public void setEditor(Map<String, Object> editor) {
-    this.editor = editor;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof InterpreterInfo)) {
-      return false;
+    public InterpreterInfo(String className, String name, boolean defaultInterpreter,
+                           Map<String, Object> editor, Map<String, Object> config) {
+        this.className = className;
+        this.name = name;
+        this.defaultInterpreter = defaultInterpreter;
+        this.editor = editor;
+        this.config = config;
     }
-    InterpreterInfo other = (InterpreterInfo) obj;
 
-    boolean sameName =
-        null == getName() ? null == other.getName() : getName().equals(other.getName());
-    boolean sameClassName = null == getClassName() ?
-        null == other.getClassName() :
-        getClassName().equals(other.getClassName());
-    boolean sameIsDefaultInterpreter = defaultInterpreter == other.isDefaultInterpreter();
+    public String getName() {
+        return name;
+    }
 
-    return sameName && sameClassName && sameIsDefaultInterpreter;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public Map<String, Object> getConfig() {
-    return config;
-  }
+    public String getClassName() {
+        return className;
+    }
 
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
-  }
+    boolean isDefaultInterpreter() {
+        return defaultInterpreter;
+    }
+
+    public Map<String, Object> getEditor() {
+        return editor;
+    }
+
+    public void setEditor(Map<String, Object> editor) {
+        this.editor = editor;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof InterpreterInfo)) {
+            return false;
+        }
+        InterpreterInfo other = (InterpreterInfo) obj;
+
+        boolean sameName =
+                null == getName() ? null == other.getName() : getName().equals(other.getName());
+        boolean sameClassName = null == getClassName() ?
+                null == other.getClassName() :
+                getClassName().equals(other.getClassName());
+        boolean sameIsDefaultInterpreter = defaultInterpreter == other.isDefaultInterpreter();
+
+        return sameName && sameClassName && sameIsDefaultInterpreter;
+    }
+
+    public Map<String, Object> getConfig() {
+        return config;
+    }
+
+    public void setConfig(Map<String, Object> config) {
+        this.config = config;
+    }
 }

@@ -32,90 +32,90 @@ import java.util.Properties;
 
 public class FlinkStreamSqlInterpreter extends FlinkSqlInterrpeter {
 
-  public FlinkStreamSqlInterpreter(Properties properties) {
-    super(properties);
-  }
-
-  @Override
-  protected boolean isBatch() {
-    return false;
-  }
-
-  @Override
-  public void open() throws InterpreterException {
-    this.flinkInterpreter =
-            getInterpreterInTheSameSessionByClassName(FlinkInterpreter.class);
-    this.tbenv = flinkInterpreter.getJavaStreamTableEnvironment("blink");
-    super.open();
-  }
-
-  @Override
-  public void close() throws InterpreterException {
-
-  }
-
-  @Override
-  public void callInnerSelect(String sql, InterpreterContext context) throws IOException {
-    String streamType = context.getLocalProperties().get("type");
-    if (streamType == null) {
-      throw new IOException("type must be specified for stream sql");
+    public FlinkStreamSqlInterpreter(Properties properties) {
+        super(properties);
     }
-    if (streamType.equalsIgnoreCase("single")) {
-      SingleRowStreamSqlJob streamJob = new SingleRowStreamSqlJob(
-              flinkInterpreter.getStreamExecutionEnvironment(),
-              tbenv,
-              flinkInterpreter.getJobManager(),
-              context,
-              flinkInterpreter.getDefaultParallelism(),
-              flinkInterpreter.getFlinkShims());
-      streamJob.run(sql);
-    } else if (streamType.equalsIgnoreCase("append")) {
-      AppendStreamSqlJob streamJob = new AppendStreamSqlJob(
-              flinkInterpreter.getStreamExecutionEnvironment(),
-              flinkInterpreter.getStreamTableEnvironment(),
-              flinkInterpreter.getJobManager(),
-              context,
-              flinkInterpreter.getDefaultParallelism(),
-              flinkInterpreter.getFlinkShims());
-      streamJob.run(sql);
-    } else if (streamType.equalsIgnoreCase("update")) {
-      UpdateStreamSqlJob streamJob = new UpdateStreamSqlJob(
-              flinkInterpreter.getStreamExecutionEnvironment(),
-              flinkInterpreter.getStreamTableEnvironment(),
-              flinkInterpreter.getJobManager(),
-              context,
-              flinkInterpreter.getDefaultParallelism(),
-              flinkInterpreter.getFlinkShims());
-      streamJob.run(sql);
-    } else {
-      throw new IOException("Unrecognized stream type: " + streamType);
+
+    @Override
+    protected boolean isBatch() {
+        return false;
     }
-  }
 
-  @Override
-  public void callInsertInto(String sql, InterpreterContext context) throws IOException {
-    super.callInsertInto(sql, context);
-  }
+    @Override
+    public void open() throws InterpreterException {
+        this.flinkInterpreter =
+                getInterpreterInTheSameSessionByClassName(FlinkInterpreter.class);
+        this.tbenv = flinkInterpreter.getJavaStreamTableEnvironment("blink");
+        super.open();
+    }
 
-  public void cancel(InterpreterContext context) throws InterpreterException {
-    this.flinkInterpreter.cancel(context);
-  }
+    @Override
+    public void close() throws InterpreterException {
 
-  @Override
-  public Interpreter.FormType getFormType() throws InterpreterException {
-    return Interpreter.FormType.SIMPLE;
-  }
+    }
 
-  @Override
-  public int getProgress(InterpreterContext context) throws InterpreterException {
-    return 0;
-  }
+    @Override
+    public void callInnerSelect(String sql, InterpreterContext context) throws IOException {
+        String streamType = context.getLocalProperties().get("type");
+        if (streamType == null) {
+            throw new IOException("type must be specified for stream sql");
+        }
+        if (streamType.equalsIgnoreCase("single")) {
+            SingleRowStreamSqlJob streamJob = new SingleRowStreamSqlJob(
+                    flinkInterpreter.getStreamExecutionEnvironment(),
+                    tbenv,
+                    flinkInterpreter.getJobManager(),
+                    context,
+                    flinkInterpreter.getDefaultParallelism(),
+                    flinkInterpreter.getFlinkShims());
+            streamJob.run(sql);
+        } else if (streamType.equalsIgnoreCase("append")) {
+            AppendStreamSqlJob streamJob = new AppendStreamSqlJob(
+                    flinkInterpreter.getStreamExecutionEnvironment(),
+                    flinkInterpreter.getStreamTableEnvironment(),
+                    flinkInterpreter.getJobManager(),
+                    context,
+                    flinkInterpreter.getDefaultParallelism(),
+                    flinkInterpreter.getFlinkShims());
+            streamJob.run(sql);
+        } else if (streamType.equalsIgnoreCase("update")) {
+            UpdateStreamSqlJob streamJob = new UpdateStreamSqlJob(
+                    flinkInterpreter.getStreamExecutionEnvironment(),
+                    flinkInterpreter.getStreamTableEnvironment(),
+                    flinkInterpreter.getJobManager(),
+                    context,
+                    flinkInterpreter.getDefaultParallelism(),
+                    flinkInterpreter.getFlinkShims());
+            streamJob.run(sql);
+        } else {
+            throw new IOException("Unrecognized stream type: " + streamType);
+        }
+    }
 
-  @Override
-  public Scheduler getScheduler() {
-    int maxConcurrency = Integer.parseInt(
-            getProperty("zeppelin.flink.concurrentStreamSql.max", "10"));
-    return SchedulerFactory.singleton().createOrGetParallelScheduler(
-            FlinkStreamSqlInterpreter.class.getName() + this.hashCode(), maxConcurrency);
-  }
+    @Override
+    public void callInsertInto(String sql, InterpreterContext context) throws IOException {
+        super.callInsertInto(sql, context);
+    }
+
+    public void cancel(InterpreterContext context) throws InterpreterException {
+        this.flinkInterpreter.cancel(context);
+    }
+
+    @Override
+    public Interpreter.FormType getFormType() throws InterpreterException {
+        return Interpreter.FormType.SIMPLE;
+    }
+
+    @Override
+    public int getProgress(InterpreterContext context) throws InterpreterException {
+        return 0;
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        int maxConcurrency = Integer.parseInt(
+                getProperty("zeppelin.flink.concurrentStreamSql.max", "10"));
+        return SchedulerFactory.singleton().createOrGetParallelScheduler(
+                FlinkStreamSqlInterpreter.class.getName() + this.hashCode(), maxConcurrency);
+    }
 }

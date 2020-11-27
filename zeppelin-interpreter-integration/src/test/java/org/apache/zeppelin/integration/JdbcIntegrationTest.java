@@ -19,14 +19,7 @@ package org.apache.zeppelin.integration;
 
 import com.google.common.collect.Lists;
 import org.apache.zeppelin.dep.Dependency;
-import org.apache.zeppelin.interpreter.ExecutionContextBuilder;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterFactory;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
-import org.apache.zeppelin.interpreter.InterpreterSettingManager;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,68 +32,68 @@ import static org.junit.Assert.assertNotNull;
 
 public class JdbcIntegrationTest {
 
-  private static MiniZeppelin zeppelin;
-  private static InterpreterFactory interpreterFactory;
-  private static InterpreterSettingManager interpreterSettingManager;
+    private static MiniZeppelin zeppelin;
+    private static InterpreterFactory interpreterFactory;
+    private static InterpreterSettingManager interpreterSettingManager;
 
 
-  @BeforeClass
-  public static void setUp() throws IOException {
-    zeppelin = new MiniZeppelin();
-    zeppelin.start(JdbcIntegrationTest.class);
-    interpreterFactory = zeppelin.getInterpreterFactory();
-    interpreterSettingManager = zeppelin.getInterpreterSettingManager();
-  }
-
-  @AfterClass
-  public static void tearDown() throws IOException {
-    if (zeppelin != null) {
-      zeppelin.stop();
+    @BeforeClass
+    public static void setUp() throws IOException {
+        zeppelin = new MiniZeppelin();
+        zeppelin.start(JdbcIntegrationTest.class);
+        interpreterFactory = zeppelin.getInterpreterFactory();
+        interpreterSettingManager = zeppelin.getInterpreterSettingManager();
     }
-  }
 
-  @Test
-  public void testMySql() throws InterpreterException, InterruptedException {
-    InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("jdbc");
-    interpreterSetting.setProperty("default.driver", "com.mysql.jdbc.Driver");
-    interpreterSetting.setProperty("default.url", "jdbc:mysql://localhost:3306/");
-    interpreterSetting.setProperty("default.user", "root");
+    @AfterClass
+    public static void tearDown() throws IOException {
+        if (zeppelin != null) {
+            zeppelin.stop();
+        }
+    }
 
-    Dependency dependency = new Dependency("mysql:mysql-connector-java:5.1.46");
-    interpreterSetting.setDependencies(Lists.newArrayList(dependency));
-    interpreterSettingManager.restart(interpreterSetting.getId());
-    interpreterSetting.waitForReady(60 * 1000);
-    Interpreter jdbcInterpreter = interpreterFactory.getInterpreter("jdbc", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("test").createExecutionContext());
-    assertNotNull("JdbcInterpreter is null", jdbcInterpreter);
+    @Test
+    public void testMySql() throws InterpreterException, InterruptedException {
+        InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("jdbc");
+        interpreterSetting.setProperty("default.driver", "com.mysql.jdbc.Driver");
+        interpreterSetting.setProperty("default.url", "jdbc:mysql://localhost:3306/");
+        interpreterSetting.setProperty("default.user", "root");
 
-    InterpreterContext context = new InterpreterContext.Builder()
-            .setNoteId("note1")
-            .setParagraphId("paragraph_1")
-            .setAuthenticationInfo(AuthenticationInfo.ANONYMOUS)
-            .build();
-    InterpreterResult interpreterResult = jdbcInterpreter.interpret("show databases;", context);
-    assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        Dependency dependency = new Dependency("mysql:mysql-connector-java:5.1.46");
+        interpreterSetting.setDependencies(Lists.newArrayList(dependency));
+        interpreterSettingManager.restart(interpreterSetting.getId());
+        interpreterSetting.waitForReady(60 * 1000);
+        Interpreter jdbcInterpreter = interpreterFactory.getInterpreter("jdbc", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("test").createExecutionContext());
+        assertNotNull("JdbcInterpreter is null", jdbcInterpreter);
 
-    context.getLocalProperties().put("saveAs", "table_1");
-    interpreterResult = jdbcInterpreter.interpret("SELECT 1 as c1, 2 as c2;", context);
-    assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertEquals(1, interpreterResult.message().size());
-    assertEquals(InterpreterResult.Type.TABLE, interpreterResult.message().get(0).getType());
-    assertEquals("c1\tc2\n1\t2\n", interpreterResult.message().get(0).getData());
+        InterpreterContext context = new InterpreterContext.Builder()
+                .setNoteId("note1")
+                .setParagraphId("paragraph_1")
+                .setAuthenticationInfo(AuthenticationInfo.ANONYMOUS)
+                .build();
+        InterpreterResult interpreterResult = jdbcInterpreter.interpret("show databases;", context);
+        assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
 
-    // read table_1 from python interpreter
-    Interpreter pythonInterpreter = interpreterFactory.getInterpreter("python", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("test").createExecutionContext());
-    assertNotNull("PythonInterpreter is null", pythonInterpreter);
+        context.getLocalProperties().put("saveAs", "table_1");
+        interpreterResult = jdbcInterpreter.interpret("SELECT 1 as c1, 2 as c2;", context);
+        assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        assertEquals(1, interpreterResult.message().size());
+        assertEquals(InterpreterResult.Type.TABLE, interpreterResult.message().get(0).getType());
+        assertEquals("c1\tc2\n1\t2\n", interpreterResult.message().get(0).getData());
 
-    context = new InterpreterContext.Builder()
-            .setNoteId("note1")
-            .setParagraphId("paragraph_1")
-            .setAuthenticationInfo(AuthenticationInfo.ANONYMOUS)
-            .build();
-    interpreterResult = pythonInterpreter.interpret("df=z.getAsDataFrame('table_1')\nz.show(df)", context);
-    assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertEquals(1, interpreterResult.message().size());
-    assertEquals(InterpreterResult.Type.TABLE, interpreterResult.message().get(0).getType());
-    assertEquals("c1\tc2\n1\t2\n", interpreterResult.message().get(0).getData());
-  }
+        // read table_1 from python interpreter
+        Interpreter pythonInterpreter = interpreterFactory.getInterpreter("python", new ExecutionContextBuilder().setUser("user1").setNoteId("note1").setDefaultInterpreterGroup("test").createExecutionContext());
+        assertNotNull("PythonInterpreter is null", pythonInterpreter);
+
+        context = new InterpreterContext.Builder()
+                .setNoteId("note1")
+                .setParagraphId("paragraph_1")
+                .setAuthenticationInfo(AuthenticationInfo.ANONYMOUS)
+                .build();
+        interpreterResult = pythonInterpreter.interpret("df=z.getAsDataFrame('table_1')\nz.show(df)", context);
+        assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
+        assertEquals(1, interpreterResult.message().size());
+        assertEquals(InterpreterResult.Type.TABLE, interpreterResult.message().get(0).getType());
+        assertEquals("c1\tc2\n1\t2\n", interpreterResult.message().get(0).getData());
+    }
 }

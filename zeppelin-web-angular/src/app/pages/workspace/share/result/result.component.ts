@@ -73,8 +73,6 @@ export class NotebookParagraphResultComponent implements OnInit, AfterViewInit, 
   @Output() readonly configChange = new EventEmitter<ParagraphConfigResult>();
   @Output() readonly sizeChange = new EventEmitter<NzResizeEvent>();
   @ViewChild(CdkPortalOutlet, { static: false }) portalOutlet: CdkPortalOutlet;
-
-  private destroy$ = new Subject();
   datasetType = DatasetType;
   angularComponent: DynamicTemplate;
   innerHTML: string | SafeHtml = '';
@@ -133,6 +131,7 @@ export class NotebookParagraphResultComponent implements OnInit, AfterViewInit, 
       instance: undefined
     }
   ];
+  private destroy$ = new Subject();
 
   constructor(
     private viewContainerRef: ViewContainerRef,

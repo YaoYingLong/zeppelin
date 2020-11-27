@@ -30,12 +30,12 @@ import java.util.Map;
  */
 public class ParamVar<K, V> extends Var<Map<K, V>> {
 
-  public ParamVar() {
-    super(new HashMap<>());
-  }
+    public ParamVar() {
+        super(new HashMap<>());
+    }
 
-  public boolean put(K key, V value) {
-    get().put(key, value);
-    return true;
-  }
+    public boolean put(K key, V value) {
+        get().put(key, value);
+        return true;
+    }
 }

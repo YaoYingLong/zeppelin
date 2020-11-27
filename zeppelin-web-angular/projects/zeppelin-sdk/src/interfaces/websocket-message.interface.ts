@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { MixMessageDataTypeMap } from './message-data-type-map.interface';
+import {MixMessageDataTypeMap} from './message-data-type-map.interface';
 
 export interface WebSocketMessage<K extends keyof MixMessageDataTypeMap> {
   op: K;

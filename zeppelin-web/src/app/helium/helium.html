@@ -20,41 +20,41 @@ limitations under the License.
           Helium
         </h3>
         <div class="pull-right heliumLearnMore">
-          <a target="_blank"
-             class="helium-repo-btn"
+          <a class="helium-repo-btn"
              ng-href="https://zeppelin.apache.org/helium_packages.html"
+             target="_blank"
              tooltip-placement="bottom" uib-tooltip="Learn more">
             <i class="icon-question" ng-style="{color: 'black'}"></i>
           </a>
-          <button tabindex="0" role="button"
+          <button class="btn btn-default btn-sm heliumRepoBtn helium-popover" ng-class="($parent.pkgListByType === pkgTypes) ? 'heliumRepoBtnToggled' : ''"
+                  ng-click="$parent.pkgListByType = pkgTypes"
                   ng-repeat="pkgTypes in allPackageTypes"
-                  class="btn btn-default btn-sm heliumRepoBtn helium-popover"
-                  ng-class="($parent.pkgListByType === pkgTypes) ? 'heliumRepoBtnToggled' : ''"
-                  ng-click="$parent.pkgListByType = pkgTypes">
+                  role="button"
+                  tabindex="0">
             <i class="fa fa-cube"></i>
             {{pkgTypes}}
           </button>
         </div>
       </div>
     </div>
-    <div ng-show="bundleOrder.length > 1"
-         class="row heliumBundleOrder">
+    <div class="row heliumBundleOrder"
+         ng-show="bundleOrder.length > 1">
       <p>Bundle package display order (drag and drop to reorder)</p>
       <div class="col-md-12">
-        <div class="sortable-row btn-group"
-             as-sortable="bundleOrderListeners"
+        <div as-sortable="bundleOrderListeners"
+             class="sortable-row btn-group"
              data-ng-model="bundleOrder">
-          <div class="btn-group" data-ng-repeat="pkgName in bundleOrder"
-               as-sortable-item>
-            <button class="btn btn-default btn-sm heliumVisIconButton"
-                 ng-bind-html='defaultPackages[pkgName].pkg.icon'
-                 as-sortable-item-handle>
+          <div as-sortable-item class="btn-group"
+               data-ng-repeat="pkgName in bundleOrder">
+            <button as-sortable-item-handle
+                    class="btn btn-default btn-sm heliumVisIconButton"
+                    ng-bind-html='defaultPackages[pkgName].pkg.icon'>
             </button>
           </div>
         </div>
         <div class="saveLink"
-             ng-show="bundleOrderChanged"
-             ng-click="saveBundleOrder()">
+             ng-click="saveBundleOrder()"
+             ng-show="bundleOrderChanged">
           save
         </div>
       </div>
@@ -69,8 +69,8 @@ limitations under the License.
 
 <div class="box width-full heliumPackageContainer">
   <div class="row"
-       style="padding-bottom: 15px"
-       ng-if="getPackageSize(defaultPackages, pkgListByType) === 0">
+       ng-if="getPackageSize(defaultPackages, pkgListByType) === 0"
+       style="padding-bottom: 15px">
     <div class="col-md-12 gray40-message">
       <em>Currently there is no available package to be listed</em>
     </div>
@@ -82,45 +82,50 @@ limitations under the License.
       <div class="col-md-12">
         <div class="heliumPackageHead">
           <div class="heliumPackageIcon"
-               ng-if="pkgSearchResult.pkg.type !== 'INTERPRETER'"
-               ng-bind-html=pkgSearchResult.pkg.icon></div>
+               ng-bind-html=pkgSearchResult.pkg.icon
+               ng-if="pkgSearchResult.pkg.type !== 'INTERPRETER'"></div>
           <div class="heliumPackageIcon"
-               ng-if="pkgSearchResult.pkg.type === 'INTERPRETER'"
-               ng-bind-html=intpDefaultIcon></div>
+               ng-bind-html=intpDefaultIcon
+               ng-if="pkgSearchResult.pkg.type === 'INTERPRETER'"></div>
           <div class="heliumPackageName">
             <span ng-if="hasNpmLink(pkgSearchResult)">
-              <a target="_blank" href="https://www.npmjs.com/package/{{pkgSearchResult.pkg.name}}">{{pkgSearchResult.pkg.name}}</a>
+              <a href="https://www.npmjs.com/package/{{pkgSearchResult.pkg.name}}" target="_blank">{{pkgSearchResult.pkg.name}}</a>
             </span>
-            <span ng-if="!hasNpmLink(pkgSearchResult) && !hasMavenLink(pkgSearchResult)" ng-class="{'heliumLocalPackage': isLocalPackage(pkgSearchResult)}">
+            <span ng-class="{'heliumLocalPackage': isLocalPackage(pkgSearchResult)}"
+                  ng-if="!hasNpmLink(pkgSearchResult) && !hasMavenLink(pkgSearchResult)">
               {{pkgSearchResult.pkg.name}}
             </span>
             <span ng-if="hasMavenLink(pkgSearchResult)">
-              <a target="_blank"
-                 href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22{{pkgSearchResult.pkg.artifact.split('@')[0]}}%22%20AND%20v%3A%22{{pkgSearchResult.pkg.artifact.split('@')[1]}}%22">
+              <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22{{pkgSearchResult.pkg.artifact.split('@')[0]}}%22%20AND%20v%3A%22{{pkgSearchResult.pkg.artifact.split('@')[1]}}%22"
+                 target="_blank">
                  {{pkgSearchResult.pkg.name}}
               </a>
             </span>
             <span class="heliumType">{{pkgSearchResult.pkg.type}}</span>
           </div>
-          <div ng-show="!pkgSearchResult.enabled"
+          <div class="btn btn-success btn-xs"
                ng-click="enable(pkgSearchResult.pkg.name, pkgSearchResult.pkg.artifact, pkgSearchResult.pkg.type, pkgSearchResult.pkg.groupId, pkgSearchResult.pkg.description)"
-               class="btn btn-success btn-xs"
-               style="float:right">Enable</div>
-          <div ng-show="pkgSearchResult.enabled"
+               ng-show="!pkgSearchResult.enabled"
+               style="float:right">Enable
+          </div>
+          <div class="btn btn-info btn-xs"
                ng-click="disable(pkgSearchResult.pkg.name, pkgSearchResult.pkg.artifact)"
                ng-if="pkgSearchResult.pkg.type !== 'INTERPRETER'"
-               class="btn btn-info btn-xs"
-               style="float:right">Disable</div>
-          <div ng-show="configExists(pkgSearchResult)"
-               ng-click="toggleConfigButton(pkgSearchResult)"
+               ng-show="pkgSearchResult.enabled"
+               style="float:right">Disable
+          </div>
+          <div class="btn btn-default btn-xs spellConfigButton"
                ng-class="getConfigButtonClass(pkgSearchResult)"
-               class="btn btn-default btn-xs spellConfigButton"
-               style="float:right; margin-right:5px;">Config</div>
+               ng-click="toggleConfigButton(pkgSearchResult)"
+               ng-show="configExists(pkgSearchResult)"
+               style="float:right; margin-right:5px;">Config
+          </div>
         </div>
-        <div ng-class="{heliumPackageDisabledArtifact: !pkgSearchResult.enabled, heliumPackageEnabledArtifact: pkgSearchResult.enabled}">
+        <div
+          ng-class="{heliumPackageDisabledArtifact: !pkgSearchResult.enabled, heliumPackageEnabledArtifact: pkgSearchResult.enabled}">
           {{pkgSearchResult.pkg.artifact}}
-          <span ng-show="pkgSearchResults[pkgSearchResult.pkg.name].length > 0"
-                ng-click="toggleVersions(pkgSearchResult.pkg.name)">
+          <span ng-click="toggleVersions(pkgSearchResult.pkg.name)"
+                ng-show="pkgSearchResults[pkgSearchResult.pkg.name].length > 0">
             versions
           </span>
         </div>
@@ -129,15 +134,16 @@ limitations under the License.
           <li class="heliumPackageDisabledArtifact"
               ng-repeat="pkgSearchResult in pkgSearchResults[pkgSearchResult.pkg.name]">
             {{pkgSearchResult.pkg.artifact}} -
-            <span ng-click="enable(pkgSearchResult.pkg.name, pkgSearchResult.pkg.artifact, pkgSearchResult.pkg.type, pkgSearchResult.pkg.groupId)"
-                  style="margin-left:3px;cursor:pointer;text-decoration: underline;color:#3071a9">
+            <span
+              ng-click="enable(pkgSearchResult.pkg.name, pkgSearchResult.pkg.artifact, pkgSearchResult.pkg.type, pkgSearchResult.pkg.groupId)"
+              style="margin-left:3px;cursor:pointer;text-decoration: underline;color:#3071a9">
               enable
             </span>
           </li>
         </ul>
         <div class="heliumPackageDescription" ng-bind-html="getDescriptionText(pkgSearchResult)"></div>
-        <div ng-if="pkgSearchResult.pkg.type === 'SPELL' && pkgSearchResult.pkg.spell"
-             class="spellInfo">
+        <div class="spellInfo"
+             ng-if="pkgSearchResult.pkg.type === 'SPELL' && pkgSearchResult.pkg.spell">
           <div>
             <span class="spellInfoDesc">MAGIC</span>
             <span class="spellInfoValue">{{pkgSearchResult.pkg.spell.magic}} </span>
@@ -166,8 +172,8 @@ limitations under the License.
               <td style="vertical-align: middle;">{{cfg.description}}</td>
               <td>
                 <div class="input-group">
-                  <input type="text" class="form-control" style="border-radius: 5px;"
-                         data-ng-model="cfg.value" placeholder="{{cfg.defaultValue}}" />
+                  <input class="form-control" data-ng-model="cfg.value" placeholder="{{cfg.defaultValue}}"
+                         style="border-radius: 5px;" type="text"/>
                 </div>
               </td>
             </tr>
@@ -175,23 +181,25 @@ limitations under the License.
 
           <div>
             <button class="btn btn-primary"
-                    ng-click="saveConfig(pkgSearchResult)">Save</button>
+                    ng-click="saveConfig(pkgSearchResult)">Save
+            </button>
             <button class="btn btn-default"
-                    ng-click="toggleConfigButton(pkgSearchResult)">Close</button>
+                    ng-click="toggleConfigButton(pkgSearchResult)">Close
+            </button>
           </div>
         </div>
         <!--end: config-->
 
       </div>
     </div>
-    <div class="text-center" style="margin-top: 20px;" ng-if="getPackageSize(defaultPackages, pkgListByType) !== 0">
-      <ul uib-pagination boundary-links="true" total-items="defaultPackages.length"
-                  ng-model="$parent.currentPage" class="pagination-sm"
-                  ng-show="$parent.pkgListByType === types"
-                  max-size="maxSize"
-                  items-per-page="itemsPerPage"
-                  ng-class="{'hide-first-boundaries': $parent.currentPage == 1, 'hide-last-boundaries': $parent.currentPage >= defaultPackages.length/itemsPerPage}"
-                  previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+    <div class="text-center" ng-if="getPackageSize(defaultPackages, pkgListByType) !== 0" style="margin-top: 20px;">
+      <ul boundary-links="true" class="pagination-sm" first-text="&laquo;"
+          items-per-page="itemsPerPage" last-text="&raquo;"
+          max-size="maxSize"
+          next-text="&rsaquo;"
+          ng-class="{'hide-first-boundaries': $parent.currentPage == 1, 'hide-last-boundaries': $parent.currentPage >= defaultPackages.length/itemsPerPage}"
+          ng-model="$parent.currentPage"
+          ng-show="$parent.pkgListByType === types" previous-text="&lsaquo;" total-items="defaultPackages.length" uib-pagination></ul>
     </div>
   </div>
 </div>

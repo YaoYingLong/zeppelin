@@ -17,17 +17,6 @@
 
 package org.apache.zeppelin.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.dep.DependencyResolver;
@@ -40,94 +29,103 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class InterpreterServiceTest {
-  @Mock private ZeppelinConfiguration mockZeppelinConfiguration;
-  @Mock private InterpreterSettingManager mockInterpreterSettingManager;
+    InterpreterService interpreterService;
+    @Mock
+    private ZeppelinConfiguration mockZeppelinConfiguration;
+    @Mock
+    private InterpreterSettingManager mockInterpreterSettingManager;
+    private Path temporaryDir;
+    private Path interpreterDir;
+    private Path localRepoDir;
 
-  private Path temporaryDir;
-  private Path interpreterDir;
-  private Path localRepoDir;
+    @Before
+    public void setUp() throws Exception {
+        temporaryDir = Files.createTempDirectory("tmp");
+        interpreterDir = Files.createTempDirectory(temporaryDir, "interpreter");
+        localRepoDir = Files.createTempDirectory(temporaryDir, "local-repo");
 
-  InterpreterService interpreterService;
+        when(mockZeppelinConfiguration.getInterpreterDir()).thenReturn(interpreterDir.toString());
+        when(mockZeppelinConfiguration.getInterpreterLocalRepoPath())
+                .thenReturn(localRepoDir.toString());
 
-  @Before
-  public void setUp() throws Exception {
-    temporaryDir = Files.createTempDirectory("tmp");
-    interpreterDir = Files.createTempDirectory(temporaryDir, "interpreter");
-    localRepoDir = Files.createTempDirectory(temporaryDir, "local-repo");
+        when(mockZeppelinConfiguration.getZeppelinProxyUrl()).thenReturn(null);
+        when(mockZeppelinConfiguration.getZeppelinProxyUser()).thenReturn(null);
+        when(mockZeppelinConfiguration.getZeppelinProxyPassword()).thenReturn(null);
 
-    when(mockZeppelinConfiguration.getInterpreterDir()).thenReturn(interpreterDir.toString());
-    when(mockZeppelinConfiguration.getInterpreterLocalRepoPath())
-        .thenReturn(localRepoDir.toString());
-
-    when(mockZeppelinConfiguration.getZeppelinProxyUrl()).thenReturn(null);
-    when(mockZeppelinConfiguration.getZeppelinProxyUser()).thenReturn(null);
-    when(mockZeppelinConfiguration.getZeppelinProxyPassword()).thenReturn(null);
-
-    interpreterService =
-        new InterpreterService(mockZeppelinConfiguration, mockInterpreterSettingManager);
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    if (null != temporaryDir) {
-      FileUtils.deleteDirectory(temporaryDir.toFile());
+        interpreterService =
+                new InterpreterService(mockZeppelinConfiguration, mockInterpreterSettingManager);
     }
-  }
 
-  @Test(expected = Exception.class)
-  public void interpreterAlreadyExist() throws Exception {
-    String alreadyExistName = "aen";
-    Path specificInterpreterDir =
-        Files.createDirectory(Paths.get(interpreterDir.toString(), alreadyExistName));
+    @After
+    public void tearDown() throws Exception {
+        if (null != temporaryDir) {
+            FileUtils.deleteDirectory(temporaryDir.toFile());
+        }
+    }
 
-    interpreterService.installInterpreter(
-        new InterpreterInstallationRequest(alreadyExistName, "artifact"), null);
-  }
+    @Test(expected = Exception.class)
+    public void interpreterAlreadyExist() throws Exception {
+        String alreadyExistName = "aen";
+        Path specificInterpreterDir =
+                Files.createDirectory(Paths.get(interpreterDir.toString(), alreadyExistName));
 
-  @Test(expected = Exception.class)
-  public void interpreterAlreadyExistWithDifferentName() throws Exception {
-    String interpreterName = "in";
-    Files.createDirectory(Paths.get(interpreterDir.toString(), interpreterName));
+        interpreterService.installInterpreter(
+                new InterpreterInstallationRequest(alreadyExistName, "artifact"), null);
+    }
 
-    String anotherButSameInterpreterName = "zeppelin-" + interpreterName;
-
-    interpreterService.installInterpreter(
-        new InterpreterInstallationRequest(anotherButSameInterpreterName, "artifact"), null);
-  }
-
-  @Test
-  public void downloadInterpreter() throws IOException {
-    final String interpreterName = "test-interpreter";
-    String artifactName = "junit:junit:4.11";
-    Path specificInterpreterPath =
+    @Test(expected = Exception.class)
+    public void interpreterAlreadyExistWithDifferentName() throws Exception {
+        String interpreterName = "in";
         Files.createDirectory(Paths.get(interpreterDir.toString(), interpreterName));
-    DependencyResolver dependencyResolver = new DependencyResolver(localRepoDir.toString());
 
-    doNothing().when(mockInterpreterSettingManager).refreshInterpreterTemplates();
+        String anotherButSameInterpreterName = "zeppelin-" + interpreterName;
 
-    interpreterService.downloadInterpreter(
-        new InterpreterInstallationRequest(interpreterName, artifactName),
-        dependencyResolver,
-        specificInterpreterPath,
-        new SimpleServiceCallback<String>() {
-          @Override
-          public void onStart(String message, ServiceContext context) {
-            assertEquals("Starting to download " + interpreterName + " interpreter", message);
-          }
+        interpreterService.installInterpreter(
+                new InterpreterInstallationRequest(anotherButSameInterpreterName, "artifact"), null);
+    }
 
-          @Override
-          public void onSuccess(String message, ServiceContext context) {
-            assertEquals(interpreterName + " downloaded", message);
-          }
+    @Test
+    public void downloadInterpreter() throws IOException {
+        final String interpreterName = "test-interpreter";
+        String artifactName = "junit:junit:4.11";
+        Path specificInterpreterPath =
+                Files.createDirectory(Paths.get(interpreterDir.toString(), interpreterName));
+        DependencyResolver dependencyResolver = new DependencyResolver(localRepoDir.toString());
 
-          @Override
-          public void onFailure(Exception ex, ServiceContext context) {
-            fail();
-          }
-        });
+        doNothing().when(mockInterpreterSettingManager).refreshInterpreterTemplates();
 
-    verify(mockInterpreterSettingManager, times(1)).refreshInterpreterTemplates();
-  }
+        interpreterService.downloadInterpreter(
+                new InterpreterInstallationRequest(interpreterName, artifactName),
+                dependencyResolver,
+                specificInterpreterPath,
+                new SimpleServiceCallback<String>() {
+                    @Override
+                    public void onStart(String message, ServiceContext context) {
+                        assertEquals("Starting to download " + interpreterName + " interpreter", message);
+                    }
+
+                    @Override
+                    public void onSuccess(String message, ServiceContext context) {
+                        assertEquals(interpreterName + " downloaded", message);
+                    }
+
+                    @Override
+                    public void onFailure(Exception ex, ServiceContext context) {
+                        fail();
+                    }
+                });
+
+        verify(mockInterpreterSettingManager, times(1)).refreshInterpreterTemplates();
+    }
 }

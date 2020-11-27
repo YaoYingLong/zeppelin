@@ -26,49 +26,48 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InterpreterIT extends AbstractZeppelinIT {
-  private static final Logger LOG = LoggerFactory.getLogger(InterpreterIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InterpreterIT.class);
 
-  @Rule
-  public ErrorCollector collector = new ErrorCollector();
+    @Rule
+    public ErrorCollector collector = new ErrorCollector();
 
-  @Before
-  public void startUp() {
-    driver = WebDriverManager.getWebDriver();
-  }
-
-  @After
-  public void tearDown() {
-    driver.quit();
-  }
-
-  @Test
-  public void testShowDescriptionOnInterpreterCreate() throws Exception {
-    try {
-      // navigate to interpreter page
-      // setting button
-      clickAndWait(By.xpath("//button[@class='nav-btn dropdown-toggle ng-scope']"));
-
-      // interpreter link
-      clickAndWait(By.xpath("//a[@href='#/interpreter']"));
-
-      // create button
-      clickAndWait(By.xpath("//button[contains(., 'Create')]"));
-
-      Select select = new Select(driver.findElement(By.xpath("//select[@ng-change='newInterpreterGroupChange()']")));
-      select.selectByVisibleText("spark");
-
-      collector.checkThat("description of interpreter property is displayed",
-          driver.findElement(By.xpath("//tr/td[contains(text(), 'spark.app.name')]/following-sibling::td[2]")).getText(),
-          CoreMatchers.equalTo("The name of spark application."));
-
-    } catch (Exception e) {
-      handleException("Exception in InterpreterIT while testShowDescriptionOnInterpreterCreate ", e);
+    @Before
+    public void startUp() {
+        driver = WebDriverManager.getWebDriver();
     }
-  }
+
+    @After
+    public void tearDown() {
+        driver.quit();
+    }
+
+    @Test
+    public void testShowDescriptionOnInterpreterCreate() throws Exception {
+        try {
+            // navigate to interpreter page
+            // setting button
+            clickAndWait(By.xpath("//button[@class='nav-btn dropdown-toggle ng-scope']"));
+
+            // interpreter link
+            clickAndWait(By.xpath("//a[@href='#/interpreter']"));
+
+            // create button
+            clickAndWait(By.xpath("//button[contains(., 'Create')]"));
+
+            Select select = new Select(driver.findElement(By.xpath("//select[@ng-change='newInterpreterGroupChange()']")));
+            select.selectByVisibleText("spark");
+
+            collector.checkThat("description of interpreter property is displayed",
+                    driver.findElement(By.xpath("//tr/td[contains(text(), 'spark.app.name')]/following-sibling::td[2]")).getText(),
+                    CoreMatchers.equalTo("The name of spark application."));
+
+        } catch (Exception e) {
+            handleException("Exception in InterpreterIT while testShowDescriptionOnInterpreterCreate ", e);
+        }
+    }
 }

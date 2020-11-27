@@ -23,7 +23,7 @@
     - raw: sudo apt-get -y install python-minimal
 
 - name: Run Ansible
-  hosts: all 
+  hosts: all
   become: true
   become_user: root
   become_method: sudo

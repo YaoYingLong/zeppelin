@@ -15,47 +15,47 @@
     *ngFor="let form of forms; trackBy: trackByNameFn"
     class="form-item"
     nz-col
-    nzSpan="12"
-    nzXl="8"
     nzLg="8"
     nzMd="12"
-    nzSm="24">
+    nzSm="24"
+    nzSpan="12"
+    nzXl="8">
     <div nz-row nzType="flex">
-      <label class="item-label" *ngIf="form.displayName" nz-col nzSpan="6">{{form.displayName}}: </label>
-      <div class="control-wrap" nz-col [nzSpan]="form.displayName ? 16 : 24">
+      <label *ngIf="form.displayName" class="item-label" nz-col nzSpan="6">{{form.displayName}}: </label>
+      <div [nzSpan]="form.displayName ? 16 : 24" class="control-wrap" nz-col>
         <ng-container [ngSwitch]="form.type">
-          <input *ngSwitchCase="formType.TextBox"
-                 nz-input
+          <input (ngModelChange)="onFormChange()"
+                 *ngSwitchCase="formType.TextBox"
                  [(ngModel)]="paramDefs[form.name]"
                  [disabled]="disable"
-                 (ngModelChange)="onFormChange()">
-          <input *ngSwitchCase="formType.Password"
-                 nz-input
-                 type="password"
+                 nz-input>
+          <input (ngModelChange)="onFormChange()"
+                 *ngSwitchCase="formType.Password"
                  [(ngModel)]="paramDefs[form.name]"
                  [disabled]="disable"
-                 (ngModelChange)="onFormChange()">
-          <nz-select *ngSwitchCase="formType.Select"
-                     [nzDisabled]="disable"
+                 nz-input
+                 type="password">
+          <nz-select (ngModelChange)="onFormChange()"
+                     *ngSwitchCase="formType.Select"
                      [(ngModel)]="paramDefs[form.name]"
-                     (ngModelChange)="onFormChange()">
+                     [nzDisabled]="disable">
             <nz-option *ngFor="let opt of form.options"
                        [nzLabel]="opt.displayName || opt.value"
                        [nzValue]="opt.value">
             </nz-option>
           </nz-select>
-          <nz-checkbox-group *ngSwitchCase="formType.CheckBox"
-                             [nzDisabled]="disable"
+          <nz-checkbox-group (ngModelChange)="checkboxChange($event, form.name)"
+                             *ngSwitchCase="formType.CheckBox"
                              [(ngModel)]="checkboxGroups[form.name]"
-                             (ngModelChange)="checkboxChange($event, form.name)">
+                             [nzDisabled]="disable">
           </nz-checkbox-group>
         </ng-container>
-        <button *ngIf="removable"
-                nz-button
-                nzType="link"
+        <button (click)="remove(form)"
+                *ngIf="removable"
                 class="remove-button"
-                (click)="remove(form)">
-          <i nz-icon nzType="close" nzTheme="outline"></i>
+                nz-button
+                nzType="link">
+          <i nz-icon nzTheme="outline" nzType="close"></i>
         </button>
       </div>
     </div>

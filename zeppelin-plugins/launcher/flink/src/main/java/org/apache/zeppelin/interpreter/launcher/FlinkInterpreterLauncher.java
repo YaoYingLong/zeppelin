@@ -27,31 +27,31 @@ import java.util.Map;
 
 public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
 
-  public FlinkInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
-    super(zConf, recoveryStorage);
-  }
+    public FlinkInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
+        super(zConf, recoveryStorage);
+    }
 
-  @Override
-  public Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context)
-          throws IOException {
-    Map<String, String> envs = super.buildEnvFromProperties(context);
-    String flinkHome = context.getProperties().getProperty("FLINK_HOME", envs.get("FLINK_HOME"));
-    if (StringUtils.isBlank(flinkHome)) {
-      throw new IOException("FLINK_HOME is not specified");
+    @Override
+    public Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context)
+            throws IOException {
+        Map<String, String> envs = super.buildEnvFromProperties(context);
+        String flinkHome = context.getProperties().getProperty("FLINK_HOME", envs.get("FLINK_HOME"));
+        if (StringUtils.isBlank(flinkHome)) {
+            throw new IOException("FLINK_HOME is not specified");
+        }
+        File flinkHomeFile = new File(flinkHome);
+        if (!flinkHomeFile.exists()) {
+            throw new IOException(String.format("FLINK_HOME '%s' doesn't exist", flinkHome));
+        }
+        if (!flinkHomeFile.isDirectory()) {
+            throw new IOException(String.format("FLINK_HOME '%s' is a file, but should be directory",
+                    flinkHome));
+        }
+        if (!envs.containsKey("FLINK_CONF_DIR")) {
+            envs.put("FLINK_CONF_DIR", flinkHome + "/conf");
+        }
+        envs.put("FLINK_LIB_DIR", flinkHome + "/lib");
+        envs.put("FLINK_PLUGINS_DIR", flinkHome + "/plugins");
+        return envs;
     }
-    File flinkHomeFile = new File(flinkHome);
-    if (!flinkHomeFile.exists()) {
-      throw new IOException(String.format("FLINK_HOME '%s' doesn't exist", flinkHome));
-    }
-    if (!flinkHomeFile.isDirectory()) {
-      throw new IOException(String.format("FLINK_HOME '%s' is a file, but should be directory",
-              flinkHome));
-    }
-    if (!envs.containsKey("FLINK_CONF_DIR")) {
-      envs.put("FLINK_CONF_DIR", flinkHome + "/conf");
-    }
-    envs.put("FLINK_LIB_DIR", flinkHome + "/lib");
-    envs.put("FLINK_PLUGINS_DIR", flinkHome + "/plugins");
-    return envs;
-  }
 }

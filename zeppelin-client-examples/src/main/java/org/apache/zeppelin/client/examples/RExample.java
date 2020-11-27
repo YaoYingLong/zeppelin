@@ -19,8 +19,8 @@ package org.apache.zeppelin.client.examples;
 
 import org.apache.zeppelin.client.ClientConfig;
 import org.apache.zeppelin.client.ExecuteResult;
-import org.apache.zeppelin.client.websocket.SimpleMessageHandler;
 import org.apache.zeppelin.client.ZSession;
+import org.apache.zeppelin.client.websocket.SimpleMessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,63 +31,63 @@ import java.util.Map;
  */
 public class RExample {
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    ZSession session = null;
-    try {
-      ClientConfig clientConfig = new ClientConfig("http://localhost:8080");
-      Map<String, String> intpProperties = new HashMap<>();
-
-      session = ZSession.builder()
-              .setClientConfig(clientConfig)
-              .setInterpreter("r")
-              .setIntpProperties(intpProperties)
-              .build();
-
-      session.start(new SimpleMessageHandler());
-
-      // single statement
-      ExecuteResult result = session.execute("bare <- c(1, 2.5, 4)\n" +
-              "print(bare)");
-      System.out.println(result.getResults().get(0).getData());
-
-      // error output
-      result = session.execute("1/0");
-      System.out.println("Result status: " + result.getStatus() +
-              ", data: " + result.getResults().get(0).getData());
-
-      // R plotting
-      result = session.execute("ir", "pairs(iris)");
-      System.out.println("R plotting result, type: " + result.getResults().get(0).getType() +
-              ", data: " + result.getResults().get(0).getData());
-
-      // ggplot2
-      result = session.execute("ir", "library(ggplot2)\n" +
-              "ggplot(mpg, aes(displ, hwy, colour = class)) + \n" +
-              "  geom_point()");
-      System.out.println("ggplot2 plotting result, type: " + result.getResults().get(0).getType() +
-              ", data: " + result.getResults().get(0).getData());
-
-      // googlevis
-      result = session.execute("ir", "library(googleVis)\n" +
-              "df=data.frame(country=c(\"US\", \"GB\", \"BR\"), \n" +
-              "              val1=c(10,13,14), \n" +
-              "              val2=c(23,12,32))\n" +
-              "Bar <- gvisBarChart(df)\n" +
-              "print(Bar, tag = 'chart')");
-      System.out.println("googlevis plotting result, type: " + result.getResults().get(0).getType() +
-              ", data: " + result.getResults().get(0).getData());
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      if (session != null) {
+        ZSession session = null;
         try {
-          session.stop();
+            ClientConfig clientConfig = new ClientConfig("http://localhost:8080");
+            Map<String, String> intpProperties = new HashMap<>();
+
+            session = ZSession.builder()
+                    .setClientConfig(clientConfig)
+                    .setInterpreter("r")
+                    .setIntpProperties(intpProperties)
+                    .build();
+
+            session.start(new SimpleMessageHandler());
+
+            // single statement
+            ExecuteResult result = session.execute("bare <- c(1, 2.5, 4)\n" +
+                    "print(bare)");
+            System.out.println(result.getResults().get(0).getData());
+
+            // error output
+            result = session.execute("1/0");
+            System.out.println("Result status: " + result.getStatus() +
+                    ", data: " + result.getResults().get(0).getData());
+
+            // R plotting
+            result = session.execute("ir", "pairs(iris)");
+            System.out.println("R plotting result, type: " + result.getResults().get(0).getType() +
+                    ", data: " + result.getResults().get(0).getData());
+
+            // ggplot2
+            result = session.execute("ir", "library(ggplot2)\n" +
+                    "ggplot(mpg, aes(displ, hwy, colour = class)) + \n" +
+                    "  geom_point()");
+            System.out.println("ggplot2 plotting result, type: " + result.getResults().get(0).getType() +
+                    ", data: " + result.getResults().get(0).getData());
+
+            // googlevis
+            result = session.execute("ir", "library(googleVis)\n" +
+                    "df=data.frame(country=c(\"US\", \"GB\", \"BR\"), \n" +
+                    "              val1=c(10,13,14), \n" +
+                    "              val2=c(23,12,32))\n" +
+                    "Bar <- gvisBarChart(df)\n" +
+                    "print(Bar, tag = 'chart')");
+            System.out.println("googlevis plotting result, type: " + result.getResults().get(0).getType() +
+                    ", data: " + result.getResults().get(0).getData());
+
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
+        } finally {
+            if (session != null) {
+                try {
+                    session.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-      }
     }
-  }
 }

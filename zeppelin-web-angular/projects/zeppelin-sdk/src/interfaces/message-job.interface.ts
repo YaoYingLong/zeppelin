@@ -22,6 +22,7 @@ export interface NoteJobs {
   lastResponseUnixTime: number;
   jobs: JobsItem[];
 }
+
 export interface JobsItem {
   noteId: string;
   noteName: string;
@@ -32,6 +33,7 @@ export interface JobsItem {
   unixTimeLastRun: number;
   paragraphs: JobItemParagraphItem[];
 }
+
 export interface JobItemParagraphItem {
   id: string;
   name: string;

@@ -24,13 +24,13 @@ import org.apache.zeppelin.elasticsearch.action.ActionResponse;
  */
 public interface ElasticsearchClient {
 
-  ActionResponse get(String index, String type, String id);
+    ActionResponse get(String index, String type, String id);
 
-  ActionResponse index(String index, String type, String id, String data);
+    ActionResponse index(String index, String type, String id, String data);
 
-  ActionResponse delete(String index, String type, String id);
+    ActionResponse delete(String index, String type, String id);
 
-  ActionResponse search(String[] indices, String[] types, String query, int size);
+    ActionResponse search(String[] indices, String[] types, String query, int size);
 
-  void close();
+    void close();
 }

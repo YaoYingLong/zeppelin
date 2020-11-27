@@ -33,7 +33,7 @@
 
 .paragraph .text {
   display: block !important;
-  font-family: "Monaco","Menlo","Ubuntu Mono","Consolas","source-code-pro",monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
   font-size: 12px !important;
   line-height: 1.42857143 !important;
   margin: 0 0 5px !important;
@@ -53,16 +53,16 @@
 }
 
 .plainTextContainer {
-  font-family: "Monaco","Menlo","Ubuntu Mono","Consolas","source-code-pro",monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
   font-size: 12px !important;
 }
 
-.plainTextContent{
-  white-space:pre-wrap; /** to preserve white-space and newlines of result */
+.plainTextContent {
+  white-space: pre-wrap; /** to preserve white-space and newlines of result */
 }
 
 .plainTextContent div {
-  min-height:17px;
+  min-height: 17px;
 }
 
 .graphContainer {
@@ -108,7 +108,7 @@
 }
 
 .paragraphAsIframe .control {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-top: 1px solid #EFEFEF;
   display: none;
   float: right;
@@ -134,11 +134,11 @@
   display: block;
   unicode-bidi: embed;
   display: block !important;
-  margin: 0 10px 5px!important;
-  font-size: 12px!important;
-  line-height: 1.42857143!important;
-  word-break: break-all!important;
-  word-wrap: break-word!important;
+  margin: 0 10px 5px !important;
+  font-size: 12px !important;
+  line-height: 1.42857143 !important;
+  word-break: break-all !important;
+  word-wrap: break-word !important;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
@@ -157,7 +157,7 @@
 .paragraph .runControl {
   font-size: 1px;
   color: #AAAAAA;
-  height:4px;
+  height: 4px;
   margin: 0px 0px 0px 0px;
 }
 
@@ -176,7 +176,7 @@
 .paragraph .control {
   position: absolute;
   float: right;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   color: #999;
   margin-top: 1px;
   margin-right: 5px;
@@ -328,15 +328,15 @@ table.table-shortcut {
 }
 
 .paragraph-disable {
-  opacity : 0.6!important;
+  opacity: 0.6 !important;
 }
 
 .ace_marker-layer .ace_selection {
-    z-index: 0 !important;
+  z-index: 0 !important;
 }
 
 .ace_marker-layer .ace_selected-word {
-    z-index: 0 !important;
+  z-index: 0 !important;
 }
 
 .ace-tm {
@@ -378,7 +378,7 @@ table.table-shortcut {
 }
 
 .ace_text-input.ace_composition {
- opacity: 0 !important;
+  opacity: 0 !important;
 }
 
 /*
@@ -402,6 +402,7 @@ table.table-shortcut {
   margin: 10px 0 0 10px;
   font-size: 12px;
 }
+
 .tableDisplay .btn-group span a {
   cursor: pointer;
 }

@@ -11,166 +11,169 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<headroom tolerance="10" offset="30" class="noteAction"
-          ng-show="note.id && !paragraphUrl">
+<headroom class="noteAction" ng-show="note.id && !paragraphUrl" offset="30"
+          tolerance="10">
   <h3>
     <div class="notebook-actionBar-title"
          ng-controller="ElasticInputCtrl as input">
-      <input type="text" pu-elastic-input class="form-control-title-input" placeholder="New name"
-             ng-if="input.showEditor" ng-model="input.value" ng-escape="input.showEditor = false" focus-if="input.showEditor"
-             ng-blur="updateNoteName(input.value);input.showEditor = false;" ng-enter="updateNoteName(input.value);input.showEditor = false;" />
+      <input class="form-control-title-input" focus-if="input.showEditor" ng-blur="updateNoteName(input.value);input.showEditor = false;" ng-enter="updateNoteName(input.value);input.showEditor = false;"
+             ng-escape="input.showEditor = false" ng-if="input.showEditor" ng-model="input.value"
+             placeholder="New name"
+             pu-elastic-input
+             type="text"/>
       <p class="form-control-title"
          ng-class="{'reverse-ellipsis ellipsis':noteName(note).length > 45}"
-         tooltip-placement="bottom"
-         uib-tooltip={{noteName(note)}}
          ng-click="input.showEditor = !revisionView; input.value = note.name"
-         ng-show="!input.showEditor"><span>{{noteName(note)}}</span></p>
+         ng-show="!input.showEditor"
+         tooltip-placement="bottom"
+         uib-tooltip={{noteName(note)}}><span>{{noteName(note)}}</span></p>
     </div>
     <div style="float: left; padding-bottom: 10px">
       <span class="labelBtn btn-group">
-      <button type="button"
-              class="btn btn-default btn-xs"
-              ng-click="runAllParagraphs(note.id)"
+      <button class="btn btn-default btn-xs"
               ng-class="{'disabled':isNoteRunning()}"
-              tooltip-placement="bottom" uib-tooltip="Run all paragraphs"
-              ng-disabled="revisionView">
+              ng-click="runAllParagraphs(note.id)"
+              ng-disabled="revisionView"
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Run all paragraphs">
         <i class="icon-control-play"></i>
       </button>
-      <button type="button"
-              class="btn btn-default btn-xs"
+      <button class="btn btn-default btn-xs"
               ng-click="toggleAllEditor()"
+              ng-disabled="revisionView"
               ng-hide="viewOnly"
-              tooltip-placement="bottom" uib-tooltip="Show/hide the code"
-              ng-disabled="revisionView">
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Show/hide the code">
         <i ng-class="editorToggled ?  'fa icon-size-fullscreen' :'fa icon-size-actual'"></i></button>
-      <button type="button"
-              class="btn btn-default btn-xs"
+      <button class="btn btn-default btn-xs"
               ng-click="toggleAllTable()"
+              ng-disabled="revisionView"
               ng-hide="viewOnly"
-              tooltip-placement="bottom" uib-tooltip="Show/hide the output"
-              ng-disabled="revisionView">
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Show/hide the output">
         <i ng-class="tableToggled ? 'fa icon-notebook' : 'fa icon-book-open'"></i>
       </button>
-      <button type="button"
-              class="btn btn-default btn-xs"
-              ng-click="clearAllParagraphOutput(note.id)"
-              ng-hide="viewOnly"
+      <button class="btn btn-default btn-xs"
               ng-class="{'disabled':isNoteRunning()}"
-              tooltip-placement="bottom" uib-tooltip="Clear output"
-              ng-disabled="revisionView">
+              ng-click="clearAllParagraphOutput(note.id)"
+              ng-disabled="revisionView"
+              ng-hide="viewOnly"
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Clear output">
         <i class="fa fa-eraser"></i>
       </button>
 
-      <button type="button"
-              class="btn btn-default btn-xs"
-              ng-hide="viewOnly"
-              tooltip-placement="bottom" uib-tooltip="Clone this note" data-source-note-name="{{note.name}}"
-              data-toggle="modal" data-target="#noteCreateModal" data-clone="true"
-              ng-disabled="revisionView">
+      <button class="btn btn-default btn-xs"
+              data-clone="true"
+              data-source-note-name="{{note.name}}"
+              data-target="#noteCreateModal" data-toggle="modal" ng-disabled="revisionView"
+              ng-hide="viewOnly" tooltip-placement="bottom" type="button"
+              uib-tooltip="Clone this note">
         <i class="fa fa-copy"></i>
       </button>
-      <button type="button"
-              class="btn btn-default btn-xs"
-              ng-hide="viewOnly"
+      <button class="btn btn-default btn-xs"
               ng-click="exportNote()"
-              tooltip-placement="bottom" uib-tooltip="Export this note (zpln)"
-              ng-disabled="revisionView">
+              ng-disabled="revisionView"
+              ng-hide="viewOnly"
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Export this note (zpln)">
         <i class="fa fa-download"></i>
       </button>
-      <button type="button"
-              class="btn btn-default btn-xs"
-              ng-hide="viewOnly"
+      <button class="btn btn-default btn-xs"
               ng-click="exportNbformat()"
-              tooltip-placement="bottom" uib-tooltip="Export this note (ipynb)"
-              ng-disabled="revisionView">
+              ng-disabled="revisionView"
+              ng-hide="viewOnly"
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Export this note (ipynb)">
         <i class="fa fa-download"></i>
       </button>
 
-      <button type="button"
-              class="btn btn-primary btn-xs"
+      <button class="btn btn-primary btn-xs"
               ng-class="isNoteRunning() ? 'disabled' : ''"
-              ng-if="ticket.principal && ticket.principal !== 'anonymous'"
-              ng-hide="viewOnly || note.config.personalizedMode !== 'true'"
               ng-click="toggleNotePersonalizedMode()"
-              tooltip-placement="bottom" uib-tooltip="Switch to collaboration mode {{isOwner ? '' : '(owner can change)'}}"
-              ng-disabled="revisionView">
+              ng-disabled="revisionView"
+              ng-hide="viewOnly || note.config.personalizedMode !== 'true'"
+              ng-if="ticket.principal && ticket.principal !== 'anonymous'"
+              tooltip-placement="bottom"
+              type="button"
+              uib-tooltip="Switch to collaboration mode {{isOwner ? '' : '(owner can change)'}}">
         <i class="fa fa-user"></i>
       </button>
-      <button type="button"
-              class="btn btn-default btn-xs"
+      <button class="btn btn-default btn-xs"
               ng-class="isNoteRunning() ? 'disabled' : ''"
-              ng-if="ticket.principal && ticket.principal !== 'anonymous'"
-              ng-hide="viewOnly || note.config.personalizedMode === 'true'"
               ng-click="toggleNotePersonalizedMode()"
-              tooltip-placement="bottom" uib-tooltip="Switch to personal mode {{isOwner ? '' : '(owner can change)'}}"
-              ng-disabled="revisionView">
+              ng-disabled="revisionView"
+              ng-hide="viewOnly || note.config.personalizedMode === 'true'"
+              ng-if="ticket.principal && ticket.principal !== 'anonymous'"
+              tooltip-placement="bottom" type="button"
+              uib-tooltip="Switch to personal mode {{isOwner ? '' : '(owner can change)'}}">
         <i class="fa fa-users"></i>
       </button>
     </span>
 
-    <span class="labelBtn btn-group" role="group" ng-if="isRevisionSupported()" >
+      <span class="labelBtn btn-group" ng-if="isRevisionSupported()" role="group">
       <div class="btn-group" role="group">
-        <button type="button"
-                class="btn btn-default btn-xs dropdown-toggle"
-                id="versionControlDropdown"
-                ng-hide="viewOnly"
+        <button class="btn btn-default btn-xs dropdown-toggle"
                 data-toggle="dropdown"
-                tooltip-placement="bottom" uib-tooltip="Version control"
-                ng-disabled="revisionView">
+                id="versionControlDropdown"
+                ng-disabled="revisionView"
+                ng-hide="viewOnly"
+                tooltip-placement="bottom" type="button"
+                uib-tooltip="Version control">
           <i class="fa fa-file-code-o"></i>
         </button>
-        <button type="button"
-                class="btn btn-default btn-xs"
+        <button class="btn btn-default btn-xs"
                 id="setRevision"
-                ng-hide="viewOnly"
                 ng-click="setNoteRevision()"
                 ng-disabled="!revisionView"
-                tooltip-placement="bottom" uib-tooltip="Set revision">
+                ng-hide="viewOnly"
+                tooltip-placement="bottom"
+                type="button" uib-tooltip="Set revision">
           <i class="fa fa-arrow-circle-o-right"></i>
         </button>
-        <ul class="dropdown-menu" style="width:250px"
-          aria-labelledby="versionControlDropdown">
+        <ul aria-labelledby="versionControlDropdown" class="dropdown-menu"
+            style="width:250px">
           <li>
             <div class="commit-container">
               <div>
-                <input type="text"
-                       dropdown-input
-                       placeholder="commit message"
+                <input dropdown-input
                        id="note.checkpoint.message"
+                       ng-model="note.checkpoint.message"
+                       placeholder="commit message"
                        style="width: 145px;"
-                       ng-model="note.checkpoint.message"/>
-                <button type="button"
-                        class="btn btn-default btn-xs"
-                        ng-hide="viewOnly"
+                       type="text"/>
+                <button class="btn btn-default btn-xs"
                         ng-click="checkpointNote(note.checkpoint.message)"
+                        ng-hide="viewOnly"
                         style="margin-left: 4px;"
                         tooltip-append-to-body="true"
                         tooltip-class="revisionTooltip"
-                        tooltip-placement="bottom" uib-tooltip="Commit this note">Commit
+                        tooltip-placement="bottom"
+                        type="button" uib-tooltip="Commit this note">Commit
                 </button>
               </div>
             </div>
           </li>
         </ul>
-        <button type="button"
-                class="btn btn-default btn-xs"
+        <button class="btn btn-default btn-xs"
                 ng-click="toggleRevisionsComparator()"
-                tooltip-placement="bottom" uib-tooltip="Compare revisions">
+                tooltip-placement="bottom"
+                type="button" uib-tooltip="Compare revisions">
           <i class="fa fa-exchange"></i>
         </button>
       </div>
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default btn-xs revisionName" title="{{currentRevision}}">
+        <button class="btn btn-default btn-xs revisionName" title="{{currentRevision}}" type="button">
           <div style="overflow: hidden">{{currentRevision}}</div>
         </button>
-        <button type="button" ng-if="noteRevisions.length > 0"
-          class="btn btn-default dropdown-toggle caretSeparator"
-          data-toggle="dropdown" id="revisionsDropdown">
+        <button class="btn btn-default dropdown-toggle caretSeparator" data-toggle="dropdown"
+                id="revisionsDropdown"
+                ng-if="noteRevisions.length > 0" type="button">
           <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu pull-right" aria-labelledby="revisionsDropdown">
-          <li ng-repeat="revision in revisionSort(noteRevisions)" class="revision">
-            <a style="cursor:pointer" ng-click="visitRevision(revision)">
+        <ul aria-labelledby="revisionsDropdown" class="dropdown-menu pull-right">
+          <li class="revision" ng-repeat="revision in revisionSort(noteRevisions)">
+            <a ng-click="visitRevision(revision)" style="cursor:pointer">
               <span style="display: block;">
                 <strong>{{revision.message}}</strong>
               </span>
@@ -183,10 +186,10 @@ limitations under the License.
       </div>
     </span>
 
-    <span class="labelBtn btn-group" id="searchGroup" style="vertical-align:middle; display:inline-block;">
-      <button type="button" class="btn btn-default btn-xs dropdown-toggle"
-              data-toggle="dropdown" tooltip-placement="bottom" uib-tooltip="Search code"
-      ng-click="searchClicked()">
+      <span class="labelBtn btn-group" id="searchGroup" style="vertical-align:middle; display:inline-block;">
+      <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"
+              ng-click="searchClicked()" tooltip-placement="bottom" type="button"
+              uib-tooltip="Search code">
         <i class="fa fa-search"></i>
       </button>
       <ul class="dropdown-menu search-dropdown" ng-click="$event.stopPropagation()"
@@ -194,31 +197,31 @@ limitations under the License.
         <li>
           <div class="input-group input-group-sm search-group">
             <span class="input-group-addon">Find</span>
-            <input type="text" class="form-control" id="findInput"
+            <input class="form-control" id="findInput" ng-change="markAllOccurrencesAndHighlightFirst()"
                    ng-class="{'no-match': !hasMatches() && search.searchText !== '',
                     'has-match': search.searchText !== ''}"
-                   ng-change="markAllOccurrencesAndHighlightFirst()"
-                   ng-click="markAllOccurrencesAndHighlightFirst()" ng-keypress="onPressOnFindInput($event)"
-                   ng-model="search.searchText"  ng-trim="false"/>
-            <span class="input-group-addon after-input" ng-show="search.searchText !== ''"
-                  ng-class="{'no-match': !hasMatches() && search.searchText !== ''}">
+                   ng-click="markAllOccurrencesAndHighlightFirst()"
+                   ng-keypress="onPressOnFindInput($event)" ng-model="search.searchText"
+                   ng-trim="false" type="text"/>
+            <span class="input-group-addon after-input" ng-class="{'no-match': !hasMatches() && search.searchText !== ''}"
+                  ng-show="search.searchText !== ''">
               {{search.currentOccurrence}} of {{search.occurrencesCount}}
             </span>
             <div class="input-group-btn">
               <button class="btn btn-default" ng-click="prevOccurrence()">
-                <i class="fa fa-angle-left" aria-hidden="true"></i>
+                <i aria-hidden="true" class="fa fa-angle-left"></i>
               </button>
             </div>
             <div class="input-group-btn">
               <button class="btn btn-default" ng-click="nextOccurrence()">
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
+                <i aria-hidden="true" class="fa fa-angle-right"></i>
               </button>
             </div>
           </div>
           <div class="input-group input-group-sm search-group">
             <span class="input-group-addon" style="border-top-width: inherit">Replace</span>
-            <input type="text" class="form-control" ng-model="search.replaceText" ng-trim="false"
-                   style="border-top-width: inherit"/>
+            <input class="form-control" ng-model="search.replaceText" ng-trim="false" style="border-top-width: inherit"
+                   type="text"/>
             <div class="input-group-btn">
               <button class="btn btn-default" ng-click="replace()"
                       style="border-top-width: inherit">Replace</button>
@@ -232,38 +235,39 @@ limitations under the License.
       </ul>
     </span>
 
-<!-- put the delete action by itself for your protection -->
+      <!-- put the delete action by itself for your protection -->
       <span class="labelBtn btn-group" style="vertical-align:middle; display:inline-block;">
         <!-- if the note is in the trash, remove note permanently -->
-        <button ng-if="isTrash(note)"
-                type="button"
-                class="btn btn-default btn-xs"
-                ng-click="removeNote(note.id)"
-                ng-hide="viewOnly"
+        <button class="btn btn-default btn-xs"
                 ng-class="{'disabled':isNoteRunning()}"
-                tooltip-placement="bottom" uib-tooltip="Remove this note permanently"
-                ng-disabled="revisionView">
+                ng-click="removeNote(note.id)"
+                ng-disabled="revisionView"
+                ng-hide="viewOnly"
+                ng-if="isTrash(note)"
+                tooltip-placement="bottom" type="button"
+                uib-tooltip="Remove this note permanently">
           <i class="icon-trash"></i>
         </button>
         <!-- if the note is not in the trash, move to trash -->
-        <button ng-if="!isTrash(note)"
-                type="button"
-                class="btn btn-default btn-xs"
-                ng-click="moveNoteToTrash(note.id)"
-                ng-hide="viewOnly"
+        <button class="btn btn-default btn-xs"
                 ng-class="{'disabled':isNoteRunning()}"
-                tooltip-placement="bottom" uib-tooltip="Move this note to trash"
-                ng-disabled="revisionView">
+                ng-click="moveNoteToTrash(note.id)"
+                ng-disabled="revisionView"
+                ng-hide="viewOnly"
+                ng-if="!isTrash(note)"
+                tooltip-placement="bottom" type="button"
+                uib-tooltip="Move this note to trash">
           <i class="icon-trash"></i>
         </button>
       </span>
 
       <span class="labelBtn" style="vertical-align:middle; display:inline-block;">
-        <button type="button"
-                class="btn btn-default btn-xs"
+        <button class="btn btn-default btn-xs"
                 ng-show="collaborativeMode"
-                tooltip-placement="bottom" uib-tooltip="Users who watch this note: {{collaborativeModeUsers.join(', ')}}"
-                style="background-color: rgba(0,151,255,0.36)">
+                style="background-color: rgba(0,151,255,0.36)"
+                tooltip-placement="bottom"
+                type="button"
+                uib-tooltip="Users who watch this note: {{collaborativeModeUsers.join(', ')}}">
           <i class="icon-eye"> {{collaborativeModeUsers.length}}</i>
         </button>
       </span>
@@ -271,32 +275,34 @@ limitations under the License.
       <span ng-hide="viewOnly">
       <div class="labelBtn btn-group" ng-if="note.config.isZeppelinNotebookCronEnable">
         <div class="btn btn-default btn-xs dropdown-toggle"
-             type="button"
              data-toggle="dropdown"
              ng-class="{ 'btn-info' : note.config.cron, 'btn-danger' : note.info.cron, 'btn-default' : !note.config.cron}"
-             tooltip-placement="bottom" uib-tooltip="Run scheduler"
-             ng-disabled="revisionView || isTrash(note)">
+             ng-disabled="revisionView || isTrash(note)"
+             tooltip-placement="bottom" type="button"
+             uib-tooltip="Run scheduler">
           <span class="fa fa-clock-o"></span> {{getCronOptionNameFromValue(note.config.cron)}}
         </div>
         <ul class="dropdown-menu" role="menu" style="width:300px">
           <li>
             <div class="cron-preset-container">
               Run note with cron scheduler.
-              Either choose from preset or write your own <a href="https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html" target="_blank">cron expression</a>.
+              Either choose from preset or write your own <a
+              href="https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html"
+              target="_blank">cron expression</a>.
               <div>
                 <span>- Preset</span>
-                <a class="cron-preset" ng-repeat="cr in cronOption"
-                   type="button"
+                <a class="cron-preset" dropdown-input
+                   ng-class="{ 'selected' : cr.value == note.config.cron}"
                    ng-click="setCronScheduler(cr.value)"
-                   dropdown-input ng-class="{ 'selected' : cr.value == note.config.cron}">{{cr.name}}</a>
+                   ng-repeat="cr in cronOption" type="button">{{cr.name}}</a>
               </div>
               <div>
                 <span>- Cron expression</span>
-                <input type="text"
-                       ng-model="note.config.cron"
+                <input dropdown-input
                        ng-change="setCronScheduler(note.config.cron)"
-                       dropdown-input ng-model-options="{ debounce: 1000 }" />
-                <p ng-show="note.info.cron" class="text-danger cron-info">
+                       ng-model="note.config.cron"
+                       ng-model-options="{ debounce: 1000 }" type="text"/>
+                <p class="text-danger cron-info" ng-show="note.info.cron">
                   {{note.info.cron}}
                 </p>
               </div>
@@ -308,37 +314,38 @@ limitations under the License.
     </div>
 
 
-    <div class="pull-right" style="margin-top:15px; margin-right:15px; margin-left: 15px; margin-bottom: 13px; font-size:15px;">
+    <div class="pull-right"
+         style="margin-top:15px; margin-right:15px; margin-left: 15px; margin-bottom: 13px; font-size:15px;">
       <span ng-if="!revisionView">
         <span class="setting-btn"
-              type="button"
-              data-toggle="modal"
               data-target="#shortcutModal"
-              tooltip-placement="bottom" uib-tooltip="List of shortcuts">
+              data-toggle="modal"
+              tooltip-placement="bottom"
+              type="button" uib-tooltip="List of shortcuts">
           <i class="fa fa-keyboard-o"></i>
         </span>
         <span class="setting-btn"
-              type="button"
               ng-click="toggleSetting()"
-              tooltip-placement="bottom" uib-tooltip="Interpreter binding">
+              tooltip-placement="bottom"
+              type="button" uib-tooltip="Interpreter binding">
           <i class="fa fa-cog" ng-style="{color: showSetting ? '#3071A9' : 'black' }"></i>
         </span>
         <span class="setting-btn"
-              type="button"
               ng-click="togglePermissions()"
-              tooltip-placement="bottom" uib-tooltip="Note permissions">
+              tooltip-placement="bottom"
+              type="button" uib-tooltip="Note permissions">
           <i class="fa fa-lock" ng-style="{color: showPermissions ? '#3071A9' : 'black' }"></i>
         </span>
       </span>
 
       <span class="btn-group">
-        <button type="button" class="btn btn-default btn-xs dropdown-toggle"
-                data-toggle="dropdown">
+        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"
+                type="button">
           {{note.config.looknfeel}} <span class="caret"></span>
         </button>
         <ul class="dropdown-menu pull-right" role="menu">
           <li ng-repeat="looknfeel in looknfeelOption">
-            <a style="cursor:pointer" ng-click="setLookAndFeel(looknfeel)">{{looknfeel}}</a>
+            <a ng-click="setLookAndFeel(looknfeel)" style="cursor:pointer">{{looknfeel}}</a>
           </li>
         </ul>
       </span>

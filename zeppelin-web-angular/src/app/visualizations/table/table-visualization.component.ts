@@ -61,6 +61,8 @@ export class TableVisualizationComponent implements OnInit {
   aggregations: AggregationType[] = ['count', 'sum', 'min', 'max', 'avg'];
   @ViewChild(NzTableComponent, { static: false }) nzTable: NzTableComponent;
 
+  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {}
+
   exportFile(type: 'csv' | 'xlsx', all = true) {
     const wb = utils.book_new();
     let ws: WorkSheet;
@@ -157,8 +159,6 @@ export class TableVisualizationComponent implements OnInit {
     this.rows = orderBy(this.rows, sortKeys, sortTypes);
     this.cdr.markForCheck();
   }
-
-  constructor(@Inject(VISUALIZATION) public visualization: Visualization, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {}
 

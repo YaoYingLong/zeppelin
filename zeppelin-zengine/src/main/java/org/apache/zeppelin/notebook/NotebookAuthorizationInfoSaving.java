@@ -30,22 +30,22 @@ import java.util.Set;
  */
 public class NotebookAuthorizationInfoSaving implements JsonSerializable {
 
-  private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  public Map<String, Map<String, Set<String>>> authInfo;
+    public Map<String, Map<String, Set<String>>> authInfo;
 
-  public NotebookAuthorizationInfoSaving(Map<String, NoteAuth> notesAuth) {
-    this.authInfo = new HashMap<>();
-    for (Map.Entry<String, NoteAuth> entry : notesAuth.entrySet()) {
-      this.authInfo.put(entry.getKey(), entry.getValue().toMap());
+    public NotebookAuthorizationInfoSaving(Map<String, NoteAuth> notesAuth) {
+        this.authInfo = new HashMap<>();
+        for (Map.Entry<String, NoteAuth> entry : notesAuth.entrySet()) {
+            this.authInfo.put(entry.getKey(), entry.getValue().toMap());
+        }
     }
-  }
 
-  public String toJson() {
-    return gson.toJson(this);
-  }
+    public static NotebookAuthorizationInfoSaving fromJson(String json) {
+        return gson.fromJson(json, NotebookAuthorizationInfoSaving.class);
+    }
 
-  public static NotebookAuthorizationInfoSaving fromJson(String json) {
-    return gson.fromJson(json, NotebookAuthorizationInfoSaving.class);
-  }
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }

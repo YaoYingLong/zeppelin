@@ -34,79 +34,78 @@ import java.util.Set;
 /**
  * It could be used either local file system or hadoop distributed file system,
  * because FileSystem support both local file system and hdfs.
- *
  */
 public class FileSystemConfigStorage extends ConfigStorage {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemConfigStorage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemConfigStorage.class);
 
-  private FileSystemStorage fs;
-  private Path interpreterSettingPath;
-  private Path authorizationPath;
-  private Path credentialPath;
+    private FileSystemStorage fs;
+    private Path interpreterSettingPath;
+    private Path authorizationPath;
+    private Path credentialPath;
 
-  public FileSystemConfigStorage(ZeppelinConfiguration zConf) throws IOException {
-    super(zConf);
-    String configDir = zConf.getConfigFSDir(false);
-    this.fs = new FileSystemStorage(zConf, configDir);
-    LOGGER.info("Creating FileSystem: {} for Zeppelin Config", this.fs.getFs().getClass().getName());
-    Path configPath = this.fs.makeQualified(new Path(configDir));
-    this.fs.tryMkDir(configPath);
-    LOGGER.info("Using folder {} to store Zeppelin Config", configPath);
-    this.interpreterSettingPath = fs.makeQualified(new Path(zConf.getInterpreterSettingPath(false)));
-    this.authorizationPath = fs.makeQualified(new Path(zConf.getNotebookAuthorizationPath(false)));
-    this.credentialPath = fs.makeQualified(new Path(zConf.getCredentialsPath(false)));
-  }
-
-  @Override
-  public void save(InterpreterInfoSaving settingInfos) throws IOException {
-    LOGGER.info("Save Interpreter Settings to {}", interpreterSettingPath);
-    fs.writeFile(settingInfos.toJson(), interpreterSettingPath, false);
-  }
-
-  @Override
-  public InterpreterInfoSaving loadInterpreterSettings() throws IOException {
-    if (!fs.exists(interpreterSettingPath)) {
-      LOGGER.warn("Interpreter Setting file {} is not existed", interpreterSettingPath);
-      return null;
+    public FileSystemConfigStorage(ZeppelinConfiguration zConf) throws IOException {
+        super(zConf);
+        String configDir = zConf.getConfigFSDir(false);
+        this.fs = new FileSystemStorage(zConf, configDir);
+        LOGGER.info("Creating FileSystem: {} for Zeppelin Config", this.fs.getFs().getClass().getName());
+        Path configPath = this.fs.makeQualified(new Path(configDir));
+        this.fs.tryMkDir(configPath);
+        LOGGER.info("Using folder {} to store Zeppelin Config", configPath);
+        this.interpreterSettingPath = fs.makeQualified(new Path(zConf.getInterpreterSettingPath(false)));
+        this.authorizationPath = fs.makeQualified(new Path(zConf.getNotebookAuthorizationPath(false)));
+        this.credentialPath = fs.makeQualified(new Path(zConf.getCredentialsPath(false)));
     }
-    LOGGER.info("Load Interpreter Setting from file: {}", interpreterSettingPath);
-    String json = fs.readFile(interpreterSettingPath);
-    return buildInterpreterInfoSaving(json);
-  }
 
-  @Override
-  public void save(NotebookAuthorizationInfoSaving authorizationInfoSaving) throws IOException {
-    LOGGER.info("Save notebook authorization to file: {}", authorizationPath);
-    fs.writeFile(authorizationInfoSaving.toJson(), authorizationPath, false);
-  }
-
-  @Override
-  public NotebookAuthorizationInfoSaving loadNotebookAuthorization() throws IOException {
-    if (!fs.exists(authorizationPath)) {
-      LOGGER.warn("Notebook Authorization file {} is not existed", authorizationPath);
-      return null;
+    @Override
+    public void save(InterpreterInfoSaving settingInfos) throws IOException {
+        LOGGER.info("Save Interpreter Settings to {}", interpreterSettingPath);
+        fs.writeFile(settingInfos.toJson(), interpreterSettingPath, false);
     }
-    LOGGER.info("Load notebook authorization from file: {}", authorizationPath);
-    String json = this.fs.readFile(authorizationPath);
-    return NotebookAuthorizationInfoSaving.fromJson(json);
-  }
 
-  @Override
-  public String loadCredentials() throws IOException {
-    if (!fs.exists(credentialPath)) {
-      LOGGER.warn("Credential file {} is not existed", credentialPath);
-      return null;
+    @Override
+    public InterpreterInfoSaving loadInterpreterSettings() throws IOException {
+        if (!fs.exists(interpreterSettingPath)) {
+            LOGGER.warn("Interpreter Setting file {} is not existed", interpreterSettingPath);
+            return null;
+        }
+        LOGGER.info("Load Interpreter Setting from file: {}", interpreterSettingPath);
+        String json = fs.readFile(interpreterSettingPath);
+        return buildInterpreterInfoSaving(json);
     }
-    LOGGER.info("Load Credential from file: {}", credentialPath);
-    return this.fs.readFile(credentialPath);
-  }
 
-  @Override
-  public void saveCredentials(String credentials) throws IOException {
-    LOGGER.info("Save Credentials to file: {}", credentialPath);
-    Set<PosixFilePermission> permissions = EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
-    fs.writeFile(credentials, credentialPath, false, permissions);
-  }
+    @Override
+    public void save(NotebookAuthorizationInfoSaving authorizationInfoSaving) throws IOException {
+        LOGGER.info("Save notebook authorization to file: {}", authorizationPath);
+        fs.writeFile(authorizationInfoSaving.toJson(), authorizationPath, false);
+    }
+
+    @Override
+    public NotebookAuthorizationInfoSaving loadNotebookAuthorization() throws IOException {
+        if (!fs.exists(authorizationPath)) {
+            LOGGER.warn("Notebook Authorization file {} is not existed", authorizationPath);
+            return null;
+        }
+        LOGGER.info("Load notebook authorization from file: {}", authorizationPath);
+        String json = this.fs.readFile(authorizationPath);
+        return NotebookAuthorizationInfoSaving.fromJson(json);
+    }
+
+    @Override
+    public String loadCredentials() throws IOException {
+        if (!fs.exists(credentialPath)) {
+            LOGGER.warn("Credential file {} is not existed", credentialPath);
+            return null;
+        }
+        LOGGER.info("Load Credential from file: {}", credentialPath);
+        return this.fs.readFile(credentialPath);
+    }
+
+    @Override
+    public void saveCredentials(String credentials) throws IOException {
+        LOGGER.info("Save Credentials to file: {}", credentialPath);
+        Set<PosixFilePermission> permissions = EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
+        fs.writeFile(credentials, credentialPath, false, permissions);
+    }
 
 }

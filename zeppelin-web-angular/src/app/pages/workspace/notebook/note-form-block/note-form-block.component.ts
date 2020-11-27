@@ -25,6 +25,7 @@ export class NoteFormBlockComponent implements OnInit {
   @Output() readonly noteTitleChange = new EventEmitter<string>();
   @Output() readonly noteFormChange = new EventEmitter<DynamicFormParams>();
   @Output() readonly noteFormNameRemove = new EventEmitter<string>();
+
   constructor() {}
 
   ngOnInit() {}

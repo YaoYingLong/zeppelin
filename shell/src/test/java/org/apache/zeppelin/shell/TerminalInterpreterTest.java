@@ -39,189 +39,189 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TerminalInterpreterTest extends BaseInterpreterTest {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TerminalInterpreterTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TerminalInterpreterTest.class);
 
-  private TerminalInterpreter terminal;
-  private InterpreterContext intpContext;
-  private InterpreterResult result;
+    private TerminalInterpreter terminal;
+    private InterpreterContext intpContext;
+    private InterpreterResult result;
 
-  @Override
-  public void setUp() throws InterpreterException {
-    Properties p = new Properties();
-    intpContext = getIntpContext();
+    @Override
+    public void setUp() throws InterpreterException {
+        Properties p = new Properties();
+        intpContext = getIntpContext();
 
-    terminal = new TerminalInterpreter(p);
-    terminal.open();
+        terminal = new TerminalInterpreter(p);
+        terminal.open();
 
-    if (System.getProperty("os.name").startsWith("Windows")) {
-      result = terminal.interpret("dir", intpContext);
-    } else {
-      result = terminal.interpret("ls", intpContext);
-    }
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-  }
-
-  @Override
-  public void tearDown() throws InterpreterException {
-    terminal.close();
-  }
-
-  @Test
-  public void testInvalidCommand() {
-    Session session = null;
-    WebSocketContainer webSocketContainer = null;
-
-    try {
-      // mock connect terminal
-      boolean running = terminal.terminalThreadIsRunning();
-      assertEquals(running, true);
-
-      URI uri = URI.create("ws://localhost:" + terminal.getTerminalPort() + "/terminal/");
-      webSocketContainer = ContainerProvider.getWebSocketContainer();
-
-      // Attempt Connect
-      session = (Session) webSocketContainer.connectToServer(TerminalSocketTest.class, uri);
-
-      // Send Start terminal service message
-      String terminalReadyCmd = String.format("{\"type\":\"TERMINAL_READY\"," +
-          "\"noteId\":\"noteId-1\",\"paragraphId\":\"paragraphId-1\"}");
-      LOGGER.info("send > " + terminalReadyCmd);
-      session.getBasicRemote().sendText(terminalReadyCmd);
-      Thread.sleep(10000);
-
-      LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
-      String msg = TerminalSocketTest.ReceivedMsg.get(0);
-      LOGGER.info(msg);
-      // {"text":"\u001b[?1034hbash-3.2$ \r\u001b[Kbash-3.2$
-      // \r\u001b[Kbash-3.2$ ","type":"TERMINAL_PRINT"}
-      String pattern = "\\{\"text\":\".*\"type\":\"TERMINAL_PRINT\"}";
-      boolean isMatch = Pattern.matches(pattern, msg);
-      assertTrue(isMatch);
-
-      // Send invalid_command message
-      String echoHelloWorldCmd = String.format("{\"type\":\"TERMINAL_COMMAND\"," +
-          "\"command\":\"invalid_command\r\"}");
-      LOGGER.info("send > " + echoHelloWorldCmd);
-      session.getBasicRemote().sendText(echoHelloWorldCmd);
-      Thread.sleep(5000);
-
-      LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
-      // [{"text":"invalid_co \rmmand\r\n","type":"TERMINAL_PRINT"},
-      //  {"text":"bash: invalid_command: command not found\r\n","type":"TERMINAL_PRINT"},
-      //  {"text":"bash-3.2$ ","type":"TERMINAL_PRINT"}]
-      boolean return_invalid_command = false;
-      for (String msg2 : TerminalSocketTest.ReceivedMsg) {
-        boolean find = msg2.contains("invalid_command: command not found");
-        if (find) {
-          LOGGER.info("find return terminal print: " + msg2);
-          return_invalid_command = true;
-          break;
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            result = terminal.interpret("dir", intpContext);
+        } else {
+            result = terminal.interpret("ls", intpContext);
         }
-      }
-      assertTrue(return_invalid_command);
-    } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage(), e);
-    } catch (DeploymentException e) {
-      LOGGER.error(e.getMessage(), e);
-    } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
-    } finally {
-      try {
-        session.close();
-      } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
-      }
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    }
 
-      // Force lifecycle stop when done with container.
-      // This is to free up threads and resources that the
-      // JSR-356 container allocates. But unfortunately
-      // the JSR-356 spec does not handle lifecycles (yet)
-      if (webSocketContainer instanceof LifeCycle) {
+    @Override
+    public void tearDown() throws InterpreterException {
+        terminal.close();
+    }
+
+    @Test
+    public void testInvalidCommand() {
+        Session session = null;
+        WebSocketContainer webSocketContainer = null;
+
         try {
-          ((LifeCycle) webSocketContainer).stop();
-        } catch (Exception e) {
-          LOGGER.error(e.getMessage(), e);
+            // mock connect terminal
+            boolean running = terminal.terminalThreadIsRunning();
+            assertEquals(running, true);
+
+            URI uri = URI.create("ws://localhost:" + terminal.getTerminalPort() + "/terminal/");
+            webSocketContainer = ContainerProvider.getWebSocketContainer();
+
+            // Attempt Connect
+            session = (Session) webSocketContainer.connectToServer(TerminalSocketTest.class, uri);
+
+            // Send Start terminal service message
+            String terminalReadyCmd = String.format("{\"type\":\"TERMINAL_READY\"," +
+                    "\"noteId\":\"noteId-1\",\"paragraphId\":\"paragraphId-1\"}");
+            LOGGER.info("send > " + terminalReadyCmd);
+            session.getBasicRemote().sendText(terminalReadyCmd);
+            Thread.sleep(10000);
+
+            LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
+            String msg = TerminalSocketTest.ReceivedMsg.get(0);
+            LOGGER.info(msg);
+            // {"text":"\u001b[?1034hbash-3.2$ \r\u001b[Kbash-3.2$
+            // \r\u001b[Kbash-3.2$ ","type":"TERMINAL_PRINT"}
+            String pattern = "\\{\"text\":\".*\"type\":\"TERMINAL_PRINT\"}";
+            boolean isMatch = Pattern.matches(pattern, msg);
+            assertTrue(isMatch);
+
+            // Send invalid_command message
+            String echoHelloWorldCmd = String.format("{\"type\":\"TERMINAL_COMMAND\"," +
+                    "\"command\":\"invalid_command\r\"}");
+            LOGGER.info("send > " + echoHelloWorldCmd);
+            session.getBasicRemote().sendText(echoHelloWorldCmd);
+            Thread.sleep(5000);
+
+            LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
+            // [{"text":"invalid_co \rmmand\r\n","type":"TERMINAL_PRINT"},
+            //  {"text":"bash: invalid_command: command not found\r\n","type":"TERMINAL_PRINT"},
+            //  {"text":"bash-3.2$ ","type":"TERMINAL_PRINT"}]
+            boolean return_invalid_command = false;
+            for (String msg2 : TerminalSocketTest.ReceivedMsg) {
+                boolean find = msg2.contains("invalid_command: command not found");
+                if (find) {
+                    LOGGER.info("find return terminal print: " + msg2);
+                    return_invalid_command = true;
+                    break;
+                }
+            }
+            assertTrue(return_invalid_command);
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+        } catch (DeploymentException e) {
+            LOGGER.error(e.getMessage(), e);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            try {
+                session.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+
+            // Force lifecycle stop when done with container.
+            // This is to free up threads and resources that the
+            // JSR-356 container allocates. But unfortunately
+            // the JSR-356 spec does not handle lifecycles (yet)
+            if (webSocketContainer instanceof LifeCycle) {
+                try {
+                    ((LifeCycle) webSocketContainer).stop();
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
         }
-      }
     }
-  }
 
-  @Test
-  public void testValidCommand() {
-    Session session = null;
-    WebSocketContainer webSocketContainer = null;
+    @Test
+    public void testValidCommand() {
+        Session session = null;
+        WebSocketContainer webSocketContainer = null;
 
-    try {
-      // mock connect terminal
-      boolean running = terminal.terminalThreadIsRunning();
-      assertEquals(running, true);
-
-      URI uri = URI.create("ws://localhost:" + terminal.getTerminalPort() + "/terminal/");
-      webSocketContainer = ContainerProvider.getWebSocketContainer();
-
-      // Attempt Connect
-      session = (Session) webSocketContainer.connectToServer(TerminalSocketTest.class, uri);
-
-      // Send Start terminal service message
-      String terminalReadyCmd = String.format("{\"type\":\"TERMINAL_READY\"," +
-          "\"noteId\":\"noteId-1\",\"paragraphId\":\"paragraphId-1\"}");
-      LOGGER.info("send > " + terminalReadyCmd);
-      session.getBasicRemote().sendText(terminalReadyCmd);
-      Thread.sleep(10000);
-
-      LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
-      String msg = TerminalSocketTest.ReceivedMsg.get(0);
-      LOGGER.info(msg);
-      // {"text":"\u001b[?1034hbash-3.2$ \r\u001b[Kbash-3.2$
-      // \r\u001b[Kbash-3.2$ ","type":"TERMINAL_PRINT"}
-      String pattern = "\\{\"text\":\".*\"type\":\"TERMINAL_PRINT\"}";
-      boolean isMatch = Pattern.matches(pattern, msg);
-      assertTrue(isMatch);
-
-      // Send echo 'hello world!' message
-      String echoHelloWorldCmd = String.format("{\"type\":\"TERMINAL_COMMAND\"," +
-          "\"command\":\"echo 'hello world!'\r\"}");
-      LOGGER.info("send > " + echoHelloWorldCmd);
-      session.getBasicRemote().sendText(echoHelloWorldCmd);
-      Thread.sleep(5000);
-
-      // [{"text":"echo \u0027hell \ro world!\u0027\r\n","type":"TERMINAL_PRINT"},
-      //  {"text":"hello world!\r\nbash-3.2$ ","type":"TERMINAL_PRINT"}]
-      LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
-      boolean return_hello_world = false;
-      for (String msg2 : TerminalSocketTest.ReceivedMsg) {
-        boolean find = msg2.contains("hello world!");
-        if (find) {
-          LOGGER.info("find return terminal print: " + msg2);
-          return_hello_world = true;
-          break;
-        }
-      }
-      assertTrue(return_hello_world);
-    } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage(), e);
-    } catch (DeploymentException e) {
-      LOGGER.error(e.getMessage(), e);
-    } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
-    } finally {
-      try {
-        session.close();
-      } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
-      }
-
-      // Force lifecycle stop when done with container.
-      // This is to free up threads and resources that the
-      // JSR-356 container allocates. But unfortunately
-      // the JSR-356 spec does not handle lifecycles (yet)
-      if (webSocketContainer instanceof LifeCycle) {
         try {
-          ((LifeCycle) webSocketContainer).stop();
-        } catch (Exception e) {
-          LOGGER.error(e.getMessage(), e);
+            // mock connect terminal
+            boolean running = terminal.terminalThreadIsRunning();
+            assertEquals(running, true);
+
+            URI uri = URI.create("ws://localhost:" + terminal.getTerminalPort() + "/terminal/");
+            webSocketContainer = ContainerProvider.getWebSocketContainer();
+
+            // Attempt Connect
+            session = (Session) webSocketContainer.connectToServer(TerminalSocketTest.class, uri);
+
+            // Send Start terminal service message
+            String terminalReadyCmd = String.format("{\"type\":\"TERMINAL_READY\"," +
+                    "\"noteId\":\"noteId-1\",\"paragraphId\":\"paragraphId-1\"}");
+            LOGGER.info("send > " + terminalReadyCmd);
+            session.getBasicRemote().sendText(terminalReadyCmd);
+            Thread.sleep(10000);
+
+            LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
+            String msg = TerminalSocketTest.ReceivedMsg.get(0);
+            LOGGER.info(msg);
+            // {"text":"\u001b[?1034hbash-3.2$ \r\u001b[Kbash-3.2$
+            // \r\u001b[Kbash-3.2$ ","type":"TERMINAL_PRINT"}
+            String pattern = "\\{\"text\":\".*\"type\":\"TERMINAL_PRINT\"}";
+            boolean isMatch = Pattern.matches(pattern, msg);
+            assertTrue(isMatch);
+
+            // Send echo 'hello world!' message
+            String echoHelloWorldCmd = String.format("{\"type\":\"TERMINAL_COMMAND\"," +
+                    "\"command\":\"echo 'hello world!'\r\"}");
+            LOGGER.info("send > " + echoHelloWorldCmd);
+            session.getBasicRemote().sendText(echoHelloWorldCmd);
+            Thread.sleep(5000);
+
+            // [{"text":"echo \u0027hell \ro world!\u0027\r\n","type":"TERMINAL_PRINT"},
+            //  {"text":"hello world!\r\nbash-3.2$ ","type":"TERMINAL_PRINT"}]
+            LOGGER.info(TerminalSocketTest.ReceivedMsg.toString());
+            boolean return_hello_world = false;
+            for (String msg2 : TerminalSocketTest.ReceivedMsg) {
+                boolean find = msg2.contains("hello world!");
+                if (find) {
+                    LOGGER.info("find return terminal print: " + msg2);
+                    return_hello_world = true;
+                    break;
+                }
+            }
+            assertTrue(return_hello_world);
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+        } catch (DeploymentException e) {
+            LOGGER.error(e.getMessage(), e);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            try {
+                session.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+
+            // Force lifecycle stop when done with container.
+            // This is to free up threads and resources that the
+            // JSR-356 container allocates. But unfortunately
+            // the JSR-356 spec does not handle lifecycles (yet)
+            if (webSocketContainer instanceof LifeCycle) {
+                try {
+                    ((LifeCycle) webSocketContainer).stop();
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
         }
-      }
     }
-  }
 }

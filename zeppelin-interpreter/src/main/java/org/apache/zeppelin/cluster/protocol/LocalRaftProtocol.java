@@ -24,35 +24,35 @@ import java.util.Map;
  * Base class for Raft protocol.
  */
 public abstract class LocalRaftProtocol {
-  private final Serializer serializer;
-  private final Map<MemberId, LocalRaftServerProtocol> servers;
-  private final Map<MemberId, LocalRaftClientProtocol> clients;
+    private final Serializer serializer;
+    private final Map<MemberId, LocalRaftServerProtocol> servers;
+    private final Map<MemberId, LocalRaftClientProtocol> clients;
 
-  public LocalRaftProtocol(Serializer serializer,
-                           Map<MemberId, LocalRaftServerProtocol> servers,
-                           Map<MemberId, LocalRaftClientProtocol> clients) {
-    this.serializer = serializer;
-    this.servers = servers;
-    this.clients = clients;
-  }
+    public LocalRaftProtocol(Serializer serializer,
+                             Map<MemberId, LocalRaftServerProtocol> servers,
+                             Map<MemberId, LocalRaftClientProtocol> clients) {
+        this.serializer = serializer;
+        this.servers = servers;
+        this.clients = clients;
+    }
 
-  <T> T copy(T value) {
-    return serializer.decode(serializer.encode(value));
-  }
+    <T> T copy(T value) {
+        return serializer.decode(serializer.encode(value));
+    }
 
-  byte[] encode(Object value) {
-    return serializer.encode(value);
-  }
+    byte[] encode(Object value) {
+        return serializer.encode(value);
+    }
 
-  <T> T decode(byte[] bytes) {
-    return serializer.decode(bytes);
-  }
+    <T> T decode(byte[] bytes) {
+        return serializer.decode(bytes);
+    }
 
-  LocalRaftServerProtocol server(MemberId memberId) {
-    return servers.get(memberId);
-  }
+    LocalRaftServerProtocol server(MemberId memberId) {
+        return servers.get(memberId);
+    }
 
-  LocalRaftClientProtocol client(MemberId memberId) {
-    return clients.get(memberId);
-  }
+    LocalRaftClientProtocol client(MemberId memberId) {
+        return clients.get(memberId);
+    }
 }

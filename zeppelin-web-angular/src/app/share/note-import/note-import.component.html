@@ -14,14 +14,14 @@
   <nz-form-item>
     <nz-form-label>Import As</nz-form-label>
     <nz-form-control>
-      <input nz-input [(ngModel)]="noteImportName" placeholder="Insert Note Name" name="noteImportName"/>
+      <input [(ngModel)]="noteImportName" name="noteImportName" nz-input placeholder="Insert Note Name"/>
     </nz-form-control>
   </nz-form-item>
 </form>
 
 <nz-tabset>
   <nz-tab nzTitle="Import From JSON File">
-    <nz-upload nzType="drag" [nzBeforeUpload]="beforeUpload" nzAccept="application/json,application/zpln">
+    <nz-upload [nzBeforeUpload]="beforeUpload" nzAccept="application/json,application/zpln" nzType="drag">
       <p class="ant-upload-drag-icon">
         <i nz-icon nzType="inbox"></i>
       </p>
@@ -35,16 +35,18 @@
     <form nz-form nzLayout="vertical">
       <nz-form-item>
         <nz-form-label>URL</nz-form-label>
-        <nz-form-control nzErrorTip="URL is Required" #control="nzFormControl">
-          <input nz-input [(ngModel)]="importUrl" placeholder="Note URL" name="importUrl" required/>
+        <nz-form-control #control="nzFormControl" nzErrorTip="URL is Required">
+          <input [(ngModel)]="importUrl" name="importUrl" nz-input placeholder="Note URL" required/>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
-          <button nz-button nzType="primary" (click)="importNote()" [disabled]="control.status === 'error'" [nzLoading]="importLoading">Import Note</button>
+          <button (click)="importNote()" [disabled]="control.status === 'error'" [nzLoading]="importLoading" nz-button
+                  nzType="primary">Import Note
+          </button>
         </nz-form-control>
       </nz-form-item>
     </form>
   </nz-tab>
 </nz-tabset>
-<nz-alert nzType="error" [nzMessage]="errorText" *ngIf="errorText"></nz-alert>
+<nz-alert *ngIf="errorText" [nzMessage]="errorText" nzType="error"></nz-alert>

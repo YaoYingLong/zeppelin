@@ -30,11 +30,10 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs
 
 import { warn, InputBoolean } from 'ng-zorro-antd/core';
 
-import { CodeEditorService } from './code-editor.service';
-import { DiffEditorOptions, EditorOptions, JoinedEditorOptions, NzEditorMode } from './nz-code-editor.definitions';
-
 // Import types from monaco editor.
 import { editor } from 'monaco-editor';
+import { CodeEditorService } from './code-editor.service';
+import { DiffEditorOptions, EditorOptions, JoinedEditorOptions, NzEditorMode } from './nz-code-editor.definitions';
 import IEditor = editor.IEditor;
 import IDiffEditor = editor.IDiffEditor;
 import ITextModel = editor.ITextModel;
@@ -62,15 +61,8 @@ export class CodeEditorComponent implements OnDestroy, AfterViewInit {
   @Input() @InputBoolean() nzLoading = false;
   @Input() @InputBoolean() nzFullControl = false;
   @Input() nzToolkit: TemplateRef<void>;
-
-  @Input() set nzEditorOption(value: JoinedEditorOptions) {
-    this.editorOption$.next(value);
-  }
-
   @Output() readonly nzEditorInitialized = new EventEmitter<IEditor | IDiffEditor>();
-
   editorOptionCached: JoinedEditorOptions = {};
-
   private readonly el: HTMLElement;
   private destroy$ = new Subject<void>();
   private resize$ = new Subject<void>();
@@ -81,6 +73,10 @@ export class CodeEditorComponent implements OnDestroy, AfterViewInit {
 
   constructor(private nzCodeEditorService: CodeEditorService, private ngZone: NgZone, elementRef: ElementRef) {
     this.el = elementRef.nativeElement;
+  }
+
+  @Input() set nzEditorOption(value: JoinedEditorOptions) {
+    this.editorOption$.next(value);
   }
 
   /**

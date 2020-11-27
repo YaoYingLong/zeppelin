@@ -25,7 +25,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 public class ParagraphNotFoundException extends WebApplicationException {
 
-  public ParagraphNotFoundException(String paragraphId) {
-    super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such paragraph: " + paragraphId));
-  }
+    public ParagraphNotFoundException(String paragraphId) {
+        super(ExceptionUtils.jsonResponseContent(NOT_FOUND, "No such paragraph: " + paragraphId));
+    }
 }

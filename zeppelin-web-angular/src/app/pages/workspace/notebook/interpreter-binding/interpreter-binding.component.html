@@ -27,16 +27,16 @@
     </p>
   </div>
   <div class="interpreter-settings">
-    <div cdkDropList class="interpreter-list" (cdkDropListDropped)="drop($event)">
-      <div class="interpreter-box" *ngFor="let item of interpreterBindings;let pFirst = first" cdkDrag>
-        <a class="refresh" (click)="restartInterpreter(item)">
-          <i nz-icon nzType="sync" nzTheme="outline"></i>
+    <div (cdkDropListDropped)="drop($event)" cdkDropList class="interpreter-list">
+      <div *ngFor="let item of interpreterBindings;let pFirst = first" cdkDrag class="interpreter-box">
+        <a (click)="restartInterpreter(item)" class="refresh">
+          <i nz-icon nzTheme="outline" nzType="sync"></i>
         </a>
         <div class="interpreter-name">
-          <button nz-button [nzType]="item.selected ? 'primary' : 'default' " (click)="item.selected = !item.selected">
+          <button (click)="item.selected = !item.selected" [nzType]="item.selected ? 'primary' : 'default' " nz-button>
             <span class="main-name">{{item.name}}</span>
             <small>
-            <span class="child-name" *ngFor="let inter of item.interpreters;let first = first">
+            <span *ngFor="let inter of item.interpreters;let first = first" class="child-name">
               <span *ngIf="!first">, </span>
               %<span *ngIf="!pFirst || first">{{item.name}}</span><span *ngIf="(!pFirst || first) && !first">.</span>
               <span *ngIf="!first">{{inter.name}}</span>
@@ -48,8 +48,8 @@
       </div>
     </div>
     <div class="submit-interpreter">
-      <button nz-button nzType="primary" (click)="saveSetting()">Save</button>
-      <button nz-button nzType="default" (click)="closeSetting()">Cancel</button>
+      <button (click)="saveSetting()" nz-button nzType="primary">Save</button>
+      <button (click)="closeSetting()" nz-button nzType="default">Cancel</button>
     </div>
   </div>
 </div>

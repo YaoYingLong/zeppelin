@@ -14,7 +14,7 @@
   <nz-form-item>
     <nz-form-label>xAxis</nz-form-label>
     <nz-form-control>
-      <nz-radio-group [(ngModel)]="xLabelStatus" (ngModelChange)="onStatusChange()" [nzButtonStyle]="'solid'">
+      <nz-radio-group (ngModelChange)="onStatusChange()" [(ngModel)]="xLabelStatus" [nzButtonStyle]="'solid'">
         <label nz-radio-button nzValue="default">Default</label>
         <label nz-radio-button nzValue="rotate">Rotate</label>
         <label nz-radio-button nzValue="hide">Hide</label>
@@ -24,15 +24,14 @@
   <nz-form-item *ngIf="xLabelStatus === 'rotate'">
     <nz-form-label>degree</nz-form-label>
     <nz-form-control>
-      <input nz-input
-             style="width: 50px"
-             placeholder="degree"
-             [(ngModel)]="degree"
+      <input (blur)="onDegreeChange()"
              (keydown.enter)="onDegreeChange()"
-             (blur)="onDegreeChange()" />
+             [(ngModel)]="degree"
+             nz-input
+             placeholder="degree"
+             style="width: 50px"/>
     </nz-form-control>
   </nz-form-item>
-
 
 
 </div>

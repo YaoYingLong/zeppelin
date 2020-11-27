@@ -32,6 +32,7 @@ export class VisualizationXAxisSettingComponent implements OnInit {
   xLabelStatus: XLabelStatus = 'default';
   degree = '-45';
   previousDegree: string;
+
   constructor(private cdr: ChangeDetectorRef) {}
 
   onStatusChange() {

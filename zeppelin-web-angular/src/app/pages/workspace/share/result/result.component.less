@@ -19,6 +19,7 @@
     left: -12px;
     padding-right: 10px;
     border: none;
+
     &::before {
       content: ' ';
       display: block;
@@ -55,11 +56,13 @@
         color: @text-color;
         table-layout: fixed;
       }
+
       thead {
         color: @table-header-color;
         border-bottom: 2px @border-style-base fade(@black, 65%);
         vertical-align: bottom;
       }
+
       tr, th, td {
         text-align: right;
         vertical-align: middle;
@@ -69,12 +72,15 @@
         max-width: none;
         border: none;
       }
+
       th {
         font-weight: bold;
       }
+
       tbody tr:nth-child(odd) {
         background: darken(@table-header-bg, 3%);
       }
+
       tbody tr:hover {
         background: @table-row-hover-bg;
       }

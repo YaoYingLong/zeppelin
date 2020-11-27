@@ -28,6 +28,13 @@ export class FolderRenameComponent implements OnInit {
   @Input() folderId: string;
   willMerged = false;
 
+  constructor(
+    private noteListService: NoteListService,
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
+    private nzModalRef: NzModalRef
+  ) {}
+
   checkMerged() {
     const newFolderPath = this.normalizeFolderId(this.newFolderPath);
     this.willMerged = this.folderId !== this.newFolderPath && !!this.noteListService.notes.flatFolderMap[newFolderPath];
@@ -66,13 +73,6 @@ export class FolderRenameComponent implements OnInit {
 
     return normalizeFolderId;
   }
-
-  constructor(
-    private noteListService: NoteListService,
-    private cdr: ChangeDetectorRef,
-    private messageService: MessageService,
-    private nzModalRef: NzModalRef
-  ) {}
 
   ngOnInit() {
     this.checkMerged();

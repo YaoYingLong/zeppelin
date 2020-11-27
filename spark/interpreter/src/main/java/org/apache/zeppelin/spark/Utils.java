@@ -27,120 +27,118 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Utility and helper functions for the Spark Interpreter
  */
 class Utils {
-  public static Logger logger = LoggerFactory.getLogger(Utils.class);
-  public static String DEPRRECATED_MESSAGE =
-          "%html <font color=\"red\">Spark lower than 2.2 is deprecated, " +
-          "if you don't want to see this message, please set " +
-          "zeppelin.spark.deprecateMsg.show to false.</font>";
+    public static Logger logger = LoggerFactory.getLogger(Utils.class);
+    public static String DEPRRECATED_MESSAGE =
+            "%html <font color=\"red\">Spark lower than 2.2 is deprecated, " +
+                    "if you don't want to see this message, please set " +
+                    "zeppelin.spark.deprecateMsg.show to false.</font>";
 
-  static Object invokeMethod(Object o, String name) {
-    return invokeMethod(o, name, new Class[]{}, new Object[]{});
-  }
-
-  static Object invokeMethod(Object o, String name, Class<?>[] argTypes, Object[] params) {
-    try {
-      return o.getClass().getMethod(name, argTypes).invoke(o, params);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      logger.error(e.getMessage(), e);
+    static Object invokeMethod(Object o, String name) {
+        return invokeMethod(o, name, new Class[]{}, new Object[]{});
     }
-    return null;
-  }
 
-  static Object invokeStaticMethod(Class<?> c, String name, Class<?>[] argTypes, Object[] params) {
-    try {
-      return c.getMethod(name, argTypes).invoke(null, params);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      logger.error(e.getMessage(), e);
+    static Object invokeMethod(Object o, String name, Class<?>[] argTypes, Object[] params) {
+        try {
+            return o.getClass().getMethod(name, argTypes).invoke(o, params);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
     }
-    return null;
-  }
 
-  static Object invokeStaticMethod(Class<?> c, String name) {
-    return invokeStaticMethod(c, name, new Class[]{}, new Object[]{});
-  }
-
-  static Class<?> findClass(String name) {
-    return findClass(name, false);
-  }
-
-  static Class<?> findClass(String name, boolean silence) {
-    try {
-      return Class.forName(name);
-    } catch (ClassNotFoundException e) {
-      if (!silence) {
-        logger.error(e.getMessage(), e);
-      }
-      return null;
+    static Object invokeStaticMethod(Class<?> c, String name, Class<?>[] argTypes, Object[] params) {
+        try {
+            return c.getMethod(name, argTypes).invoke(null, params);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
     }
-  }
 
-  static Object instantiateClass(String name, Class<?>[] argTypes, Object[] params) {
-    try {
-      Constructor<?> constructor = Utils.class.getClassLoader()
-              .loadClass(name).getConstructor(argTypes);
-      return constructor.newInstance(params);
-    } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
-      InstantiationException | InvocationTargetException e) {
-      logger.error(e.getMessage(), e);
+    static Object invokeStaticMethod(Class<?> c, String name) {
+        return invokeStaticMethod(c, name, new Class[]{}, new Object[]{});
     }
-    return null;
-  }
 
-  // function works after intp is initialized
-  static boolean isScala2_10() {
-    try {
-      Class.forName("org.apache.spark.repl.SparkIMain");
-      return true;
-    } catch (ClassNotFoundException e) {
-      return false;
-    } catch (IncompatibleClassChangeError e) {
-      return false;
+    static Class<?> findClass(String name) {
+        return findClass(name, false);
     }
-  }
 
-  public static String buildJobGroupId(InterpreterContext context) {
-    String uName = "anonymous";
-    if (context.getAuthenticationInfo() != null) {
-      uName = getUserName(context.getAuthenticationInfo());
+    static Class<?> findClass(String name, boolean silence) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            if (!silence) {
+                logger.error(e.getMessage(), e);
+            }
+            return null;
+        }
     }
-    return "zeppelin|" + uName + "|" + context.getNoteId() + "|" + context.getParagraphId();
-  }
 
-  public static String buildJobDesc(InterpreterContext context) {
-    return "Started by: " + getUserName(context.getAuthenticationInfo());
-  }
+    static Object instantiateClass(String name, Class<?>[] argTypes, Object[] params) {
+        try {
+            Constructor<?> constructor = Utils.class.getClassLoader()
+                    .loadClass(name).getConstructor(argTypes);
+            return constructor.newInstance(params);
+        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
+                InstantiationException | InvocationTargetException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
 
-  public static String getUserName(AuthenticationInfo info) {
-    String uName = "";
-    if (info != null) {
-      uName = info.getUser();
+    // function works after intp is initialized
+    static boolean isScala2_10() {
+        try {
+            Class.forName("org.apache.spark.repl.SparkIMain");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (IncompatibleClassChangeError e) {
+            return false;
+        }
     }
-    if (uName == null || uName.isEmpty()) {
-      uName = "anonymous";
-    }
-    return uName;
-  }
 
-  public static void printDeprecateMessage(SparkVersion sparkVersion,
-                                            InterpreterContext context,
-                                            Properties properties) throws InterpreterException {
-    context.out.clear();
-    if (sparkVersion.olderThan(SparkVersion.SPARK_2_2_0)
-            && Boolean.parseBoolean(
-                    properties.getProperty("zeppelin.spark.deprecatedMsg.show", "true"))) {
-      try {
-        context.out.write(DEPRRECATED_MESSAGE);
-        context.out.write("%text ");
-      } catch (IOException e) {
-        throw new InterpreterException(e);
-      }
+    public static String buildJobGroupId(InterpreterContext context) {
+        String uName = "anonymous";
+        if (context.getAuthenticationInfo() != null) {
+            uName = getUserName(context.getAuthenticationInfo());
+        }
+        return "zeppelin|" + uName + "|" + context.getNoteId() + "|" + context.getParagraphId();
     }
-  }
+
+    public static String buildJobDesc(InterpreterContext context) {
+        return "Started by: " + getUserName(context.getAuthenticationInfo());
+    }
+
+    public static String getUserName(AuthenticationInfo info) {
+        String uName = "";
+        if (info != null) {
+            uName = info.getUser();
+        }
+        if (uName == null || uName.isEmpty()) {
+            uName = "anonymous";
+        }
+        return uName;
+    }
+
+    public static void printDeprecateMessage(SparkVersion sparkVersion,
+                                             InterpreterContext context,
+                                             Properties properties) throws InterpreterException {
+        context.out.clear();
+        if (sparkVersion.olderThan(SparkVersion.SPARK_2_2_0)
+                && Boolean.parseBoolean(
+                properties.getProperty("zeppelin.spark.deprecatedMsg.show", "true"))) {
+            try {
+                context.out.write(DEPRRECATED_MESSAGE);
+                context.out.write("%text ");
+            } catch (IOException e) {
+                throw new InterpreterException(e);
+            }
+        }
+    }
 }

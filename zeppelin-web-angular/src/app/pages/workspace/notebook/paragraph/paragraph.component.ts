@@ -85,10 +85,24 @@ export class NotebookParagraphComponent extends ParagraphBase implements OnInit,
   @Output() readonly triggerSaveParagraph = new EventEmitter<string>();
   @Output() readonly selected = new EventEmitter<string>();
   @Output() readonly selectAtIndex = new EventEmitter<number>();
-
+  waitConfirmFromEdit = false;
   private destroy$ = new Subject();
   private mode: Mode = 'command';
-  waitConfirmFromEdit = false;
+
+  constructor(
+    noteStatusService: NoteStatusService,
+    cdr: ChangeDetectorRef,
+    ngZService: NgZService,
+    private heliumService: HeliumService,
+    public messageService: MessageService,
+    private nzModalService: NzModalService,
+    private noteVarShareService: NoteVarShareService,
+    private shortcutService: ShortcutService,
+    private host: ElementRef,
+    private ngTemplateAdapterService: NgTemplateAdapterService
+  ) {
+    super(messageService, noteStatusService, ngZService, cdr);
+  }
 
   switchMode(mode: Mode): void {
     if (mode === this.mode) {
@@ -443,21 +457,6 @@ export class NotebookParagraphComponent extends ParagraphBase implements OnInit,
     return index;
   }
 
-  constructor(
-    noteStatusService: NoteStatusService,
-    cdr: ChangeDetectorRef,
-    ngZService: NgZService,
-    private heliumService: HeliumService,
-    public messageService: MessageService,
-    private nzModalService: NzModalService,
-    private noteVarShareService: NoteVarShareService,
-    private shortcutService: ShortcutService,
-    private host: ElementRef,
-    private ngTemplateAdapterService: NgTemplateAdapterService
-  ) {
-    super(messageService, noteStatusService, ngZService, cdr);
-  }
-
   ngOnInit() {
     const shortcutService = this.shortcutService.forkByElement(this.host.nativeElement);
     const observables: Array<
@@ -617,6 +616,7 @@ export class NotebookParagraphComponent extends ParagraphBase implements OnInit,
       });
     }
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     const { index, select, scrolled } = changes;
     if (
@@ -637,6 +637,7 @@ export class NotebookParagraphComponent extends ParagraphBase implements OnInit,
   getElement(): HTMLElement {
     return this.host && this.host.nativeElement;
   }
+
   ngAfterViewInit(): void {
     this.scrollIfNeeded();
   }

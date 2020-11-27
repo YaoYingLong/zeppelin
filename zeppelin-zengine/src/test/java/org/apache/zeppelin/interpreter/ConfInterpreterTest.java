@@ -25,78 +25,78 @@ import static org.junit.Assert.assertTrue;
 
 public class ConfInterpreterTest extends AbstractInterpreterTest {
 
-  private ExecutionContext executionContext = new ExecutionContextBuilder()
-          .setUser("user1")
-          .setNoteId("note1")
-          .setDefaultInterpreterGroup("test")
-          .createExecutionContext();
+    private ExecutionContext executionContext = new ExecutionContextBuilder()
+            .setUser("user1")
+            .setNoteId("note1")
+            .setDefaultInterpreterGroup("test")
+            .createExecutionContext();
 
-  @Test
-  public void testCorrectConf() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+    @Test
+    public void testCorrectConf() throws InterpreterException {
+        assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
+        ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
+        InterpreterContext context = InterpreterContext.builder()
+                .setNoteId("noteId")
+                .setParagraphId("paragraphId")
+                .build();
 
-    InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+        InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    remoteInterpreter.interpret("hello world", context);
-    assertEquals(7, remoteInterpreter.getProperties().size());
-    assertEquals("new_value", remoteInterpreter.getProperty("property_1"));
-    assertEquals("dummy_value", remoteInterpreter.getProperty("new_property"));
-    assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
+        assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
+        RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
+        remoteInterpreter.interpret("hello world", context);
+        assertEquals(7, remoteInterpreter.getProperties().size());
+        assertEquals("new_value", remoteInterpreter.getProperty("property_1"));
+        assertEquals("dummy_value", remoteInterpreter.getProperty("new_property"));
+        assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
 
-    // rerun the paragraph with the same properties would result in SUCCESS
-    result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+        // rerun the paragraph with the same properties would result in SUCCESS
+        result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    // run the paragraph with the same properties would result in ERROR
-    result = confInterpreter.interpret("property_1\tnew_value_2\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
-  }
+        // run the paragraph with the same properties would result in ERROR
+        result = confInterpreter.interpret("property_1\tnew_value_2\nnew_property\tdummy_value", context);
+        assertEquals(InterpreterResult.Code.ERROR, result.code);
+    }
 
-  @Test
-  public void testEmptyConf() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+    @Test
+    public void testEmptyConf() throws InterpreterException {
+        assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
+        ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
-    InterpreterResult result = confInterpreter.interpret("", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+        InterpreterContext context = InterpreterContext.builder()
+                .setNoteId("noteId")
+                .setParagraphId("paragraphId")
+                .build();
+        InterpreterResult result = confInterpreter.interpret("", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    assertEquals(6, remoteInterpreter.getProperties().size());
-    assertEquals("value_1", remoteInterpreter.getProperty("property_1"));
-    assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
-  }
+        assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
+        RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
+        assertEquals(6, remoteInterpreter.getProperties().size());
+        assertEquals("value_1", remoteInterpreter.getProperty("property_1"));
+        assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
+    }
 
 
-  @Test
-  public void testRunningAfterOtherInterpreter() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+    @Test
+    public void testRunningAfterOtherInterpreter() throws InterpreterException {
+        assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
+        ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
+        InterpreterContext context = InterpreterContext.builder()
+                .setNoteId("noteId")
+                .setParagraphId("paragraphId")
+                .build();
 
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    InterpreterResult result = remoteInterpreter.interpret("hello world", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+        RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
+        InterpreterResult result = remoteInterpreter.interpret("hello world", context);
+        assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
-  }
+        result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
+        assertEquals(InterpreterResult.Code.ERROR, result.code);
+    }
 
 }
