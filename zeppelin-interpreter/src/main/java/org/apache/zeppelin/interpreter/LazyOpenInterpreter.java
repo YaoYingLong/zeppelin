@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * 解释器包装器，用于延迟初始化
+ * <p>
  * Interpreter wrapper for lazy initialization
  */
 public class LazyOpenInterpreter

@@ -36,6 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 命令行实用程序，用于从Maven存储库安装解释器
+ * <p>
  * Commandline utility to install interpreter from maven repository
  */
 public class InstallInterpreter {

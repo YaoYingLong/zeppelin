@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 监听来自RemoteInterpreterProcess的事件
+ * <p>
  * Listener for events from RemoteInterpreterProcess.
  */
 public interface RemoteInterpreterProcessListener {
@@ -47,8 +49,7 @@ public interface RemoteInterpreterProcessListener {
      * @param type
      * @param output
      */
-    void onOutputUpdated(
-            String noteId, String paragraphId, int index, InterpreterResult.Type type, String output);
+    void onOutputUpdated(String noteId, String paragraphId, int index, InterpreterResult.Type type, String output);
 
     /**
      * Invoked when output is cleared.
@@ -59,6 +60,8 @@ public interface RemoteInterpreterProcessListener {
     void onOutputClear(String noteId, String paragraphId);
 
     /**
+     * 运行paragraphs，可以通过索引（paragraphIndices）或id（paragraphIds）指定paragraphs
+     * <p>
      * Run paragraphs, paragraphs can be specified via indices(paragraphIndices) or ids(paragraphIds)
      *
      * @param noteId
@@ -67,8 +70,7 @@ public interface RemoteInterpreterProcessListener {
      * @param curParagraphId
      * @throws IOException
      */
-    void runParagraphs(String noteId, List<Integer> paragraphIndices, List<String> paragraphIds,
-                       String curParagraphId)
+    void runParagraphs(String noteId, List<Integer> paragraphIndices, List<String> paragraphIds, String curParagraphId)
             throws IOException;
 
     /**

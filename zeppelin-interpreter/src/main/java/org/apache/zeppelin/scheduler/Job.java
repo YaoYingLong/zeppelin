@@ -27,11 +27,20 @@ import java.util.Map;
 
 
 /**
+ * 对于Job的概念精髓的实现
+ * - 为继承而设计
+ * - 应该在单独的线程上运行
+ * - 维护内部状态：它的状态
+ * - 支持在状态更改时更新的侦听器
+ * <p>
  * Skeletal implementation of the Job concept.
  * - designed for inheritance
  * - should be run on a separate thread
  * - maintains internal state: it's status
  * - supports listeners who are updated on status change
+ * <p>
+ * Job类被序列化/反序列化，并使用服务器<->客户端通信,并从磁盘保存/加载作业。
+ * 更改/添加/删除非传递字段名称需要考虑这一点。
  * <p>
  * Job class is serialized/deserialized and used server<->client communication
  * and saving/loading jobs from disk.
@@ -50,6 +59,7 @@ public abstract class Job<T> {
     private volatile String errorMessage;
     private transient volatile Throwable exception;
     private transient JobListener listener;
+
     public Job(String jobName, JobListener listener) {
         this.jobName = jobName;
         this.listener = listener;
@@ -101,6 +111,8 @@ public abstract class Job<T> {
     }
 
     /**
+     * 只是设置状态而无需通知监听器。
+     * <p>
      * just set status without notifying to listeners for spell.
      */
     public void setStatusWithoutNotification(Status status) {
@@ -233,13 +245,13 @@ public abstract class Job<T> {
     /**
      * Job status.
      * <p>
-     * UNKNOWN - Job is not found in remote
-     * READY - Job is not running, ready to run.
-     * PENDING - Job is submitted to scheduler. but not running yet
-     * RUNNING - Job is running.
-     * FINISHED - Job finished run. with success
-     * ERROR - Job finished run. with error
-     * ABORT - Job finished by abort
+     * UNKNOWN - Job is not found in remote  - 在远程找不到作业
+     * READY - Job is not running, ready to run. - 作业未运行，准备运行
+     * PENDING - job is submitted to scheduler. but not running yet - 作业已提交给调度程序。但还没执行
+     * RUNNING - Job is running. - 作业正在运行
+     * FINISHED - Job finished run. with success - 作业完成运行。成功
+     * ERROR - Job finished run. with error - 作业完成运行。有错误
+     * ABORT - Job finished by abort - 作业因中止而完成
      */
     public enum Status {
         UNKNOWN, READY, PENDING, RUNNING, FINISHED, ERROR, ABORT;

@@ -79,6 +79,8 @@ import static org.apache.zeppelin.cluster.ClusterManagerServer.CLUSTER_INTP_SETT
 
 
 /**
+ * 管理所有解释程序设置的组件：load/create/update/remove/get
+ * <p>
  * InterpreterSettingManager is the component which manage all the interpreter settings.
  * (load/create/update/remove/get)
  * TODO(zjffdu) We could move it into another separated component.

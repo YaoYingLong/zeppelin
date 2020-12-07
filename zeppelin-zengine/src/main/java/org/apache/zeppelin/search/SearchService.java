@@ -27,6 +27,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * 搜索（包括索引和查询）注释，有多种实现
+ * - 本地Lucene通过内存或磁盘
+ * - 远程通过Elasticsearch
+ * <p>
  * Search (both, indexing and query) the notes.
  * <p>
  * Intended to have multiple implementation, i.e:
@@ -40,6 +44,8 @@ public abstract class SearchService extends NoteEventAsyncListener {
     }
 
     /**
+     * 在所有notes中进行全文搜索
+     * <p>
      * Full-text search in all the notes
      *
      * @param queryStr a query

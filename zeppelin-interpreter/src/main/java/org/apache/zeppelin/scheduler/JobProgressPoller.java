@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 按给定间隔轮询作业进度
+ * <p>
  * Polls job progress with given interval
  *
  * @see Job#progress()
